@@ -456,7 +456,7 @@ func EnclosingSymbol(path string, line int) (*Symbol, error) {
 
 var callRe = regexp.MustCompile(`\b([A-Za-z_][A-Za-z0-9_]*)\s*\(`)
 
-// Callers finds symbols whose bodies reference `name(` — heuristic
+// Callers finds symbols whose bodies reference `name(` - heuristic
 // callers. Each hit is resolved to the enclosing declaration.
 func Callers(root, sub, name string, limit int) ([]SymHit, error) {
 	if !regexp.MustCompile(`^[\w$.-]+$`).MatchString(name) {
