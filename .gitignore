@@ -1,0 +1,5 @@
+*.test
+coverage.out
+*.exe
+dist/
+notes.md
