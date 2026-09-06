@@ -13,6 +13,7 @@ MeshChatX. Go, stdlib-first, stdio transport, safe read-only defaults.
 | Server | Purpose |
 | --- | --- |
 | rns-mcp | RNS manual, zen, forum/GitHub community, rngit, read-only rn* probes |
+| reticulum-go-mcp | Reticulum-Go docs at reticulum-go.quad4.io: searchable, section-aware, fetch |
 | memory-mcp | Persistent agent memory: notes, people, RNS destinations, tasks, fuzzy recall |
 | meshchatx-mcp | MeshChatX docs, scaffolding, god-file detection, split plans, surface snapshots |
 | context-mcp | Token-efficient code access: outlines, symbol reads, repo maps |

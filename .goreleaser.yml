@@ -161,10 +161,42 @@ builds:
       - amd64
       - arm64
 
+  - id: memory-mcp
+    dir: memory-mcp
+    main: .
+    binary: memory-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
   - id: no-slop-mcp
     dir: no-slop-mcp
     main: .
     binary: no-slop-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: reticulum-go-mcp
+    dir: reticulum-go-mcp
+    main: .
+    binary: reticulum-go-mcp
     ldflags:
       - -s -w
     env:

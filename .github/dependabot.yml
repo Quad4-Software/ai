@@ -72,6 +72,11 @@ updates:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
+    directory: "/reticulum-go-mcp"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: gomod
     directory: "/workspace-mcp"
     schedule:
       interval: weekly
