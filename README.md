@@ -46,6 +46,11 @@ It spawns each configured command server lazily, exposes a compact
 tool index, and fetches full schemas only on demand. External servers
 in the same config (docker-based, etc.) are proxied too.
 
+To share one gateway across every client window, use shared daemon
+mode: register the gateway with args ["--attach"], which bridges each
+window's stdio to a single long-lived daemon on an owner-only unix
+socket (auto-started on first connect). See gateway-mcp/README.md.
+
 ## Design contract
 
 - Newline-delimited JSON-RPC 2.0 over stdio. MCP protocol 2025-11-25.

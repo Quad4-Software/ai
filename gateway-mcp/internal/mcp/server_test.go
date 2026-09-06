@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"sync"
@@ -353,4 +355,58 @@ func TestNoGoroutineLeakWithTimeout(t *testing.T) {
 	if after > base+2 {
 		t.Fatalf("possible goroutine leak after repeated timeouts: base=%d after=%d", base, after)
 	}
+}
+
+func TestServeListenerShared(t *testing.T) {
+	srv := NewServer("t", "0.1", []Tool{
+		{Name: "ok", Description: "d", InputSchema: map[string]any{},
+			Handle: func(context.Context, json.RawMessage) (string, error) { return "fine", nil }},
+	}, nil)
+	l, err := net.Listen("unix", filepath.Join(t.TempDir(), "s.sock"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go srv.ServeListener(ctx, l) // #nosec -- test
+	roundTrip := func() error {
+		c, err := net.Dial("unix", l.Addr().String())
+		if err != nil {
+			return err
+		}
+		defer c.Close()
+		fmt.Fprintln(c, `{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"ok","arguments":{}}}`)
+		var res map[string]any
+		if err := json.NewDecoder(c).Decode(&res); err != nil {
+			return err
+		}
+		result, _ := res["result"].(map[string]any)
+		content, _ := result["content"].([]any)
+		first, _ := content[0].(map[string]any)
+		if first["text"] != "fine" {
+			return fmt.Errorf("bad result: %v", res)
+		}
+		return nil
+	}
+	// many concurrent clients share one server without racing
+	var wg sync.WaitGroup
+	errs := make(chan error, 16)
+	for range 16 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for range 3 {
+				if err := roundTrip(); err != nil {
+					errs <- err
+					return
+				}
+			}
+		}()
+	}
+	wg.Wait()
+	close(errs)
+	for err := range errs {
+		t.Fatal(err)
+	}
+	cancel()
 }

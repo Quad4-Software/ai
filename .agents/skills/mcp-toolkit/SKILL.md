@@ -27,8 +27,8 @@ Current servers and purposes:
 - context-mcp - token-efficient code access for agents: outlines, windowed
   reads, symbol bodies, repo maps, ranked references. Reports estimated token
   cost per response.
-- gateway-mcp - multiplexes many stdio MCP servers behind four tools
-  (servers, tools, tool_schema, invoke): lazy child spawn and respawn.
+- gateway-mcp - multiplexes many stdio MCP servers behind five tools
+  (servers, tools, tool_schema, invoke, gateway_stats): lazy child spawn and respawn.
 - i18n-mcp - locale coverage checks: missing keys, per-key lookups,
   hardcoded UI string candidates.
 - lxmf-mcp - reads local Reticulum state (~/.reticulum): sanitized config,

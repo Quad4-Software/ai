@@ -17,6 +17,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"sort"
 	"strings"
 	"sync"
@@ -187,6 +188,29 @@ func (s *Server) Serve(ctx context.Context, r io.Reader, w io.Writer) error {
 		send(s.dispatch(ctx, &req))
 	}
 	return sc.Err()
+}
+
+// ServeListener accepts connections from l and serves each on its own
+// goroutine via Serve, so many clients share one Server and its state.
+// It returns when l is closed or ctx is cancelled.
+func (s *Server) ServeListener(ctx context.Context, l net.Listener) error {
+	go func() {
+		<-ctx.Done()
+		l.Close() // #nosec G104 -- shutdown path, error irrelevant
+	}()
+	for {
+		c, err := l.Accept()
+		if err != nil {
+			if ctx.Err() != nil {
+				return nil
+			}
+			return err
+		}
+		go func() {
+			defer c.Close()    // #nosec G104 -- per-conn cleanup
+			s.Serve(ctx, c, c) // #nosec G104 -- per-conn errors end that conn only
+		}()
+	}
 }
 
 func (s *Server) dispatch(ctx context.Context, req *request) (res response) {
