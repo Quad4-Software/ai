@@ -1,0 +1,228 @@
+version: 2
+
+builds:
+  - id: agents-mcp
+    dir: agents-mcp
+    main: .
+    binary: agents-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: bug-hunter-mcp
+    dir: bug-hunter-mcp
+    main: .
+    binary: bug-hunter-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: ci-security-mcp
+    dir: ci-security-mcp
+    main: .
+    binary: ci-security-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: context-mcp
+    dir: context-mcp
+    main: .
+    binary: context-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: gateway-mcp
+    dir: gateway-mcp
+    main: .
+    binary: gateway-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: i18n-mcp
+    dir: i18n-mcp
+    main: .
+    binary: i18n-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: lxmf-mcp
+    dir: lxmf-mcp
+    main: .
+    binary: lxmf-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: lxmfy-mcp
+    dir: lxmfy-mcp
+    main: .
+    binary: lxmfy-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: meshchatx-mcp
+    dir: meshchatx-mcp
+    main: .
+    binary: meshchatx-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: micron-mcp
+    dir: micron-mcp
+    main: .
+    binary: micron-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: no-slop-mcp
+    dir: no-slop-mcp
+    main: .
+    binary: no-slop-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: rns-mcp
+    dir: rns-mcp
+    main: .
+    binary: rns-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+  - id: workspace-mcp
+    dir: workspace-mcp
+    main: .
+    binary: workspace-mcp
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+sboms: []
+signs: []
+
+release:
+  name_template: "Quad4 MCP toolkit {{.Tag}}"
