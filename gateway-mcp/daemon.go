@@ -114,7 +114,7 @@ func spawnDaemon(sock string) error {
 	cmd := exec.Command(exe, "--daemon", "--socket", sock) // #nosec G204 -- fixed argv, own binary
 	cmd.Stdout, cmd.Stderr = log, log
 	cmd.Stdin = nil
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
+	cmd.SysProcAttr = detachSysProcAttr()
 	if err := cmd.Start(); err != nil {
 		return err
 	}
