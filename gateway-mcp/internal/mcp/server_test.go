@@ -392,16 +392,14 @@ func TestServeListenerShared(t *testing.T) {
 	var wg sync.WaitGroup
 	errs := make(chan error, 16)
 	for range 16 {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			for range 3 {
 				if err := roundTrip(); err != nil {
 					errs <- err
 					return
 				}
 			}
-		}()
+		})
 	}
 	wg.Wait()
 	close(errs)

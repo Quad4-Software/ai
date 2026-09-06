@@ -36,7 +36,7 @@ EOF
 badge ci      "CI"      "passing"  "#4c1"   28 58
 badge gosec   "gosec"   "passing"  "#4c1"   38 58
 badge race    "race"    "passing"  "#37d"   36 58
-badge release "release" "v0.1.5"   "#a35"   42 48
+badge release "release" "v0.1.6"   "#a35"   42 48
 badge go      "go"      "1.27"     "#00ADD8" 26 40
 badge license "license" "0BSD"     "#999"   38 40
 
