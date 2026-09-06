@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: 0BSD
+name: ci
+on:
+  push:
+    paths:
+      - '**/*.go'
+      - '**/go.mod'
+      - '**/go.sum'
+      - '**/Makefile'
+      - 'Makefile'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    paths:
+      - '**/*.go'
+      - '**/go.mod'
+      - '**/go.sum'
+      - '**/Makefile'
+      - 'Makefile'
+      - '.github/workflows/ci.yml'
+
+permissions: {}
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+        with:
+          go-version: stable
+      - name: all
+        run: make all
+      - name: gosec
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          make gosec

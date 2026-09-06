@@ -1,0 +1,15 @@
+Micron Quick Reference
+
+Sections:       >Heading  >>Sub  >>>Sub-sub
+Dividers:       ---  -=  -*
+Bold:           `!text`!
+Italic:         `*text`*
+Underline:      `_text`_
+Reset:          ``
+Colors:         `Fxxx  `FTxxxxxx  `f  `Bxxx  `BTxxxxxx  `b
+Page colors:    #!fg=aaaaaa  #!bg=222
+Alignment:      `c  `l  `r  `a
+Links:          `[label`/path.mu]  `[hash:/page.mu]
+Fields:         `<<name`>>  `[`?name=`name
+Tables:         `t ... `t
+Comments:       # comment line

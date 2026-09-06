@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="90" height="20" role="img" aria-label="release: v0.1.3">
+  <title>release: v0.1.3</title>
+  <linearGradient id="grelease" x2="0" y2="100%">
+    <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+    <stop offset="1" stop-opacity=".1"/>
+  </linearGradient>
+  <clipPath id="crelease">
+    <rect width="90" height="20" rx="3" fill="#fff"/>
+  </clipPath>
+  <g clip-path="url(#crelease)">
+    <rect width="42" height="20" fill="#555"/>
+    <rect x="42" width="48" height="20" fill="#a35"/>
+    <rect width="90" height="20" fill="url(#grelease)"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="11">
+    <text x="21" y="14">release</text>
+    <text x="66" y="14">v0.1.3</text>
+  </g>
+</svg>
