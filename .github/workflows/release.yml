@@ -1,0 +1,68 @@
+# SPDX-License-Identifier: 0BSD
+name: release
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  validate-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate tag
+        run: |
+          tag="${{ github.ref_name }}"
+          if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "valid tag: $tag"
+          else
+            echo "invalid tag: $tag" >&2
+            exit 1
+          fi
+
+  release:
+    needs: validate-tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@5c6294f65b6e27a9f0b85a469efb074d601c8c26 # v2.0.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+        with:
+          go-version: stable
+
+      - name: Install gosec
+        run: go install github.com/securego/gosec/v2/cmd/gosec@latest
+
+      - name: make all
+        run: make all
+
+      - name: make gosec
+        run: make gosec
+
+      - name: GoReleaser
+        uses: goreleaser/goreleaser-action@90a89b8ca313719f0eb35d5b263c2711749467b2
+        with:
+          distribution: goreleaser
+          version: '~> v2'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate release notes from checksums
+        run: ./scripts/release-notes.sh
+
+      - name: Update release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit "${{ github.ref_name }}" --notes-file notes.md
