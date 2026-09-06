@@ -25,4 +25,7 @@ jobs:
         with:
           go-version: stable
       - name: fuzz-micron
-        run: cd micron-mcp && go test -fuzz=Fuzz -fuzztime=30s -run='^$' .
+        run: |
+          for target in FuzzParseMicron FuzzRenderHTML; do
+            (cd micron-mcp && go test -fuzz=$target -fuzztime=15s -run='^$' .) || exit 1
+          done
