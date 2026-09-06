@@ -27,7 +27,7 @@ jobs:
       contents: write
     steps:
       - name: Harden runner
-        uses: step-security/harden-runner@5c6294f65b6e27a9f0b85a469efb074d601c8c26 # v2.0.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
@@ -51,7 +51,7 @@ jobs:
         run: make gosec
 
       - name: GoReleaser
-        uses: goreleaser/goreleaser-action@90a89b8ca313719f0eb35d5b263c2711749467b2
+        uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
         with:
           distribution: goreleaser
           version: '~> v2'
