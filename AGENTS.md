@@ -62,7 +62,7 @@ exclude /third_party/.
 ## CI
 
 Workflows in .github/workflows/: ci.yml, dependency-review.yml,
-gosec.yml, race.yml, fuzz.yml, bench.yml, leak.yml, release.yml.
+gosec.yml, race.yml, fuzz.yml, bench.yml, leak.yml, release.yml, scorecard.yml.
 All actions pinned to full SHAs. Every job begins with
 step-security/harden-runner (pinned). No arbitrary shell on untrusted
 input. Dependabot handles gomod weekly.
