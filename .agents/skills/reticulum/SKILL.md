@@ -1,5 +1,5 @@
 ---
-name: reticulum-mesh
+name: reticulum
 description: >
   Use when working with the Reticulum-related servers (rns-mcp, lxmf-mcp,
   lxmfy-mcp, meshchatx-mcp): Reticulum protocol and API, cryptography, links,
@@ -177,24 +177,9 @@ tools should be designed in its spirit:
 - These `rns://` paths are only resolvable inside a running Reticulum network.
   Tools should not attempt HTTP access to them and should not fabricate content.
 
-## Servers
+## Reticulum MCP tools
 
-- `rns-mcp` serves the Reticulum manual as searchable, section-aware tools with
-  low memory usage.
-- `lxmf-mcp` reads `~/.reticulum` directly for sanitized config, storage
-  inventory, identity names and decoded known destinations.
-- `lxmf-mcp` is strictly read-only. It must never write to `~/.reticulum`,
-  restart rnsd or expose private keys. Identity files are listed by name only
-  and config secrets are redacted.
-- `lxmfy-mcp` provides LXMFy docs, bot scaffolding, diagnostics and test
-  guidance. Framework detail lives in the lxmfy skill.
-- `meshchatx-mcp` provides MeshChatX documentation tools for lookups and
-  browsing, plus opt-in GitHub issue write tools (template-aware
-  issue_create in the repo's issue-form style, issue_update for
-  edit/close/reopen, issue_comment, issue_search, issue_references)
-  gated behind a GitHub token env var. Issue text auto-links ecosystem
-  and spec terms (BCP 47, LXMF, RNode, KISS, ...) to canonical URLs so
-  filed issues stay readable without assumed knowledge.
+Server and tool conventions are in [references/tools.md](references/tools.md). This section is optional if the relevant MCP server is installed.
 
 ## RNS lifecycle and reload
 
@@ -329,7 +314,6 @@ Weave is a switching fabric for Reticulum under development by Mark Qvist. It ac
 - Bootstrap and directory references: `directory.rns.recipes` and `rmap.world`.
 - Public source mirrors: `github.com/markqvist/Reticulum` and `rns://7649a50d84610232d1416b41d2896aff/reticulum/reticulum`.
 - A destination hash is a 16-byte hex value in angle brackets, e.g. `<13425ec15b621c1d928589718000d814>`.
-- Useful rns-mcp tools: `search_docs`, `get_topic`, `rns_status`, `rns_path_table`, `rns_path_lookup`, `rns_probe`, `rns_config_check`, `community_read`, `interface_directory`.
 
 ## Plugin / god-file pattern
 
@@ -610,17 +594,10 @@ LXMF daemon and propagation node.
 - `-r, --remote REMOTE` remote propagation node destination hash.
 - `--identity IDENTITY` identity for remote requests.
 
-## Conventions for Reticulum MCP tools
 
-- Read-only by default. Tools never start, stop or reconfigure the daemon.
-  The one exception is meshchatx-mcp's GitHub issue tools, which write only
-  to the issue tracker and only when a token env var is configured.
-- Path-jail all file access to `~/.reticulum` (or a configured root), reject
-  traversal.
-- Redact secrets: passphrases, private keys, tokens, credentials and any field
-  that could identify or compromise a mesh peer.
-- Return destination hashes in canonical angle-bracket hex form, e.g.
-  `<13425ec15b621c1d928589718000d814>`, and never display private key data.
-- Cap and paginate large outputs; RNS networks may be low bandwidth and the
-  consumers of these tools may be remote.
-- Use `#nosec` sparingly and only with an inline justification comment.
+## IFAC, discovery and blackhole
+
+- [IFAC](references/ifac.md) - Interface Access Codes
+- [Interface discovery](references/discovery.md) - AutoInterface discovery and `discovery_lxmf_address`
+- [Blackhole](references/blackhole.md) - Blackhole and distributed blackhole lists
+

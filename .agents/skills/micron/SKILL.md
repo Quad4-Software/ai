@@ -26,21 +26,9 @@ fields, form inputs, tables, partials, and literal blocks.
 For exact syntax, call the micron_reference tool or read
 micron-mcp/third_party/micron-parser-go/micron/doc.go.
 
-## micron-mcp tools
+## Tool reference
 
-Registered in micron-mcp/main.go:
-
-- parse_micron - source to structured JSON AST (blocks, inlines, colors,
-  spans).
-- lint_micron - syntax diagnostics via micron.DiagnosticsJSON.
-- render_html - source to safe HTML fragment.
-- render_ansi - source to ANSI terminal output.
-- extract_links - URL, label, source line, and field names.
-- extract_headings - headings with depth and source line.
-- search_micron - matching line numbers and snippets.
-- generate_template - starter .mu template: page, color, form, table, or
-  minimal.
-- micron_reference - syntax quick reference.
+Tool details are in [references/tools.md](references/tools.md). This section is optional if micron-mcp is installed.
 
 ## Vendored parser
 

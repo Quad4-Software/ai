@@ -268,31 +268,15 @@ space, chaos engineering (bit-rot, SD card failure, storage
 corruption), temporal drift (clock jumps of a year), and leak
 detection (memory, fds, threads). Run with the repo test runner.
 
-## lxmfy-mcp tools
+## Tool reference
 
-Registered in lxmfy-mcp/main.go. Docs are fetched live from
-lxmfy.quad4.io (1 MiB page cap, 32-entry LRU, 10 min TTL, 15s timeout),
-so the server needs network at runtime though builds and tests stay
-offline.
-
-- `list_topics`, `get_topic`, `list_sections`, `get_section` -
-  navigate the three doc pages above. Prefer `get_section` over
-  `get_topic` on large pages.
-- `search_docs` - ranked excerpts with topic and section anchors.
-- `fetch_page` - any URL on the lxmfy.quad4.io host (allowlisted), for
-  deep links outside the topic index.
-- `list_templates`, `scaffold_bot`, `scaffold_cog` - generate starter
-  files. Names must match `^[a-z][a-z0-9_-]{0,48}$`. Templates:
-  minimal, echo, note, reminder, rrc, cogtest.
-- `list_test_scenarios` - reliability and stress test categories.
-- `diagnose_bot` - static checks on bot source (max 64 KiB): missing
-  admins, Landlock disabled, unsafe threading, missing run guard, etc.
+Tool details are in [references/tools.md](references/tools.md). This section is optional if lxmfy-mcp is installed.
 
 ## Conventions for lxmfy-related work
 
 - This is a Python framework; the Go server only documents and
   scaffolds it. Keep generated Python consistent with upstream docs.
-- Follow the Zen of Reticulum (see reticulum-mesh skill): bots are
+- Follow the Zen of Reticulum (see reticulum skill): bots are
   peers, keep outputs small, never fabricate mesh state.
 - LXMFy is the rare write-capable piece of the stack (bots send
   messages, manage storage, run script cogs). Keep lxmfy-mcp itself

@@ -1,0 +1,30 @@
+{
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "MCP toolkit",
+      "description": "Skills for the Quad4-Software/ai MCP server repo: building, testing, security, release and style.",
+      "skills": [
+        "mcp-toolkit",
+        "bug-hunting",
+        "no-slop",
+        "ci-security",
+        "release",
+        "micron",
+        "go",
+        "vendor-all"
+      ]
+    },
+    {
+      "title": "Reticulum",
+      "description": "Skills for Reticulum mesh networking, LXMF, LXMFy, the Go implementation, tooling and interface operation.",
+      "skills": [
+        "reticulum",
+        "reticulum-go",
+        "lxmf",
+        "lxmfy",
+        "rngit"
+      ]
+    }
+  ]
+}
