@@ -32,6 +32,44 @@ status/health endpoint on port 8080 when `HTTP_PORT` is set. In Coolify assign
 a domain to the `mcp` service and use `http(s)://example.com:8080`. The
 `expose` list tells the proxy where to route traffic.
 
+## Public HTTP/SSE API
+
+The gateway also speaks the official MCP over SSE transport on `HTTP_PORT`.
+This lets any HTTP-capable client (including AI agents) connect without needing
+stdio access.
+
+Endpoints:
+
+- `GET /`      JSON status: `name`, `version`, `read_only`, `servers`.
+- `GET /healthz`  plain `ok` for load balancers.
+- `GET /sse`   Server-Sent Events stream. The first event (`event: endpoint`)
+  contains the POST URL for this session. Later `event: message` events carry
+  JSON-RPC responses.
+- `POST /messages?session=<id>`  send one JSON-RPC request body. Returns
+  `202 Accepted`; the result comes back on the matching `/sse` stream.
+
+Example with two terminals:
+
+```
+# Terminal 1: open the SSE stream and read the session URL
+$ curl -N -H 'Accept: text/event-stream' http://localhost:8080/sse
+
+event: endpoint
+data: /messages?session=abc123
+
+event: message
+data: {"jsonrpc":"2.0","id":1,"result":{...}}
+```
+
+```
+# Terminal 2: send requests to the endpoint returned above
+$ curl -X POST -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"agent","version":"0.1.0"}}}' \
+  'http://localhost:8080/messages?session=abc123'
+
+$ curl -X POST -d '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
+  'http://localhost:8080/messages?session=abc123'
+```
+
 ## What read-only mode blocks
 
 - `tools/list` does not advertise tools marked `Write: true`.
