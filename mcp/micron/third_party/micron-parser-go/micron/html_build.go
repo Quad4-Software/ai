@@ -150,11 +150,6 @@ func (p *Parser) writeField(b *strings.Builder, f *Field, s *State) {
 
 func (p *Parser) writeLink(b *strings.Builder, lk *Link, s *State) {
 	direct := linkDirectURL(lk.URL)
-	// data-destination is a bare destination: never expose a raw
-	// javascript:/vbscript:/file: scheme that a client could navigate to.
-	if dangerousNavScheme(direct) {
-		direct = "#"
-	}
 	if len(lk.Fields) == 0 {
 		b.WriteString(`<a class="Mu-nl" href="`)
 		b.WriteString(htmlAttr(lk.URL))
@@ -165,7 +160,11 @@ func (p *Parser) writeLink(b *strings.Builder, lk *Link, s *State) {
 		b.WriteString(`"`)
 		appendQuotedHTMLStyleAttr(b, lk.Style, s.DefaultBG)
 		b.WriteString(`>`)
-		b.WriteString(lk.Label)
+		if p.ForceMonospace {
+			p.appendSplitAtSpaces(b, lk.Label)
+		} else {
+			appendHTMLText(b, lk.Label)
+		}
 		b.WriteString(`</a>`)
 		return
 	}
@@ -212,7 +211,11 @@ func (p *Parser) writeLink(b *strings.Builder, lk *Link, s *State) {
 	b.WriteString(`"`)
 	appendQuotedHTMLStyleAttr(b, lk.Style, s.DefaultBG)
 	b.WriteString(`>`)
-	b.WriteString(lk.Label)
+	if p.ForceMonospace {
+		p.appendSplitAtSpaces(b, lk.Label)
+	} else {
+		appendHTMLText(b, lk.Label)
+	}
 	b.WriteString(`</a>`)
 }
 

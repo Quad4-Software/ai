@@ -328,22 +328,8 @@ func (p *Parser) consumeTableFenceBlocks(doc *Document, line string, lineSpan Sp
 		if len(micronLines) == 0 {
 			return
 		}
-		base := len(doc.Blocks)
 		for _, ml := range micronLines {
 			p.appendBlocksFromLine(doc, ml, lineSpan, srcLine, s, collectDiag, diags)
-		}
-		// Generated table art has no backing source text: clamp inline
-		// spans to the fence line so no span escapes the source buffer.
-		for i := base; i < len(doc.Blocks); i++ {
-			for j := range doc.Blocks[i].Inlines {
-				sp := &doc.Blocks[i].Inlines[j].Span
-				if sp.End > lineSpan.End {
-					sp.End = lineSpan.End
-				}
-				if sp.Start > sp.End {
-					sp.Start = sp.End
-				}
-			}
 		}
 		return
 	}

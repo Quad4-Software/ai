@@ -36,7 +36,7 @@ func dangerousNavScheme(url string) bool {
 	}
 	scheme := strings.ToLower(url[:colon])
 	switch scheme {
-	case "javascript", "vbscript", "file", "data":
+	case "javascript", "vbscript", "file":
 		return true
 	default:
 		return false
