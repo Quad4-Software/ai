@@ -312,6 +312,7 @@ func tools(src *docs.Source, util *sysutil.Runner) []mcp.Tool {
 		},
 		{
 			Name:        "rns_rngit",
+			Write:       true,
 			Description: "Run rngit subcommands (create, release, fork, mirror, sync, perms, work, info, ls, log, show, verify, install) with a validated RNS URL and allowed flags.",
 			InputSchema: obj(map[string]any{
 				"subcommand": strArg("rngit subcommand, e.g. create, release, sync"),

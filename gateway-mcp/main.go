@@ -249,7 +249,9 @@ func main() {
 	sock := flag.String("socket", defaultSocket(), "shared-daemon unix socket path")
 	attachMode := flag.Bool("attach", false, "bridge stdio to the shared daemon, auto-starting it")
 	daemonMode := flag.Bool("daemon", false, "run as shared daemon on the socket")
+	ro := flag.Bool("read-only", false, "disable mutating tools")
 	flag.Parse()
+	_ = ro
 	if *attachMode {
 		if err := attach(*sock); err != nil {
 			fmt.Fprintln(os.Stderr, "gateway-mcp attach:", err)
@@ -258,13 +260,17 @@ func main() {
 		return
 	}
 	if *daemonMode {
-		if err := runDaemon(context.Background(), *sock, buildServer()); err != nil {
+		srv := buildServer()
+		srv.ReadOnly = *ro || srv.ReadOnly
+		if err := runDaemon(context.Background(), *sock, srv); err != nil {
 			fmt.Fprintln(os.Stderr, "gateway-mcp daemon:", err)
 			os.Exit(1)
 		}
 		return
 	}
-	if err := buildServer().Serve(context.Background(), os.Stdin, os.Stdout); err != nil {
+	srv := buildServer()
+	srv.ReadOnly = *ro || srv.ReadOnly
+	if err := srv.Serve(context.Background(), os.Stdin, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, "gateway-mcp:", err)
 		os.Exit(1)
 	}

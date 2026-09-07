@@ -31,6 +31,7 @@ func issueTools() []mcp.Tool {
 		},
 		{
 			Name:          "issue_create",
+			Write:         true,
 			Description:   "File a MeshChatX issue from a template. The body is rendered in the same section style as the issue forms (### headings, human prose). Known spec and ecosystem terms (BCP 47, LXMF, RNode, ...) are auto-linked to canonical references, see issue_references. Write op: needs a GitHub token in the environment.",
 			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"kind": "feature", "title": "Language picker should use native names", "fields": {"os": "All platforms", "problem": "...", "proposal": "..."}}`)}},
 			InputSchema: obj(map[string]any{
@@ -101,6 +102,7 @@ func issueTools() []mcp.Tool {
 		},
 		{
 			Name:          "issue_update",
+			Write:         true,
 			Description:   "Edit or close a MeshChatX issue. Pass only what changes: title, body, labels (replaces the set), or state open/closed with optional state_reason completed/not_planned. Write op: needs a GitHub token in the environment.",
 			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"number": 88, "state": "closed", "state_reason": "completed"}`)}},
 			InputSchema: obj(map[string]any{
@@ -154,6 +156,7 @@ func issueTools() []mcp.Tool {
 		},
 		{
 			Name:        "issue_comment",
+			Write:       true,
 			Description: "Add a comment to a MeshChatX issue. Write op: needs a GitHub token in the environment.",
 			InputSchema: obj(map[string]any{
 				"number": map[string]any{"type": "integer", "description": "issue number"},

@@ -1,11 +1,12 @@
 # Quad4 MCP toolkit
 
-<a href="https://github.com/Quad4-Software/ai/actions/workflows/ci.yml"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/master/badges/ci.svg" alt="ci"></a>
-<a href="https://github.com/Quad4-Software/ai/actions/workflows/gosec.yml"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/master/badges/gosec.svg" alt="gosec"></a>
-<a href="https://github.com/Quad4-Software/ai/actions/workflows/race.yml"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/master/badges/race.svg" alt="race"></a>
-<a href="https://github.com/Quad4-Software/ai/releases/latest"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/master/badges/release.svg" alt="release"></a>
-<a href="https://github.com/Quad4-Software/ai/blob/master/agents-mcp/go.mod"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/master/badges/go.svg" alt="go version"></a>
-<a href="https://github.com/Quad4-Software/ai/blob/master/LICENSE"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/master/badges/license.svg" alt="license"></a>
+<a href="https://github.com/Quad4-Software/ai/actions/workflows/ci.yml"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/ci.svg" alt="ci"></a>
+<a href="https://github.com/Quad4-Software/ai/actions/workflows/gosec.yml"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/gosec.svg" alt="gosec"></a>
+<a href="https://github.com/Quad4-Software/ai/actions/workflows/race.yml"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/race.svg" alt="race"></a>
+<a href="https://github.com/Quad4-Software/ai/actions/workflows/mcp-inspector.yml"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/mcp-inspector.svg" alt="mcp-inspector"></a>
+<a href="https://github.com/Quad4-Software/ai/releases/latest"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/release.svg" alt="release"></a>
+<a href="https://github.com/Quad4-Software/ai/blob/master/agents-mcp/go.mod"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/go.svg" alt="go version"></a>
+<a href="https://github.com/Quad4-Software/ai/blob/master/LICENSE"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/license.svg" alt="license"></a>
 
 Small standalone MCP servers and Skills for agents working on Reticulum and
 MeshChatX. Go, stdlib-first, stdio transport, safe read-only defaults.

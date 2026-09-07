@@ -291,6 +291,7 @@ func tools() []mcp.Tool {
 	return []mcp.Tool{
 		{
 			Name:        "remember",
+			Write:       true,
 			Description: "Store a memory. Use for notes, people, RNS destinations, tasks, things to avoid, or snippets from docs/web searches.",
 			InputSchema: obj(map[string]any{
 				"content": strArg("The text to remember. Max 64 KiB."),
@@ -446,6 +447,7 @@ func tools() []mcp.Tool {
 		},
 		{
 			Name:        "update_memory",
+			Write:       true,
 			Description: "Update an existing memory's content, type, tags, or source by id.",
 			InputSchema: obj(map[string]any{
 				"id":      strArg("Memory id to update."),
@@ -505,6 +507,7 @@ func tools() []mcp.Tool {
 		},
 		{
 			Name:        "forget",
+			Write:       true,
 			Description: "Delete one or more memories by id.",
 			InputSchema: obj(map[string]any{
 				"ids": arrayArg(strArg("Memory ids to delete."), "Memory ids."),

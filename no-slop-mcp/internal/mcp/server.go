@@ -19,6 +19,7 @@ import (
 	"io"
 	"maps"
 	"net"
+	"os"
 	"sort"
 	"strings"
 	"sync"
@@ -60,7 +61,9 @@ type Tool struct {
 	InputSchema map[string]any
 	// InputExamples shows agents concrete valid calls (2025-11-25+).
 	InputExamples []map[string]any `json:"inputExamples,omitempty"`
-	Handle        func(ctx context.Context, args json.RawMessage) (string, error)
+	// Write marks a mutating tool; it is hidden/blocked in read-only mode.
+	Write  bool
+	Handle func(ctx context.Context, args json.RawMessage) (string, error)
 }
 
 // PromptArg describes one argument of a prompt template.
@@ -110,6 +113,9 @@ type Server struct {
 	// DefaultToolCallTimeout.
 	ToolCallTimeout time.Duration
 
+	// ReadOnly disables all tools with Write: true when set.
+	ReadOnly bool
+
 	tasksMu sync.Mutex
 	tasks   map[string]*task
 	taskSeq int
@@ -134,6 +140,14 @@ func NewServer(name, version string, tools []Tool, prompts []Prompt) *Server {
 		tasks:              map[string]*task{},
 		MaxToolOutputBytes: DefaultMaxToolOutputBytes,
 		ToolCallTimeout:    DefaultToolCallTimeout,
+	}
+	if os.Getenv("MCP_READ_ONLY") == "1" || os.Getenv("READ_ONLY") == "1" {
+		s.ReadOnly = true
+	}
+	for _, a := range os.Args[1:] {
+		if a == "--read-only" || a == "-read-only" {
+			s.ReadOnly = true
+		}
 	}
 	for _, t := range tools {
 		s.tools[t.Name] = t
@@ -379,6 +393,9 @@ func (s *Server) handle(ctx context.Context, method string, params json.RawMessa
 		if !ok {
 			return nil, &rpcError{Code: -32602,
 				Message: fmt.Sprintf("unknown tool %q; available: %s", p.Name, s.toolNames())}
+		}
+		if s.ReadOnly && t.Write {
+			return nil, &rpcError{Code: -32603, Message: fmt.Sprintf("tool %q is disabled in read-only mode", t.Name)}
 		}
 		if len(p.Task) > 0 {
 			return s.startTask(ctx, t, p.Arguments), nil

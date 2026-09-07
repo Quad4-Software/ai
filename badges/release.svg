@@ -1,19 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="90" height="20" role="img" aria-label="release: v0.1.7">
-  <title>release: v0.1.7</title>
-  <linearGradient id="grelease" x2="0" y2="100%">
-    <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
-    <stop offset="1" stop-opacity=".1"/>
-  </linearGradient>
+<svg xmlns="http://www.w3.org/2000/svg" width="90" height="22" role="img" aria-label="release: v0.2.0">
+  <title>release: v0.2.0</title>
+  <defs>
+    <linearGradient id="grelease" x2="0" y2="100%">
+      <stop offset="0" stop-color="#fff" stop-opacity=".15"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".1"/>
+    </linearGradient>
+    <filter id="srelease" x="0" y="0" width="100%" height="100%">
+      <feDropShadow dx="0" dy="1" stdDeviation="0.5" flood-color="#000" flood-opacity=".2"/>
+    </filter>
+  </defs>
   <clipPath id="crelease">
-    <rect width="90" height="20" rx="3" fill="#fff"/>
+    <rect width="90" height="22" rx="6" fill="#fff"/>
   </clipPath>
   <g clip-path="url(#crelease)">
-    <rect width="42" height="20" fill="#555"/>
-    <rect x="42" width="48" height="20" fill="#a35"/>
-    <rect width="90" height="20" fill="url(#grelease)"/>
+    <rect width="42" height="22" fill="#2d2d2d"/>
+    <rect x="42" width="48" height="22" fill="#a35"/>
+    <rect width="90" height="22" fill="url(#grelease)"/>
   </g>
-  <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="11">
-    <text x="21" y="14">release</text>
-    <text x="66" y="14">v0.1.7</text>
+  <rect x="42" y="0" width="1" height="22" fill="#000" fill-opacity=".15"/>
+  <g fill="#fff" text-anchor="middle" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="600" filter="url(#srelease)">
+    <text x="21" y="16">release</text>
+    <text x="66" y="16">v0.2.0</text>
   </g>
 </svg>

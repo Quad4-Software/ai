@@ -123,7 +123,7 @@ func tools() []mcp.Tool {
 	return []mcp.Tool{
 		{
 			Name:        "task_list",
-			Description: "List Taskfile targets (task --list).",
+			Description: "List Taskfile targets (task --list.)",
 			InputSchema: obj(map[string]any{}),
 			Handle: func(ctx context.Context, _ json.RawMessage) (string, error) {
 				return run(ctx, "task", "--list")
@@ -131,6 +131,7 @@ func tools() []mcp.Tool {
 		},
 		{
 			Name:        "task_run",
+			Write:       true,
 			Description: "Run a Taskfile target by name (e.g. test, lint, fmt). Name is validated; output capped.",
 			InputSchema: obj(map[string]any{"name": strArg("task name from task_list")}, "name"),
 			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
@@ -198,6 +199,7 @@ func tools() []mcp.Tool {
 		},
 		{
 			Name:          "run_tests",
+			Write:         true,
 			Description:   "Find the mapped test file for a source file and run it (pytest, vitest, or go test).",
 			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"file": "meshchatx/src/backend/plugin_permissions.py"}`)}},
 			InputSchema:   obj(map[string]any{"file": strArg("repo-relative source path")}, "file"),
@@ -251,6 +253,7 @@ func tools() []mcp.Tool {
 		},
 		{
 			Name:          "test_triage",
+			Write:         true,
 			Description:   "Run the mapped test and return a compact failure report: file:line, assertion, one-line cause. Cheaper than reading raw test output.",
 			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"file": "meshchatx/src/backend/plugin_permissions.py"}`)}},
 			InputSchema:   obj(map[string]any{"file": strArg("repo-relative source path")}, "file"),
