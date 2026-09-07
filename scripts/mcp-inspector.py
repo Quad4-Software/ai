@@ -45,7 +45,8 @@ def inspect(repo, s):
             env[k] = ""
     if "MCP_REPO_ROOT" not in env:
         env["MCP_REPO_ROOT"] = repo
-    env.setdefault("GATEWAY_CONFIG", os.path.join(repo, "dist", "quad4-mcp.json"))
+    if not env.get("GATEWAY_CONFIG"):
+        env["GATEWAY_CONFIG"] = os.path.join(repo, "dist", "quad4-mcp.json")
     proc = subprocess.Popen(
         [path],
         stdin=subprocess.PIPE,
