@@ -1,11 +1,32 @@
 ---
 name: no-slop
 description: >
-  Use when writing or editing prose, documentation or code comments in this
-  repo. Catches AI slop, machine tics, semicolons, backtick inflation in
-  docs and comments, Markdown leakage, sycophancy, emojis, em dashes,
-  filler and hedging.
+  This skill lints prose against AI slop and MeshChatX style rules through
+  no-slop-mcp. Use when you are writing docs, comments, or commit messages
+  and want to remove machine tics, filler, hedging, and banned markup.
+compatibility: stdio-mcp
+metadata:
+  server: no-slop-mcp
 ---
+
+## When to use this skill
+
+- You are writing a README, docs, or commit message.
+- You want to check a diff for slop before committing.
+- You are editing code comments and need to avoid backticks and semicolons.
+
+## How to use
+
+1. Build no-slop-mcp: `cd no-slop-mcp && go test ./... && go build`.
+2. Add the binary to your MCP client config as `prose` or `no-slop`.
+3. Call `check_text {text, kind}` or `check_file {path}` with `prose`, `doc`, or `comment`.
+4. Use `fix_text` for a rewrite pass and `list_rules` for the rule set.
+
+## Examples
+
+- "Lint this README for `doc` mode violations."
+- "Check the added lines in a diff with `check_diff`."
+- "Run `review_prose` on a paragraph before committing."
 
 # No slop
 

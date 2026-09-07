@@ -14,7 +14,7 @@ import (
 func TestCleanProse(t *testing.T) {
 	in := "Flags are not languages — they break down; also see `language-icons`.\n\n```\nkeep — this; `code`\n```\n"
 	got := CleanProse(in)
-	prose := strings.Split(got, "\n\n")[0]
+	prose, _, _ := strings.Cut(got, "\n\n")
 	if strings.Contains(prose, "—") || strings.Contains(prose, ";") {
 		t.Fatalf("prose not cleaned: %q", got)
 	}

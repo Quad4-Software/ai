@@ -1,10 +1,32 @@
 ---
 name: micron
 description: >
-  Use when working with Micron markup or the micron-mcp server: syntax
-  reference, the nine MCP tools (parse, lint, render, extract, search,
-  template, reference), the vendored micron-parser-go, and HTML safety rules.
+  This skill covers Micron markup, the vendored parser, and the tools in
+  micron-mcp. Use when you need to parse, lint, render, extract, or search
+  Micron, or update the vendored parser.
+compatibility: stdio-mcp
+metadata:
+  server: micron-mcp
 ---
+
+## When to use this skill
+
+- You are writing or linting Micron markup.
+- You need to render, extract, search, or template Micron.
+- You are updating the vendored `micron-parser-go`.
+
+## How to use
+
+1. Build micron-mcp: `cd micron-mcp && go test ./... && go build`.
+2. Add the binary to your MCP client config as `micron`.
+3. Call `micron_reference` or `parse` for syntax questions, `lint` for checks, `render` for output.
+4. Update `third_party/micron-parser-go` offline, bump the require version, and keep the `replace` line.
+
+## Examples
+
+- "Parse a Micron document and render it to HTML."
+- "Lint a Micron file for unsafe link schemes."
+- "Show the Micron syntax reference for headings."
 
 # Micron and micron-mcp
 

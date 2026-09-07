@@ -1,10 +1,31 @@
 ---
 name: mcp-toolkit
 description: >
-  Use when working in the Quad4-Software/ai MCP toolkit repo: adding or
-  modifying stdio MCP servers, running builds/tests/lints, understanding
-  the shared internal/mcp package, module layout, and security rules.
+  This skill gives the big picture for the Quad4-Software/ai MCP toolkit
+  repo. Use when you are adding a server, building or testing the repo, or
+  need to understand the shared internal packages and security rules.
+metadata:
+  repo: Quad4-Software/ai
 ---
+
+## When to use this skill
+
+- You are adding a new `*-mcp` server or editing the repo layout.
+- You need the build, test, lint, or security rules.
+- You want the shared `internal/mcp` patterns or module path convention.
+
+## How to use
+
+1. Read this skill for the multi-module layout and security rules.
+2. Run `make all`, `make gosec`, and per-server `make test`.
+3. Copy `mcp-scaffold/` to start a new server and follow the conventions.
+4. Cross-reference per-server skills such as `rns`, `meshchatx`, or `workspace`.
+
+## Examples
+
+- "Add a new `metrics-mcp` server from the scaffold."
+- "Explain the path-jailing and secret-redaction rules for this repo."
+- "Run `make all` after changing `internal/mcp/server.go`."
 
 # MCP Toolkit Project Overview
 

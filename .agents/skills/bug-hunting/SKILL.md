@@ -1,10 +1,33 @@
 ---
 name: bug-hunting
 description: >
-  Use when hunting bugs or operating bug-hunter-mcp: 22 methods, 20 scanners,
-  TOCTOU, taint, injection, crypto, supply chain, CI/CD, MCP tool poisoning,
-  secrets, churn hotspots, property-based testing.
+  This skill guides structured bug hunting with bug-hunter-mcp. Use when you
+  need to choose a methodology, run mechanical security scans, mine git
+  history for hotspots, or audit a repo for bugs.
+compatibility: stdio-mcp
+metadata:
+  server: bug-hunter-mcp
 ---
+
+## When to use this skill
+
+- You are planning a bug hunt or chartering an area.
+- You need to run a scanner such as `hotspots`, `toctou_scan`, or `injection_scan`.
+- You want to audit an MCP tool surface for poisoning.
+- You are confirming a hypothesis with an oracle before reporting.
+
+## How to use
+
+1. Build and test bug-hunter-mcp: `cd bug-hunter-mcp && go test ./... && go build`.
+2. Add the binary to your MCP client config as `bug-hunter`.
+3. Call `list_methods` to see the 22 methodologies, or run a scanner like `hotspots {since, limit}`.
+4. Treat every scanner hit as a candidate. Confirm with an oracle before calling it a bug.
+
+## Examples
+
+- "Run `churn` hotspots and `toctou_scan` on the last 90 days of `internal/`."
+- "Audit `mcp_audit` on `.agents/skills/` for tool-poisoning patterns."
+- "Generate a `hunt` prompt for the authz area and propose the right scanners."
 
 # Bug hunting
 

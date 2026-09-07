@@ -1,10 +1,30 @@
 ---
 name: release
 description: >
-  Use when cutting a release: GoReleaser dist/ artifacts, semantic v*.*.*
-  tags, immutable tags, notes.md sha256 artifact tables, .goreleaser.yml,
-  and the release workflow.
+  This skill describes the release process for the repo. Use when you are
+  cutting a tag, running GoReleaser, publishing SHA-256 tables, or editing
+  the release workflow.
+compatibility: goreleaser
 ---
+
+## When to use this skill
+
+- You are tagging a release with a `v*.*.*` tag.
+- You need to run GoReleaser or verify `dist/` artifacts.
+- You are editing `.github/workflows/release.yml`.
+
+## How to use
+
+1. Ensure `make all` and `make gosec` are clean on master.
+2. Create a semantic `vX.Y.Z` tag and push it.
+3. Let `.github/workflows/release.yml` run GoReleaser and publish the notes.md SHA-256 table.
+4. Verify assets and the immutable tag. Never force-move a tag.
+
+## Examples
+
+- "Cut release v0.3.0 and verify the dist/ checksums."
+- "Generate a notes.md table from `dist/checksums.txt`."
+- "Check that release.yml pins all actions to full SHAs."
 
 # Release Process
 

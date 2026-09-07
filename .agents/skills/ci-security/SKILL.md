@@ -1,10 +1,32 @@
 ---
 name: ci-security
 description: >
-  Use when editing GitHub Actions workflows, CI jobs, or security gates in
-  this repo: harden-runner, pinned SHAs, Dependabot, dependency review,
-  gosec, go vet, and the race/fuzz/bench/leak workflows.
+  This skill guides CI/CD security with ci-security-mcp. Use when you are
+  editing GitHub Actions, hardening Dockerfiles, pinning actions to SHAs, or
+  scanning CI files for security flaws.
+compatibility: stdio-mcp
+metadata:
+  server: ci-security-mcp
 ---
+
+## When to use this skill
+
+- You are editing `.github/workflows/*.yml` or a Dockerfile.
+- You need to pin an action or resolve a tag to a SHA.
+- You want a security audit of a workflow or container.
+
+## How to use
+
+1. Build ci-security-mcp: `cd ci-security-mcp && go test ./... && go build`.
+2. Add the binary to your MCP client config as `ci-security`.
+3. Call `scan_workflow {yaml}` or `scan_dockerfile {dockerfile}` for a security pass.
+4. Use `pin_workflow {yaml}` to rewrite `uses:` lines to pinned SHAs.
+
+## Examples
+
+- "Scan `.github/workflows/ci.yml` for unpinned actions and script injection."
+- "Pin all `uses:` lines in a workflow to commit SHAs."
+- "Run `audit_workflow` on a new workflow file."
 
 # CI and Security Gates
 

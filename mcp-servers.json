@@ -1,0 +1,125 @@
+{
+  "version": "0.1.0",
+  "servers": [
+    {
+      "name": "rns",
+      "module": "rns-mcp",
+      "command": "rns-mcp/rns-mcp",
+      "description": "RNS manual, zen, forum/GitHub community, rngit, read-only rn* probes.",
+      "version": "0.3.0",
+      "env": []
+    },
+    {
+      "name": "reticulum-go",
+      "module": "reticulum-go-mcp",
+      "command": "reticulum-go-mcp/reticulum-go-mcp",
+      "description": "Reticulum-Go docs at reticulum-go.quad4.io: searchable, section-aware, fetch.",
+      "version": "0.1.0",
+      "env": []
+    },
+    {
+      "name": "memory",
+      "module": "memory-mcp",
+      "command": "memory-mcp/memory-mcp",
+      "description": "Persistent agent memory: notes, people, RNS destinations, tasks, fuzzy recall.",
+      "version": "0.1.0",
+      "env": []
+    },
+    {
+      "name": "meshchatx",
+      "module": "meshchatx-mcp",
+      "command": "meshchatx-mcp/meshchatx-mcp",
+      "description": "MeshChatX docs, scaffolding, god-file detection, split plans, surface snapshots, opt-in GitHub issue tools (env-token gated).",
+      "version": "0.3.0",
+      "env": ["MESHCHATX_GITHUB_TOKEN"]
+    },
+    {
+      "name": "context",
+      "module": "context-mcp",
+      "command": "context-mcp/context-mcp",
+      "description": "Token-efficient code access: outlines, symbol reads, repo maps.",
+      "version": "0.1.0",
+      "env": ["MCP_REPO_ROOT"]
+    },
+    {
+      "name": "agents",
+      "module": "agents-mcp",
+      "command": "agents-mcp/agents-mcp",
+      "description": "Repo skills, conventions, module ownership, file tree.",
+      "version": "0.1.0",
+      "env": []
+    },
+    {
+      "name": "no-slop",
+      "module": "no-slop-mcp",
+      "command": "no-slop-mcp/no-slop-mcp",
+      "description": "Anti-slop linter for text, diffs, files, directories.",
+      "version": "0.1.0",
+      "env": []
+    },
+    {
+      "name": "bug-hunter",
+      "module": "bug-hunter-mcp",
+      "command": "bug-hunter-mcp/bug-hunter-mcp",
+      "description": "Hotspots, TOCTOU, attack surface, complexity, regression mining.",
+      "version": "0.1.0",
+      "env": []
+    },
+    {
+      "name": "ci-security",
+      "module": "ci-security-mcp",
+      "command": "ci-security-mcp/ci-security-mcp",
+      "description": "GitHub Actions + Dockerfile scanning, action pinning, YAML lint.",
+      "version": "0.1.0",
+      "env": ["GITHUB_TOKEN"]
+    },
+    {
+      "name": "i18n",
+      "module": "i18n-mcp",
+      "command": "i18n-mcp/i18n-mcp",
+      "description": "Locale keys, coverage, usage, hardcoded strings.",
+      "version": "0.1.0",
+      "env": []
+    },
+    {
+      "name": "workspace",
+      "module": "workspace-mcp",
+      "command": "workspace-mcp/workspace-mcp",
+      "description": "Taskfile list/run, git status/log/diff, test mapping and runs.",
+      "version": "0.1.0",
+      "env": []
+    },
+    {
+      "name": "lxmf",
+      "module": "lxmf-mcp",
+      "command": "lxmf-mcp/lxmf-mcp",
+      "description": "Local Reticulum state: config, storage, known destinations.",
+      "version": "0.1.0",
+      "env": []
+    },
+    {
+      "name": "lxmfy",
+      "module": "lxmfy-mcp",
+      "command": "lxmfy-mcp/lxmfy-mcp",
+      "description": "LXMFy docs, bot scaffolding, diagnostics, and test guidance.",
+      "version": "0.1.0",
+      "env": []
+    },
+    {
+      "name": "micron",
+      "module": "micron-mcp",
+      "command": "micron-mcp/micron-mcp",
+      "description": "Micron parsing, linting, rendering, extraction, search, templates, and syntax reference.",
+      "version": "0.1.0",
+      "env": []
+    },
+    {
+      "name": "gateway",
+      "module": "gateway-mcp",
+      "command": "gateway-mcp/gateway-mcp",
+      "description": "Multiplexes all servers behind tools/tool_schema/invoke. One config entry, tiny tool surface.",
+      "version": "0.1.0",
+      "env": ["GATEWAY_CONFIG"]
+    }
+  ]
+}

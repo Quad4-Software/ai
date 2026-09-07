@@ -1,12 +1,30 @@
 ---
 name: reticulum
 description: >
-  Use when working with the Reticulum-related servers (rns-mcp, lxmf-mcp,
-  lxmfy-mcp, meshchatx-mcp): Reticulum protocol and API, cryptography, links,
-  channels, requests, responses, transports, LXMF, LXST, LXMFy, NomadNet,
-  MeshChatX, source mirrors, pip-rns, ~/.reticulum state, interface config,
-  diagnostics and tool-building conventions.
+  This skill covers the Reticulum protocol, LXMF, and related concepts
+  for the rns-mcp, lxmf-mcp, lxmfy-mcp, and meshchatx-mcp servers. Use
+  when you need mesh networking, destination, link, transport, or security
+  details that apply across the Reticulum stack.
 ---
+
+## When to use this skill
+
+- You need Reticulum protocol, packet, or addressing details.
+- You are working with LXMF, LXST, NomadNet, or MeshChatX concepts.
+- You need the tool-building Zen or security/anti-footgun rules for Reticulum.
+
+## How to use
+
+1. Pair this skill with `rns`, `lxmf`, `lxmfy`, or `meshchatx` for server-specific tools.
+2. Use `rns.search_docs` for the Reticulum manual, `lxmf.store_config` for local state.
+3. Apply the Zen of Reticulum: no center, no plaintext, redact keys, keep responses small.
+4. Never restart `rnsd` or modify `~/.reticulum/config` from a tool.
+
+## Examples
+
+- "Explain the Reticulum destination hash and link layer."
+- "List the security fixes and anti-footguns for RNS 1.5.x."
+- "Describe the packet header layout for a single transport data packet."
 
 # Reticulum Mesh Concepts
 

@@ -1,10 +1,30 @@
 ---
 name: rngit
 description: >
-  Use when working with Git over Reticulum: rngit nodes, rns:// remotes,
-  git-remote-rns, repository creation, forking, mirroring, releases,
-  work documents and Reticulum commit signing.
+  This skill covers Git hosting and workflows over Reticulum with rngit.
+  Use when you need rns:// remotes, node setup, permissions, releases,
+  work documents, or commit signing.
+compatibility: reticulum
 ---
+
+## When to use this skill
+
+- You are setting up a `rngit` node or using `rns://` Git remotes.
+- You need to configure permissions, aliases, or templates.
+- You want to create a release, work document, or signed commit over Reticulum.
+
+## How to use
+
+1. Install `pip install rngit` or `pipx install rngit` after `rns` is running.
+2. Use `git clone rns://<hash>/group/repo` and `rngit create/fork/mirror` as needed.
+3. Configure `~/.rngit/config` with groups, access, and optional Nomad Network pages.
+4. Use `rngcs` for SSH-format commit signing with a Reticulum identity.
+
+## Examples
+
+- "Create a new bare repo with `rngit create rns://<hash>/public/myrepo`."
+- "Set group permissions with an `.allowed` file."
+- "Verify a release manifest with `rngit release <manifest.rsm> verify`."
 
 # Git over Reticulum
 

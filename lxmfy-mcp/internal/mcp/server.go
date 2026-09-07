@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: 0BSD
 // Package mcp implements a minimal MCP server over stdio using
-// newline-delimited JSON-RPC 2.0, stdlib only. It supports the tools
-// and prompts capabilities.
+// newline-delimited JSON-RPC 2.0, stdlib only. It supports the tools,
+// prompts, and resources capabilities.
 //
 // Reliability contract:
 //   - malformed input produces a JSON-RPC parse error, never a crash
@@ -17,6 +17,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
+	"net"
 	"sort"
 	"strings"
 	"sync"
@@ -76,13 +78,29 @@ type Prompt struct {
 	Handle      func(args map[string]string) (string, error)
 }
 
+// Resource is a readable MCP resource. Handle returns the resource
+// content as text. Read handlers must stay inside their allowed root
+// and never return secret material, same rules as tools.
+type Resource struct {
+	// URI is the resource identifier, for example docs://readme.
+	URI         string
+	Name        string
+	Description string
+	// MIMEType is the content type, for example text/plain or
+	// application/json. Empty defaults to text/plain on read.
+	MIMEType string
+	Handle   func(ctx context.Context) (string, error)
+}
+
 type Server struct {
-	name    string
-	version string
-	tools   map[string]Tool
-	torder  []string
-	prompts map[string]Prompt
-	porder  []string
+	name      string
+	version   string
+	tools     map[string]Tool
+	torder    []string
+	prompts   map[string]Prompt
+	porder    []string
+	resources map[string]Resource
+	rorder    []string
 
 	// MaxToolOutputBytes caps tool result size in bytes; <= 0 uses
 	// DefaultMaxToolOutputBytes. Oversized output is an error, never
@@ -127,7 +145,22 @@ func NewServer(name, version string, tools []Tool, prompts []Prompt) *Server {
 		s.prompts[p.Name] = p
 		s.porder = append(s.porder, p.Name)
 	}
+	s.resources = make(map[string]Resource)
 	return s
+}
+
+// RegisterResources adds resources to the server after construction so
+// the NewServer signature stays stable for existing callers. Duplicate
+// URIs overwrite earlier registrations. The list order is sorted so
+// resources/list output is deterministic.
+func (s *Server) RegisterResources(resources []Resource) {
+	for _, r := range resources {
+		if _, exists := s.resources[r.URI]; !exists {
+			s.rorder = append(s.rorder, r.URI)
+		}
+		s.resources[r.URI] = r
+	}
+	sort.Strings(s.rorder)
 }
 
 type request struct {
@@ -189,6 +222,29 @@ func (s *Server) Serve(ctx context.Context, r io.Reader, w io.Writer) error {
 	return sc.Err()
 }
 
+// ServeListener accepts connections from l and serves each on its own
+// goroutine via Serve, so many clients share one Server and its state.
+// It returns when l is closed or ctx is cancelled.
+func (s *Server) ServeListener(ctx context.Context, l net.Listener) error {
+	go func() {
+		<-ctx.Done()
+		l.Close() // #nosec G104 -- shutdown path, error irrelevant
+	}()
+	for {
+		c, err := l.Accept()
+		if err != nil {
+			if ctx.Err() != nil {
+				return nil
+			}
+			return err
+		}
+		go func() {
+			defer c.Close()    // #nosec G104 -- per-conn cleanup
+			s.Serve(ctx, c, c) // #nosec G104 -- per-conn errors end that conn only
+		}()
+	}
+}
+
 func (s *Server) dispatch(ctx context.Context, req *request) (res response) {
 	res = response{JSONRPC: "2.0", ID: req.ID}
 	defer func() {
@@ -217,6 +273,9 @@ func (s *Server) capabilities() map[string]any {
 	}
 	if len(s.porder) > 0 {
 		caps["prompts"] = map[string]any{"listChanged": false}
+	}
+	if len(s.rorder) > 0 {
+		caps["resources"] = map[string]any{"listChanged": false, "subscribe": false}
 	}
 	// experimental tasks support (2025-11-25): task-augmented tools/call
 	caps["tasks"] = map[string]any{
@@ -257,9 +316,56 @@ func (s *Server) handle(ctx context.Context, method string, params json.RawMessa
 		list := make([]toolDef, 0, len(s.torder))
 		for _, name := range s.torder {
 			t := s.tools[name]
-			list = append(list, toolDef{t.Name, t.Description, t.InputSchema, t.InputExamples})
+			schema := t.InputSchema
+			if len(t.InputExamples) > 0 {
+				// copy so the stored schema is never mutated
+				schema = make(map[string]any, len(t.InputSchema)+1)
+				maps.Copy(schema, t.InputSchema)
+				schema["examples"] = t.InputExamples
+			}
+			list = append(list, toolDef{t.Name, t.Description, schema, t.InputExamples})
 		}
 		return map[string]any{"tools": list}, nil
+	case "resources/list":
+		type resourceDef struct {
+			URI         string `json:"uri"`
+			Name        string `json:"name"`
+			Description string `json:"description,omitempty"`
+			MIMEType    string `json:"mimeType,omitempty"`
+		}
+		list := make([]resourceDef, 0, len(s.rorder))
+		for _, uri := range s.rorder {
+			r := s.resources[uri]
+			list = append(list, resourceDef{r.URI, r.Name, r.Description, r.MIMEType})
+		}
+		return map[string]any{"resources": list}, nil
+	case "resources/read":
+		var p struct {
+			URI string `json:"uri"`
+		}
+		if err := json.Unmarshal(params, &p); err != nil {
+			return nil, &rpcError{Code: -32602, Message: "invalid params"}
+		}
+		r, ok := s.resources[p.URI]
+		if !ok {
+			return nil, &rpcError{Code: -32602,
+				Message: fmt.Sprintf("unknown resource %q", p.URI)}
+		}
+		mime := r.MIMEType
+		if mime == "" {
+			mime = "text/plain"
+		}
+		text, err := r.Handle(ctx)
+		if err != nil {
+			return nil, &rpcError{Code: -32603, Message: err.Error()}
+		}
+		return map[string]any{
+			"contents": []map[string]any{{
+				"uri":      r.URI,
+				"mimeType": mime,
+				"text":     text,
+			}},
+		}, nil
 	case "tools/call":
 		var p struct {
 			Name      string          `json:"name"`

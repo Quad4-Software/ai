@@ -1,12 +1,32 @@
 ---
 name: lxmfy
 description: >
-  Use when working with LXMFy, the Python LXMF bot framework, or the
-  lxmfy-mcp server: LXMFBot configuration, commands, cogs, external script
-  cogs, NLP intents, RNS links, RRC hub clients, storage, permissions,
-  signatures, Landlock sandboxing, templates, CLI tools, and the
-  lxmfy.quad4.io documentation layout.
+  This skill covers the LXMFy Python bot framework and the documentation
+  exposed by lxmfy-mcp. Use when you are building LXMF bots, scaffolding
+  cogs, or looking up LXMFBot options.
+compatibility: stdio-mcp
+metadata:
+  server: lxmfy-mcp
 ---
+
+## When to use this skill
+
+- You are building or debugging a Python LXMF bot.
+- You need the `lxmfy.quad4.io` docs on commands, cogs, storage, or RRC.
+- You want to scaffold a bot or run `diagnose_bot` on a bot file.
+
+## How to use
+
+1. Build lxmfy-mcp: `cd lxmfy-mcp && make all`.
+2. Add the binary to your MCP client config as `lxmfy`.
+3. Call `list_topics` or `search_docs {query}` for docs.
+4. Use `scaffold_bot` or `diagnose_bot` for bot work.
+
+## Examples
+
+- "Search the LXMFy docs for `FIELD_COMMANDS`."
+- "Scaffold a `reminder` bot with `scaffold_bot`."
+- "Run `diagnose_bot` on my `notesbot.py`."
 
 # LXMFy and lxmfy-mcp
 

@@ -82,7 +82,7 @@ var wsRun = regexp.MustCompile(`[ \t]{2,}`)
 func CleanProse(s string) string {
 	var out []string
 	fenced := false
-	for _, line := range strings.Split(s, "\n") {
+	for line := range strings.SplitSeq(s, "\n") {
 		if strings.HasPrefix(strings.TrimSpace(line), "```") {
 			fenced = !fenced
 			out = append(out, line)

@@ -1,9 +1,32 @@
 ---
 name: reticulum-go
 description: >
-  Use when working with reticulum-go-mcp or the Reticulum-Go docs and API:
-  topic lookup, section search, package map, and Go implementation details.
+  This skill exposes the Reticulum-Go docs through reticulum-go-mcp. Use
+  when you need the Reticulum-Go package map, API, or Go implementation
+  details.
+compatibility: stdio-mcp
+metadata:
+  server: reticulum-go-mcp
 ---
+
+## When to use this skill
+
+- You need the Reticulum-Go docs or package map.
+- You are working with the Go implementation of Reticulum.
+- You want to compare the Go docs against the Python reference.
+
+## How to use
+
+1. Build reticulum-go-mcp: `cd reticulum-go-mcp && go test ./... && go build`.
+2. Add the binary to your MCP client config as `reticulum-go`.
+3. Call `list_topics` or `search_docs {query}` for docs.
+4. Use `fetch_page {url}` for a specific page or `github_repo` for repository info.
+
+## Examples
+
+- "Search the Reticulum-Go docs for `packet` handling."
+- "Show the package map topic."
+- "List open issues on the Reticulum-Go GitHub repo."
 
 # Reticulum-Go
 

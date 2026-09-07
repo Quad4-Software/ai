@@ -1,9 +1,29 @@
 ---
 name: vendor-all
 description: >
-  Use when building web projects that must avoid CDNs, trackers and external
-  dependencies: vendor fonts, scripts, styles and assets locally with wget or curl.
+  This skill helps you vendor web assets locally. Use when you want to
+  avoid CDNs, remove trackers, support offline use, or pin versions of
+  fonts, scripts, styles, and images.
 ---
+
+## When to use this skill
+
+- You are building a web project and it loads assets from a CDN.
+- You want to remove trackers and keep the site offline-capable.
+- You need to pin a version of a JS, CSS, or font dependency.
+
+## How to use
+
+1. Audit the HTML for remote URLs, analytics, and social embeds.
+2. Download assets with `wget` or `curl`, or install from npm and copy out the needed files.
+3. Rewrite links to point at `assets/vendor/`, keep license/attribution notes, and add subresource integrity.
+4. Use `npm`/`pnpm`/`yarn` where you need lockfiles and version pinning.
+
+## Examples
+
+- "Replace a Google Fonts link with self-hosted `woff2` files."
+- "Vendor `htmx` and `bootstrap` into `assets/vendor/` with SRI hashes."
+- "Build a `LICENSES.md` for all vendored assets."
 
 # Vendor-all web assets
 

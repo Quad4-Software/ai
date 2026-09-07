@@ -73,7 +73,7 @@ func LinkReferences(body string) string {
 	}
 	var out []string
 	fenced := false
-	for _, line := range strings.Split(body, "\n") {
+	for line := range strings.SplitSeq(body, "\n") {
 		if strings.HasPrefix(strings.TrimSpace(line), "```") {
 			fenced = !fenced
 			out = append(out, line)

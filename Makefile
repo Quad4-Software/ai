@@ -16,7 +16,20 @@ golangci:
 		(cd $$d && golangci-lint run ./...) || exit 1; \
 	done
 
-build test vet fmt gosec clean install:
+install: build
+	@echo "=== One-entry MCP client config (paste into your client) ==="
+	@python3 scripts/gen-configs.py --print
+
+mcp-config:
+	@python3 scripts/gen-configs.py --repo $(CURDIR) --out dist
+
+server-json: build
+	@python3 scripts/gen-configs.py --repo $(CURDIR) --out dist --server-json
+
+inspector: build mcp-config
+	@python3 scripts/mcp-inspector.py
+
+build test vet fmt gosec clean:
 	@for d in $(SERVERS); do \
 		$(MAKE) -C $$d $@ || exit 1; \
 	done

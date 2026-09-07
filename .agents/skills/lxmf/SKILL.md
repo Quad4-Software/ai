@@ -1,10 +1,32 @@
 ---
 name: lxmf
 description: >
-  Use when working with LXMF (Lightweight Extensible Message Format) over
-  Reticulum: message format, delivery methods, message signing, stamps,
-  paper messages, sneakernet, propagation nodes and the LXM Router API.
+  This skill describes LXMF messaging and the `~/.reticulum` state exposed
+  by lxmf-mcp. Use when you need message format details, local Reticulum
+  storage, or destination lookups.
+compatibility: stdio-mcp
+metadata:
+  server: lxmf-mcp
 ---
+
+## When to use this skill
+
+- You need to understand LXMF message structure, delivery methods, or stamps.
+- You want to inspect `~/.reticulum` storage, identities, or destinations.
+- You are building a tool that reads local Reticulum state.
+
+## How to use
+
+1. Build lxmf-mcp: `cd lxmf-mcp && go test ./... && go build`.
+2. Add the binary to your MCP client config as `lxmf`.
+3. Call `store_config`, `store_inventory`, `store_identities`, or `store_destinations` to read state.
+4. Combine with the `reticulum` skill for mesh concepts.
+
+## Examples
+
+- "Show sanitized `~/.reticulum/config` without keys."
+- "List known destinations and their first/last seen times."
+- "Explain `PROPAGATED` delivery and propagation nodes."
 
 # LXMF Concepts
 

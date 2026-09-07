@@ -25,6 +25,27 @@
         "lxmfy",
         "rngit"
       ]
+    },
+    {
+      "title": "MCP servers",
+      "description": "Skills for each stdio MCP server in the repo.",
+      "skills": [
+        "agents",
+        "bug-hunting",
+        "ci-security",
+        "context",
+        "gateway",
+        "i18n",
+        "lxmf",
+        "lxmfy",
+        "memory",
+        "meshchatx",
+        "micron",
+        "no-slop",
+        "reticulum-go",
+        "rns",
+        "workspace"
+      ]
     }
   ]
 }

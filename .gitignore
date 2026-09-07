@@ -3,3 +3,7 @@ coverage.out
 *.exe
 dist/
 notes.md
+# Built server binaries (named after their directory).
+*-mcp/*-mcp
+*-mcp/your-mcp
+
