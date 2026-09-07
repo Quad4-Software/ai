@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: 0BSD
+name: badges
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout badges branch
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: badges
+          path: badges
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate and push badges
+        working-directory: badges
+        run: |
+          chmod +x gen-badges.sh
+          ./gen-badges.sh
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --quiet --cached || git commit -m "Update badges"
+          git push origin HEAD:badges

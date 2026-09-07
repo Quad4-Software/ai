@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: 0BSD
+# Secure, minimal deployment of the MCP toolkit gateway.
+# The gateway is a stdio MCP server, so no network port is exposed.
+# Mount an empty tmpfs if the server ever needs a writable temporary directory.
+
+services:
+  mcp:
+    image: ghcr.io/Quad4-Software/ai/mcp-toolkit:latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    user: "65532:65532"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - "no-new-privileges:true"
+    environment:
+      MCP_READ_ONLY: "1"
+      GATEWAY_CONFIG: "/app/config/quad4-mcp.json"
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,noexec,size=64m

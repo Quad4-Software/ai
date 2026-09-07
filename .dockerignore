@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: 0BSD
+
+.git
+.gitignore
+.github
+.agents
+badges
+dist
+coverage.out
+*.test
+notes.md
+.goreleaser.yml
+docker
