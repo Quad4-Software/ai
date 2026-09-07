@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	nurl "net/url"
 	"regexp"
 	"strings"
 	"sync"
@@ -74,6 +75,22 @@ var (
 
 func clean(s string) string {
 	return wsRe.ReplaceAllString(strings.TrimSpace(entities.Replace(tagRe.ReplaceAllString(s, " "))), " ")
+}
+
+// cleanMD formats a markdown export while preserving paragraph breaks.
+func cleanMD(s string) string {
+	var b strings.Builder
+	for raw := range strings.SplitSeq(s, "\n") {
+		line := strings.TrimSpace(entities.Replace(tagRe.ReplaceAllString(raw, " ")))
+		b.WriteString(line)
+		b.WriteByte('\n')
+	}
+	return strings.TrimSpace(b.String())
+}
+
+// relToAbs expands rns.recipes relative image and link targets to absolute URLs.
+func relToAbs(s string) string {
+	return strings.ReplaceAll(s, "](/", "](https://rns.recipes/")
 }
 
 // Link is a parsed anchor.
@@ -158,7 +175,8 @@ func ForumThreads(ctx context.Context, category string, limit int) ([]Link, erro
 }
 
 // ReadPage fetches a community page and returns readable text.
-// Allowed hosts: rns.recipes, unsigned.io, github.com discussion pages.
+// For rns.recipes forum threads it tries the markdown export endpoint so
+// images and links survive. Allowed hosts: rns.recipes, unsigned.io, github.com.
 func ReadPage(ctx context.Context, url string) (string, error) {
 	low := strings.ToLower(url)
 	ok := strings.HasPrefix(low, "https://rns.recipes/forum/") ||
@@ -167,9 +185,26 @@ func ReadPage(ctx context.Context, url string) (string, error) {
 	if !ok {
 		return "", fmt.Errorf("url not on a community host: rns.recipes forum, unsigned.io, or markqvist/Reticulum discussions")
 	}
-	body, err := get(ctx, url)
+	u, err := nurl.Parse(url)
 	if err != nil {
 		return "", err
+	}
+	body := ""
+	if strings.HasPrefix(low, "https://rns.recipes/forum/") && !strings.HasSuffix(u.Path, "/export.md") {
+		exp := *u
+		exp.Path = strings.TrimSuffix(exp.Path, "/") + "/export.md"
+		if b, err := get(ctx, exp.String()); err == nil {
+			body = b
+		}
+	}
+	if body == "" {
+		body, err = get(ctx, url)
+		if err != nil {
+			return "", err
+		}
+	}
+	if strings.HasSuffix(u.Path, "/export.md") {
+		return relToAbs(cleanMD(body)), nil
 	}
 	return clean(body), nil
 }

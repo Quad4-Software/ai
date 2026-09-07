@@ -60,6 +60,35 @@ Finish gate, redesign if any fail:
 5. No new unauthenticated mutating surface
 6. No cross-identity leakage`
 
+const nomadNetContext = `NomadNet context
+
+NomadNet is a console/terminal mesh comms app built on Reticulum and LXMF. It lets users browse Micron pages hosted on nomadnet nodes, send and receive messages, and follow links across the mesh.
+
+Core concepts:
+- Install with pip install nomadnet or pipx install nomadnet.
+- Run with nomadnet. It needs a working Reticulum instance or AutoInterface.
+- It uses the local Reticulum instance and stores its own pages and state locally.
+- Nodes host Micron pages. A page can contain headings, lists, links, forms, tables, accordions and resources.
+- Pages are written in Micron markup; the micron-mcp server can parse, lint and render Micron.
+- Navigation is keyboard driven; help is available with ? or h.
+- LXMF carries messages and propagation nodes provide store-and-forward delivery.
+- Addresses are RNS destination hashes, not DNS names or IP addresses.
+
+Image rendering prototype (NomadNet 1.3.1 discussion on rns.recipes):
+- The screenshot is a live client-side prototype in nomadnet, not a mockup.
+- Uses the Kitty Terminal Graphics Protocol with zero new dependencies and pure Python.
+- Supports image buffer re-use, sizing in cols/rows or percentages, and left/right/center alignment.
+- On unsupported terminals it falls back to an alt-text placeholder.
+- For low-bandwidth links the serving side needs scaling, compression, selective retrieval and a user-selectable text-only mode.
+- Terminals tested: Kitty, Konsole and Wezterm. Ghostty appears supported. Windows Terminal support is being explored.
+
+Screenshot:
+![nnimgs.png](https://rns.recipes/storage/forum/XClxgw3Xynkh1DZYiNnKMj5pwp90moVGIiIVxg3T.png)
+
+Source thread:
+https://rns.recipes/forum/general/so-this-is-possible-but
+`
+
 func strArg(desc string) map[string]any {
 	return map[string]any{"type": "string", "description": desc}
 }
@@ -506,7 +535,15 @@ func tools(src *docs.Source, util *sysutil.Runner) []mcp.Tool {
 }
 
 func prompts(src *docs.Source) []mcp.Prompt {
-	return []mcp.Prompt{
+	return []mcp.Prompt{{
+		Name:        "nomadnet_context",
+		Description: "NomadNet context from rns.recipes, including the image rendering prototype.",
+		Arguments:   []mcp.PromptArg{},
+		Handle: func(args map[string]string) (string, error) {
+			_ = args
+			return nomadNetContext, nil
+		},
+	},
 		{
 			Name:        "zen_review",
 			Description: "Review a design or change against the Zen of Reticulum finish gates.",

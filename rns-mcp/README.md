@@ -31,6 +31,7 @@ rncp, rnx, rnsh, and rnodeconf are mutating tools and likewise stay help-only.
 
 ## Prompts
 
+- `nomadnet_context` - NomadNet context including the image rendering prototype and screenshot from rns.recipes.
 - `zen_review` `{design}` - review a design against the Zen of Reticulum finish gates.
 
 ## Build and test
@@ -58,4 +59,4 @@ Pages are fetched on demand over HTTPS, so the binary stays small and docs stay 
 - `forum_categories` / `forum_threads {category}` / `forum_search {query}` / `forum_latest` - rns.recipes forum
 - `github_discussions {limit}` - markqvist/Reticulum discussions (parsed HTML)
 - `github_search {query}` - issues/PRs via GitHub REST (repo mostly uses discussions)
-- `community_read {url}` - read a forum thread, unsigned post, or discussion page
+- `community_read {url}` - read a forum thread, unsigned post, or discussion page. rns.recipes forum threads are fetched from their markdown export so images and links stay readable.
