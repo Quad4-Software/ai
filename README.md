@@ -7,7 +7,7 @@
 <a href="https://github.com/Quad4-Software/ai/blob/master/agents-mcp/go.mod"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/master/badges/go.svg" alt="go version"></a>
 <a href="https://github.com/Quad4-Software/ai/blob/master/LICENSE"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/master/badges/license.svg" alt="license"></a>
 
-Small standalone MCP servers for agents working on Reticulum and
+Small standalone MCP servers and Skills for agents working on Reticulum and
 MeshChatX. Go, stdlib-first, stdio transport, safe read-only defaults.
 
 | Server | Purpose |
@@ -39,7 +39,7 @@ MeshChatX. Go, stdlib-first, stdio transport, safe read-only defaults.
 make install prints an mcpServers entry for every server. Copy the
 entries you need into ~/.config/mcp/mcp.json and adjust the paths.
 
-## gateway-mcp: the token saver
+## the gateway-mcp
 
 Point your client at gateway-mcp instead of the individual servers.
 It spawns each configured command server lazily, exposes a compact
@@ -51,7 +51,7 @@ mode: register the gateway with args ["--attach"], which bridges each
 window's stdio to a single long-lived daemon on an owner-only unix
 socket (auto-started on first connect). See gateway-mcp/README.md.
 
-## Design contract
+## Design
 
 - Newline-delimited JSON-RPC 2.0 over stdio. MCP protocol 2025-11-25.
 - Malformed input returns a parse error, never a crash.
@@ -71,25 +71,4 @@ mcpServers, for example:
 
 Use `memory-mcp` to persist destinations, learned facts, and todo items.
 
-## Development
-
-Every dir has a Makefile. make all runs fmt, vet, test, build.
-make gosec runs the security scan. The top-level Makefile fans the
-same targets across every server. New servers start from
-mcp-scaffold/ (see its README). CI lives in .github/workflows/ci.yml.
-
-Repo-aware servers (context, agents, meshchatx, i18n, workspace,
-bug-hunter) use MCP_REPO_ROOT or walk up to the nearest .git.
-
-## Release
-
-Create an annotated tag and push it to start the release workflow:
-
-    git tag -a v0.1.0 -m "release v0.1.0"
-    git push origin v0.1.0
-
-The release workflow builds cross-platform archives, generates
-[notes.md](notes.md) from dist/checksums.txt, and publishes the
-SHA-256 table to the GitHub release notes.
-
-License: 0BSD, see LICENSE.
+License: [0BSD](LICENSE)

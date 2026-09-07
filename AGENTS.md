@@ -71,5 +71,18 @@ All actions pinned to full SHAs. Every job begins with
 step-security/harden-runner (pinned). No arbitrary shell on untrusted
 input. Dependabot handles gomod weekly.
 
-See .agents/skills/ for detailed guides: mcp-toolkit, reticulum-mesh,
+See .agents/skills/ for detailed guides: mcp-toolkit, reticulum,
 lxmfy, micron, ci-security, release.
+
+## Agent Skills distribution
+
+The `.agents/skills/` directory follows the Agent Skills specification. Once
+this repo is pushed to GitHub, anyone can install the skills with:
+
+```
+npx skills add Quad4-Software/ai
+```
+
+Use `--skill <name>` to install only one, `-g` for global installation, or
+`--list` to preview. The `skills.sh.json` at the repo root lists the skill
+groups for the skills.sh marketplace.
