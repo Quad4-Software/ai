@@ -1,10 +1,13 @@
+#!fg=ddd
+#!bg=222
+
 >Welcome
 
 This is a starter Micron page.
 
 >>Links
-Here is a `[labeled link`/page/index.mu].
+Here is a `F79d`_`[labeled link`/page/index.mu]`_`f
 
 >>Format
 You can make text `!bold`!, `_underlined`_, and `*italic`*.
-Use `Faaa`Fcolors`f and `B222`Bbackgrounds`b.
+Use `Faaacolors`f and `B333backgrounds`b.

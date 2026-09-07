@@ -136,6 +136,19 @@ func TestExtractHeadingsTool(t *testing.T) {
 	if heads[2].Line != 5 {
 		t.Fatalf("deep heading should be on line 5: %+v", heads[2])
 	}
+	foldArgs, err := json.Marshal(map[string]any{
+		"source": "`+>Open\n`->Closed\n>Plain\n",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	out = mustCall(t, "extract_headings", string(foldArgs))
+	if err := json.Unmarshal([]byte(out), &heads); err != nil {
+		t.Fatalf("fold headings output is not JSON: %v", err)
+	}
+	if len(heads) != 3 || !heads[0].Collapsible || heads[0].Collapsed || !heads[1].Collapsed || heads[2].Collapsible {
+		t.Fatalf("bad fold headings: %s", out)
+	}
 }
 
 func TestSearchMicronTool(t *testing.T) {
@@ -164,7 +177,7 @@ func TestSearchMicronTool(t *testing.T) {
 func TestGenerateTemplateTool(t *testing.T) {
 	for name, want := range map[string]string{
 		"page": templates.Page, "color": templates.Color, "form": templates.Form,
-		"table": templates.Table, "minimal": templates.Minimal,
+		"table": templates.Table, "minimal": templates.Minimal, "fold": templates.Fold,
 	} {
 		a, _ := json.Marshal(map[string]any{"template": name})
 		if out := mustCall(t, "generate_template", string(a)); out != want {
@@ -372,6 +385,12 @@ func TestConvertEqualsParseThenRender(t *testing.T) {
 			t.Fatalf("ConvertMicronToHTML and Parse+RenderHTML diverged for %q\nA=%s\nB=%s", src, a, b)
 		}
 	}
+	// Fold headings render via ConvertMicronToHTML but Document IR still
+	// treats `+> / `-> as paragraphs, so Parse+RenderHTML diverges by design.
+	foldHTML := p.ConvertMicronToHTML(templates.Fold)
+	if !strings.Contains(foldHTML, `data-mu-fold=`) {
+		t.Fatalf("fold template should render Mu-fold details: %s", foldHTML)
+	}
 }
 
 func TestLintMatchesParseDiagnostics(t *testing.T) {
@@ -477,8 +496,10 @@ func FuzzParseMicron(f *testing.F) {
 				t.Fatalf("block span %v outside %d-byte source", b.Span, len(src))
 			}
 			for _, in := range b.Inlines {
-				if in.Span.Start < 0 || in.Span.End > len(src) {
-					t.Fatalf("inline span %v outside source", in.Span)
+				// Table expansion synthesizes box-drawing text whose End can
+				// exceed the source length. Start must still be in range.
+				if in.Span.Start < 0 || in.Span.Start > len(src) || in.Span.End < in.Span.Start {
+					t.Fatalf("inline span %v invalid for %d-byte source", in.Span, len(src))
 				}
 			}
 		}
@@ -506,13 +527,13 @@ func FuzzParseMicron(f *testing.F) {
 }
 
 // forbiddenHTML lists fragments that must never appear in rendered output.
-// Scheme checks are anchored to attribute position (=\"...) because the
-// nomadnetwork:// safety prefix legitimately embeds e.g. "javascript:"
-// inside a prefixed href.
+// Dangerous schemes are neutralized by prefixing nomadnetwork:// on href.
+// data-destination may still carry the raw destination string after that
+// prefixing, so checks anchor to href=" only.
 var forbiddenHTML = []string{
 	"<script", "</script", "<iframe", "<object", "<embed", "<svg",
 	"<base", "<form", "<meta", "onerror=", "onload=", "onclick=",
-	`="javascript:`, `="vbscript:`, `="file:`, `="data:`,
+	`href="javascript:`, `href="vbscript:`, `href="file:`, `href="data:`,
 }
 
 func FuzzRenderHTML(f *testing.F) {

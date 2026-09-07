@@ -1,8 +1,12 @@
 #!bg=222
-#!fg=aaaaaa
+#!fg=ddd
 
 >Banded Colors
-`F00a`_`!Red`!`_
-`F0a0`_`!Green`!`_
-`F00a`_`!Blue`!`_
-`Faaa`_`!Neutral`!`_
+
+`Ff00`_`!Red`!`_`f
+`F0f0`_`!Green`!`_`f
+`F00f`_`!Blue`!`_`f
+`Faaa`_`!Neutral`!`_`f
+
+Truecolor: `FT112233six digit`f and `BT445566background`b
+Grayscale: `Fg50gray mid`f

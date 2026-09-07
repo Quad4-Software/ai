@@ -172,7 +172,7 @@ func tools() []mcp.Tool {
 		},
 		{
 			Name:        "extract_headings",
-			Description: "Extract section headings from Micron markup with depth and source line.",
+			Description: "Extract section headings from Micron markup with depth, source line, and fold state.",
 			InputSchema: obj(map[string]any{"source": strArg("Micron source, max 1 MiB")}, "source"),
 			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
 				var a struct {
@@ -184,9 +184,7 @@ func tools() []mcp.Tool {
 				if err := checkSource(a.Source); err != nil {
 					return "", err
 				}
-				p := micron.Parser{}
-				doc := p.Parse(a.Source)
-				h := collectHeadings(doc)
+				h := collectHeadingsFromSource(a.Source)
 				b, _ := json.MarshalIndent(h, "", "  ")
 				return string(b), nil
 			},
@@ -225,10 +223,10 @@ func tools() []mcp.Tool {
 		},
 		{
 			Name:          "generate_template",
-			Description:   "Generate a starter Micron .mu template: page, color, form, table, or minimal.",
+			Description:   "Generate a starter Micron .mu template: page, color, form, table, fold, or minimal.",
 			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"template": "page"}`)}},
 			InputSchema: obj(map[string]any{
-				"template": strArg("page, color, form, table, or minimal"),
+				"template": strArg("page, color, form, table, fold, or minimal"),
 			}, "template"),
 			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
 				var a struct {
@@ -241,14 +239,14 @@ func tools() []mcp.Tool {
 				}
 				body, ok := templates.ByName[a.Template]
 				if !ok {
-					return "", fmt.Errorf("unknown template %q (try page, color, form, table, minimal)", a.Template)
+					return "", fmt.Errorf("unknown template %q (try page, color, form, table, fold, minimal)", a.Template)
 				}
 				return body, nil
 			},
 		},
 		{
 			Name:        "micron_reference",
-			Description: "Return a Micron syntax quick reference.",
+			Description: "Return a Micron syntax quick reference for the NomadNet 1.4.0 dialect.",
 			InputSchema: obj(map[string]any{}),
 			Handle: func(_ context.Context, _ json.RawMessage) (string, error) {
 				return templates.Reference, nil
@@ -265,9 +263,11 @@ type linkOut struct {
 }
 
 type headingOut struct {
-	Text  string `json:"text"`
-	Depth int    `json:"depth"`
-	Line  int    `json:"line"`
+	Text        string `json:"text"`
+	Depth       int    `json:"depth"`
+	Line        int    `json:"line"`
+	Collapsible bool   `json:"collapsible,omitempty"`
+	Collapsed   bool   `json:"collapsed,omitempty"`
 }
 
 func collectLinks(doc *micron.Document) []linkOut {
@@ -287,25 +287,55 @@ func collectLinks(doc *micron.Document) []linkOut {
 	return out
 }
 
-func collectHeadings(doc *micron.Document) []headingOut {
+// collectHeadingsFromSource walks markup lines so fold headings (`+> / `->)
+// are reported even though Document IR still treats those as paragraphs.
+func collectHeadingsFromSource(source string) []headingOut {
 	out := make([]headingOut, 0, 8)
-	for _, b := range doc.Blocks {
-		if b.Kind != micron.BlockHeading {
+	literal := false
+	lines := strings.Split(source, "\n")
+	for i, line := range lines {
+		if line == "`=" {
+			literal = !literal
 			continue
 		}
-		var text strings.Builder
-		for _, in := range b.Inlines {
-			if in.Text != "" {
-				text.WriteString(in.Text)
-			}
+		if literal {
+			continue
 		}
-		out = append(out, headingOut{
-			Text:  text.String(),
-			Depth: b.Depth,
-			Line:  b.SourceLine,
-		})
+		h, ok := parseHeadingLine(line)
+		if !ok {
+			continue
+		}
+		h.Line = i + 1
+		out = append(out, h)
 	}
 	return out
+}
+
+func parseHeadingLine(line string) (headingOut, bool) {
+	collapsible := false
+	collapsed := false
+	if len(line) >= 3 && line[0] == '`' && (line[1] == '+' || line[1] == '-') && line[2] == '>' {
+		collapsible = true
+		collapsed = line[1] == '-'
+		line = line[2:]
+	}
+	if line == "" || line[0] != '>' {
+		return headingOut{}, false
+	}
+	depth := 0
+	for depth < len(line) && line[depth] == '>' {
+		depth++
+	}
+	text := strings.TrimSpace(line[depth:])
+	if text == "" {
+		return headingOut{}, false
+	}
+	return headingOut{
+		Text:        text,
+		Depth:       depth,
+		Collapsible: collapsible,
+		Collapsed:   collapsed,
+	}, true
 }
 
 func searchMicron(source, query string, limit int) string {

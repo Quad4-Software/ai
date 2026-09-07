@@ -1,15 +1,112 @@
-Micron Quick Reference
+Micron Quick Reference (NomadNet 1.4.0 dialect)
 
-Sections:       >Heading  >>Sub  >>>Sub-sub
-Dividers:       ---  -=  -*
-Bold:           `!text`!
-Italic:         `*text`*
-Underline:      `_text`_
-Reset:          ``
-Colors:         `Fxxx  `FTxxxxxx  `f  `Bxxx  `BTxxxxxx  `b
-Page colors:    #!fg=aaaaaa  #!bg=222
-Alignment:      `c  `l  `r  `a
-Links:          `[label`/path.mu]  `[hash:/page.mu]
-Fields:         `<<name`>>  `[`?name=`name
-Tables:         `t ... `t
-Comments:       # comment line
+Authority: NomadNet MicronParser.py and Guide.py. micron-parser-go
+renders the same dialect to HTML and ANSI. UTF-8 sources assumed.
+Escape any tag sequence with a leading backslash. Reset all style
+with a lone double-backtick pair (``).
+
+Page headers (leading lines, before body content)
+  #!c=SECONDS     Cache TTL for peers (0 = never cache). Must be first
+                  if present. Default peer cache is 12 hours.
+  #!fg=XXX        Default page foreground (3 or 6 hex digits)
+  #!bg=XXX        Default page background (3 or 6 hex digits). Place
+                  after #!c= when both are used.
+  #!fold OPEN [CLOSED]
+                  Custom fold glyphs for collapsible sections.
+                  One glyph uses the same glyph for open and closed.
+                  Defaults: open ▾ , closed ▸
+
+Sections and headings (line-start)
+  > Heading       Level 1 section (arbitrary nesting with more >)
+  >> Sub          Level 2
+  >>> Sub-sub     Level 3+ (heading palette defined for 1..3)
+  >>>>            Section indent with no heading text
+  <               Reset section depth to 0 for the rest of the line
+
+Collapsible sections (NomadNet 1.4.0, line-start)
+  `+> Heading     Foldable, expanded by default
+  `-> Heading     Foldable, collapsed by default
+  `+>> Nested     Any depth works the same as normal sections
+  Toggle in NomadNet with Enter, Space, or click. HTML render uses
+  <details class="Mu-fold"> with Mu-fold-glyph markers.
+
+Dividers (line-start)
+  -               Horizontal rule (box drawing ─)
+  -X              Divider using character X (control chars rejected)
+
+Alignment (line-start tags)
+  `c  center    `l  left    `r  right    `a  default align
+
+Inline formatting (backtick then tag, toggles or sets style)
+  `!text`!        Bold
+  `*text`*        Italic
+  `_text`_        Underline
+  ``              Reset bold, italic, underline, colors, and align
+
+Colors (hex RGB, grayscale gNN)
+  `Fxxx           Foreground 3-digit hex (each nibble expanded to byte)
+  `FTxxxxxx       Foreground truecolor 6-digit hex
+  `f              Restore default foreground
+  `Bxxx           Background 3-digit hex
+  `BTxxxxxx       Background truecolor 6-digit hex
+  `b              Restore default background
+  gNN             Grayscale token (N 0-9), also accepted as a color
+
+Default theme palettes (when page has no #!fg / #!bg)
+  Dark:  plain fg ddd, heading1 222/bbb, heading2 111/999, heading3 000/777
+  Light: plain fg 222, heading1 000/777, heading2 111/aaa, heading3 222/ccc
+
+Links
+  `[url]
+  `[label`url]
+  `[label`url`field|list|or|var=value]
+  Submit all fields:  `[Go`:/page/x.mu`*]
+  Named fields:       `[Go`:/page/x.mu`user|token]
+  Vars plus fields:   `[Go`:/page/x.mu`user|action=view]
+  Same-page anchor:   `[Jump`#name]   or next heading: `[Continue`#]
+  Cross-page anchor:  `[Go`hash:/page.mu`anchor=name]
+
+Anchors (NomadNet browser)
+  `:name          Explicit zero-width marker (A-Z a-z 0-9 _ -)
+  Headings also auto-anchor via slugify: lowercased, non-alnum runs
+  to hyphen, trim edges (Hello World -> hello-world).
+
+Fields and inputs
+  `<name`value>                 Text field (default width 24)
+  `<name`>                      Empty text field
+  `<16|name`>                   Width in columns (max 256)
+  `<40x5|notes`>                Width x rows for multi-line
+  `<!|secret`hidden>            Masked field
+  `<!32|all`hidden>             Masked with width
+  `<?|name|value`>label         Checkbox (comma-joins shared names)
+  `<?|name|value|*`>label       Pre-checked checkbox
+  `<^|name|value`>label         Radio (mutually exclusive per name)
+  `<^|name|value|*`>label       Pre-selected radio
+
+Tables (GitHub-style pipes between `t fences)
+  `t
+  | Name | Price | Qty |
+  | ---- | :---: | --: |
+  | Apple | Free | 5 |
+  `t
+  Opening fence options: `tl `tc `tr for align, optional max width
+  e.g. `tc30
+
+Images (NomadNet terminal / Kitty graphics, WebP only)
+  `(alt text`w=N`h=N`a=c`:/media/file.webp)
+  w/h: columns/rows, percent, or n for near-native. a: l|r|c.
+  Block-level, own line. micron-parser-go does not render images yet.
+
+Partials (async include)
+  `{url}
+  `{url`SECONDS}
+  `{url`SECONDS`pid=ID|field|var=value}
+
+Literals
+  `=              Toggle literal block (content not interpreted)
+  \# comment      Line comment when # is the first character
+                  (# alone, not #! directives which are headers)
+
+Security notes for HTML render
+  Text and attributes are escaped. javascript:, vbscript:, data:,
+  and file: link schemes are rejected. No raw HTML passthrough.

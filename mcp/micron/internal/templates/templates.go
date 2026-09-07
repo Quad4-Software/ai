@@ -20,6 +20,9 @@ var Table string
 //go:embed minimal.mu
 var Minimal string
 
+//go:embed fold.mu
+var Fold string
+
 //go:embed reference.txt
 var Reference string
 
@@ -30,4 +33,5 @@ var ByName = map[string]string{
 	"form":    Form,
 	"table":   Table,
 	"minimal": Minimal,
+	"fold":    Fold,
 }
