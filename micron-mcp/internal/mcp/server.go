@@ -330,6 +330,9 @@ func (s *Server) handle(ctx context.Context, method string, params json.RawMessa
 		list := make([]toolDef, 0, len(s.torder))
 		for _, name := range s.torder {
 			t := s.tools[name]
+			if s.ReadOnly && t.Write {
+				continue
+			}
 			schema := t.InputSchema
 			if len(t.InputExamples) > 0 {
 				// copy so the stored schema is never mutated
