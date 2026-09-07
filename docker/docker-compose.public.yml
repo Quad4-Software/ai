@@ -15,3 +15,10 @@ services:
     environment:
       MCP_READ_ONLY: "1"
       GATEWAY_CONFIG: "/app/config/quad4-mcp.json"
+    mem_limit: 512m
+    cpus: "1.0"
+    pids_limit: 64
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 2048
