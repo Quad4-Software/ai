@@ -77,7 +77,7 @@ jobs:
 
       - name: Sign image with Cosign
         run: |
-          cosign sign --yes "${{ env.IMAGE_NAME }}@sha256:${{ steps.build.outputs.digest }}"
+          cosign sign --yes "${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}"
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@d2a0b60797ff03db6132bd4e2b293f9b37081297
