@@ -14,3 +14,5 @@ Root resolution: `MCP_REPO_ROOT` env, else nearest ancestor with `.agents/`.
 - `search_docs {query, limit}` - regex over .agents/, docs/, AGENTS.md
 - `module_owners` - `.agents/module-ownership.md`
 - `skill_for {task}` - rank .agents skills against a task description
+- ask {question, limit} - fuzzy-matched question answering over .agents skills and docs
+- fuzzy_search {query, limit} - token-based fuzzy search over .agents skills, conventions and AGENTS.md

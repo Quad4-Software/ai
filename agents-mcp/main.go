@@ -415,7 +415,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, "agents-mcp:", err)
 		os.Exit(1)
 	}
-	srv := mcp.NewServer("agents-mcp", "0.1.0", tools(), nil)
+	srv := mcp.NewServer("agents-mcp", "0.1.0", append(tools(), askTool, fuzzySearchTool), nil)
 	if err := srv.Serve(context.Background(), os.Stdin, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, "agents-mcp:", err)
 		os.Exit(1)
