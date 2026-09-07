@@ -45,14 +45,15 @@ micron vendors micron-parser-go under
 mcp/micron/third_party/micron-parser-go via:
 
 ```
-require micron-parser-go v1.1.0
+require micron-parser-go v1.1.4
 replace micron-parser-go => ./third_party/micron-parser-go
 ```
 
 To update: replace the vendored tree, bump the require version to match,
 keep the replace line, run go mod tidy and go test ./... inside
 micron. Never go get the parser from the network. Lint targets
-exclude /third_party/.
+exclude /third_party/. Read the vendored CHANGELOG.md when bumping
+(NomadNet 1.4.0 fold headings landed in v1.1.4).
 
 ## Adding an MCP server
 

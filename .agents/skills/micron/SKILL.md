@@ -7,70 +7,109 @@ description: >
 compatibility: stdio-mcp
 metadata:
   server: micron
+  dialect: NomadNet 1.4.0
+  parser: micron-parser-go v1.1.4
 ---
 
 ## When to use this skill
 
 - You are writing or linting Micron markup.
 - You need to render, extract, search, or template Micron.
-- You are updating the vendored `micron-parser-go`.
+- You are updating the vendored micron-parser-go.
 
 ## How to use
 
 1. Build micron: `cd mcp/micron && go test ./... && go build`.
-2. Add the binary to your MCP client config as `micron`.
-3. Call `micron_reference` or `parse` for syntax questions, `lint` for checks, `render` for output.
-4. Update `third_party/micron-parser-go` offline, bump the require version, and keep the `replace` line.
+2. Add the binary to your MCP client config as micron.
+3. Call micron_reference or parse_micron for syntax questions, lint_micron
+   for checks, render_html for output.
+4. Update third_party/micron-parser-go offline, bump the require version,
+   and keep the replace line.
 
 ## Examples
 
-- "Parse a Micron document and render it to HTML."
-- "Lint a Micron file for unsafe link schemes."
-- "Show the Micron syntax reference for headings."
+- Parse a Micron document and render it to HTML.
+- Lint a Micron file for unsafe link schemes.
+- Show the Micron syntax for collapsible headings and colors.
 
 # Micron and micron
 
-## Micron syntax
+## Dialect authority
 
-Micron is NomadNet's lightweight markup language. It has headings at three
-levels, bold/italic/underline spans, color directives, alignment, link
-fields, form inputs, tables, partials, and literal blocks.
+Micron is NomadNet's markup language. Primary authority is NomadNet 1.4.0
+`nomadnet/ui/textui/MicronParser.py` and Guide.py topic Outputting
+Formatted Text. micron-parser-go is the Go/HTML/ANSI implementation
+vendored here. When Go and NomadNet disagree, prefer NomadNet and note the
+gap.
 
-- Headings are single, double, and triple greater-than signs.
-- Bold, italic, and underline spans each have their own delimiters.
-- Colors are backtick-quoted directives and named blocks.
-- Link fields are backtick-wrapped and follow the url|label format.
-- Forms expose input fields and submit actions.
-- Tables are pipe-delimited and can carry data descriptors.
-- Partials are included by name.
-- Literal blocks are left as preformatted text.
+Full tag and color tables live in
+[references/syntax.md](references/syntax.md). Tool details are in
+[references/tools.md](references/tools.md).
 
-For exact syntax, call the micron_reference tool or read
-mcp/micron/third_party/micron-parser-go/micron/doc.go.
+## Feature map (NomadNet 1.4.0)
+
+- Sections: `>`, `>>`, `>>>`, ... and depth reset with `<`
+- Collapsible sections (1.4.0): `` `+> `` open, `` `-> `` collapsed,
+  `#!fold OPEN [CLOSED]` glyphs (defaults ▾ / ▸)
+- Dividers: `-` and `-X`
+- Inline style: bold `` `! ``, italic `` `* ``, underline `` `_ ``, reset ``
+- Colors: `` `Fxxx `` / `` `FTxxxxxx `` / `` `f ``, `` `Bxxx `` /
+  `` `BTxxxxxx `` / `` `b ``, grayscale `gNN`
+- Page headers: `#!c=`, `#!fg=`, `#!bg=`, `#!fold`
+- Alignment: `` `c `` `` `l `` `` `r `` `` `a ``
+- Links, request fields, same-page `#` anchors
+- Explicit anchors `` `:name `` (NomadNet browser)
+- Fields: text, masked, multi-row, checkbox `` `? ``, radio `` `^ ``
+- Tables: GitHub-style pipes inside `` `t `` fences
+- Images: `` `(alt`w=`h=`a=`:url.webp) `` (NomadNet / Kitty, WebP only,
+  not rendered by micron-parser-go yet)
+- Partials `` `{url`refresh`fields} ``
+- Literals `` `= `` and `#` comments
+
+## Heading theme colors
+
+Dark theme defaults: plain fg `ddd`, heading1 `222`/`bbb`, heading2
+`111`/`999`, heading3 `000`/`777`. Light theme: plain fg `222`, heading1
+`000`/`777`, heading2 `111`/`aaa`, heading3 `222`/`ccc`.
 
 ## Tool reference
 
-Tool details are in [references/tools.md](references/tools.md). This section is optional if micron is installed.
+Nine tools: parse_micron, lint_micron, render_html, render_ansi,
+extract_links, extract_headings (includes fold state), search_micron,
+generate_template (page, color, form, table, fold, minimal),
+micron_reference.
 
 ## Vendored parser
 
-The parser is vendored at mcp/micron/third_party/micron-parser-go with
+Vendored at mcp/micron/third_party/micron-parser-go:
 
 ```
-require micron-parser-go v1.1.0
+require micron-parser-go v1.1.4
 replace micron-parser-go => ./third_party/micron-parser-go
 ```
 
-in mcp/micron/go.mod. To update: replace the vendored tree, bump the
-require version, keep the replace line, run go mod tidy offline-safe and
-go test ./... in mcp/micron. Never go get the parser from the network.
+Upstream: Quad4-Software/Micron-Parser-Go. Read CHANGELOG.md in the
+vendored tree before bumping. To update: replace the vendored tree, bump
+the require version, keep the replace line, run go mod tidy offline-safe
+and go test ./... in mcp/micron. Never go get the parser from the network.
+
+### Recent changelog (v1.1.0 through v1.1.4)
+
+- v1.1.4: NomadNet 1.4.0 folding headings (`` `+> ``, `` `-> ``, `#!fold`)
+  and HTML `<details class="Mu-fold">` output.
+- v1.1.3: Go 1.27.1+, ForceMonospace link-label escape fix, wasm_exec.js
+  in release checksums.
+- v1.1.2: SHASUMS256.txt in release packaging.
+- v1.1.1: Nerd Font / PUA glyph span for WASM.
+- v1.1.0: Document IR, Lint, ANSI, bindings, NomadNet as dialect authority.
+
+Note: ConvertMicronToHTML handles folds. Document IR / Parse still treats
+fold lines as paragraphs, so extract_headings scans source lines for fold
+prefixes instead of relying on the AST alone.
 
 ## Limits and HTML safety
 
-- Source input capped at 1 MiB (maxSourceBytes in main.go). Queries
-  capped at maxQueryBytes. NUL bytes rejected.
-- HTML output is escaped. javascript:, vbscript:, data:, and file:
-  link schemes are rejected and neutralized in the parser (url.go, lint.go,
-  html_build.go). Do not weaken these checks.
-- No raw HTML passthrough: Micron never emits script tags, event-handler
-  attributes, or unescaped markup.
+- Source capped at 1 MiB, queries at maxQueryBytes, NUL rejected.
+- HTML escaped. javascript:, vbscript:, and file: schemes are prefixed with
+  nomadnetwork:// on href. Lint also flags data: and javascript:.
+- No raw HTML passthrough.

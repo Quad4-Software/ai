@@ -63,8 +63,9 @@ Current servers and purposes:
   to canonical URLs. Writes
   need MESHCHATX_GITHUB_TOKEN, GITHUB_TOKEN, or GH_TOKEN; repo defaults to
   Quad4-Software/MeshChatX, override with MESHCHATX_ISSUES_REPO.
-- micron - Micron markup: parse, lint, render HTML/ANSI, extract
-  links/headings, search, templates, syntax reference.
+- micron - Micron markup (NomadNet 1.4.0 dialect): parse, lint, render
+  HTML/ANSI, extract links/headings (including fold state), search,
+  templates, syntax reference. Vendors micron-parser-go v1.1.4.
 - no-slop - lints prose against no-AI-slop and MeshChatX style rules.
 - rns - Reticulum manual and API reference as searchable, section-aware tools. Any manual page can be fetched with `get_topic` or `search_docs`. Also exposes the `zen_review` and `nomadnet_context` prompts.
 - workspace - wraps repo dev commands: Taskfile targets, git health,
