@@ -15,7 +15,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/Quad4-Software/ai/mcp-toolkit
+  IMAGE_NAME: ghcr.io/quad4-software/ai/mcp-toolkit
 
 jobs:
   build-and-push:
