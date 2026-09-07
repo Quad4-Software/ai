@@ -20,7 +20,11 @@ Per server: cd <name>-mcp && make test, or go test ./....
 ## Conventions
 
 - Stdlib-first: no third-party dependencies unless vendored or justified.
-- Read-only by default: servers never mutate host state.
+- Read-only by default: servers never mutate host state. Exception:
+  meshchatx-mcp ships opt-in GitHub issue tools (create, update, close,
+  comment, search) that only activate when a token env var is set
+  (MESHCHATX_GITHUB_TOKEN, GITHUB_TOKEN, GH_TOKEN). Tokens are never
+  returned in tool output and the target repo is owner/name validated.
 - Path jailing: all file access resolved under an allowed root, traversal
   rejected.
 - Secrets: never return key material or config secrets, redact them.
@@ -68,4 +72,4 @@ step-security/harden-runner (pinned). No arbitrary shell on untrusted
 input. Dependabot handles gomod weekly.
 
 See .agents/skills/ for detailed guides: mcp-toolkit, reticulum-mesh,
-micron, ci-security, release.
+lxmfy, micron, ci-security, release.
