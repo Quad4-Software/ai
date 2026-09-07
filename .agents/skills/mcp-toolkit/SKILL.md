@@ -35,11 +35,17 @@ Current servers and purposes:
   storage inventory, identity names, decoded destinations. Never returns key
   material, secrets are redacted.
 - lxmfy-mcp - LXMFy docs, bot scaffolding, static diagnostics, test guidance.
-- meshchatx-mcp - MeshChatX documentation as searchable, section-aware tools.
+- meshchatx-mcp - MeshChatX documentation as searchable, section-aware tools,
+  plus opt-in GitHub issue tools (issue_templates, issue_create, issue_view,
+  issue_update for edit/close/reopen, issue_comment, issue_search,
+  issue_references). Bodies auto-link known terms (BCP 47, LXMF, ...)
+  to canonical URLs. Writes
+  need MESHCHATX_GITHUB_TOKEN, GITHUB_TOKEN, or GH_TOKEN; repo defaults to
+  Quad4-Software/MeshChatX, override with MESHCHATX_ISSUES_REPO.
 - micron-mcp - Micron markup: parse, lint, render HTML/ANSI, extract
   links/headings, search, templates, syntax reference.
 - no-slop-mcp - lints prose against no-AI-slop and MeshChatX style rules.
-- rns-mcp - Reticulum manual as searchable, section-aware tools. Low memory.
+- rns-mcp - Reticulum manual and API reference as searchable, section-aware tools. Any manual page can be fetched with `get_topic` or `search_docs`. Also exposes the `zen_review` and `nomadnet_context` prompts.
 - workspace-mcp - wraps repo dev commands: Taskfile targets, git health,
   test-file mapping. Commands are validated and bounded.
 
@@ -81,6 +87,8 @@ custom toolchain go1.27.1-X:nodwarf5 (see AGENTS.md for caveats).
 
 - Stdlib-first: no third-party deps unless vendored or justified.
 - Read-only by default: never mutate host state, jails and redaction required.
+  Opt-in write tools are allowed when env-gated behind a token that is never
+  returned (meshchatx-mcp issue tools are the precedent).
 - Path jailing: resolve all file access to an allowed root, reject traversal.
 - Secrets: never return key material, tokens, or config secrets, redact.
 - #nosec annotations require an inline justification comment.
