@@ -5,7 +5,7 @@ ARG VERSION="0.2.0"
 ARG VCS_REF="unknown"
 ARG CREATED="unknown"
 
-FROM golang:1.27-bookworm AS builder
+FROM golang:1.27-bookworm@sha256:648f440f42a0958804efb24df176f806f9d353b41f1c0627f666428e40310f6b AS builder
 
 WORKDIR /build
 
@@ -37,7 +37,7 @@ RUN python3 scripts/gen-configs.py \
       --repo /app \
       --out /app/config
 
-FROM gcr.io/distroless/static-debian13:nonroot
+FROM gcr.io/distroless/static-debian13:nonroot@sha256:1c2c046bc09ed40fad370b599a0b1ae7987f55b01e247cf27a7c27cd97e5bbc7
 
 WORKDIR /app
 
