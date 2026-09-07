@@ -25,6 +25,13 @@ docker compose -f docker/docker-compose.public.yml up -d
 This sets `MCP_READ_ONLY=1`, runs as UID 65532, drops all capabilities, mounts
 no writable filesystem, and uses `read_only: true` plus `no-new-privileges`.
 
+## Coolify
+
+Both compose files are Coolify-ready. The gateway starts a read-only HTTP
+status/health endpoint on port 8080 when `HTTP_PORT` is set. In Coolify assign
+a domain to the `mcp` service and use `http(s)://example.com:8080`. The
+`expose` list tells the proxy where to route traffic.
+
 ## What read-only mode blocks
 
 - `tools/list` does not advertise tools marked `Write: true`.

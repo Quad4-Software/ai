@@ -51,6 +51,8 @@ ENV GATEWAY_CONFIG=/app/config/quad4-mcp.json
 
 USER 65532:65532
 
+EXPOSE 8080
+
 LABEL org.opencontainers.image.source="https://github.com/Quad4-Software/ai" \
       org.opencontainers.image.url="https://github.com/Quad4-Software/ai" \
       org.opencontainers.image.version="${VERSION}" \

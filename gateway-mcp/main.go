@@ -15,6 +15,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -245,6 +246,33 @@ func findTool(name string) (*child, string, error) {
 	return nil, "", fmt.Errorf("no server %q; available: %s", srv, strings.Join(names, ", "))
 }
 
+func startHTTP(addr string, srv *mcp.Server) {
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("ok"))
+	})
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		var names []string
+		for _, c := range children {
+			names = append(names, c.def.Name)
+		}
+		b, _ := json.Marshal(map[string]any{
+			"name":      "gateway-mcp",
+			"version":   "0.1.0",
+			"read_only": srv.ReadOnly,
+			"servers":   names,
+			"config":    os.Getenv("GATEWAY_CONFIG"),
+		})
+		_, _ = w.Write(b)
+	})
+	go func() {
+		if err := http.ListenAndServe(addr, nil); err != nil {
+			fmt.Fprintln(os.Stderr, "gateway-mcp http:", err)
+		}
+	}()
+}
+
 func main() {
 	sock := flag.String("socket", defaultSocket(), "shared-daemon unix socket path")
 	attachMode := flag.Bool("attach", false, "bridge stdio to the shared daemon, auto-starting it")
@@ -262,6 +290,9 @@ func main() {
 	if *daemonMode {
 		srv := buildServer()
 		srv.ReadOnly = *ro || srv.ReadOnly
+		if port := os.Getenv("HTTP_PORT"); port != "" {
+			startHTTP(":"+port, srv)
+		}
 		if err := runDaemon(context.Background(), *sock, srv); err != nil {
 			fmt.Fprintln(os.Stderr, "gateway-mcp daemon:", err)
 			os.Exit(1)
@@ -270,6 +301,9 @@ func main() {
 	}
 	srv := buildServer()
 	srv.ReadOnly = *ro || srv.ReadOnly
+	if port := os.Getenv("HTTP_PORT"); port != "" {
+		startHTTP(":"+port, srv)
+	}
 	if err := srv.Serve(context.Background(), os.Stdin, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, "gateway-mcp:", err)
 		os.Exit(1)
