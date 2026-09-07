@@ -23,7 +23,9 @@ var methodsText string
 var methodNames = []string{
 	"exploratory", "oracle", "property", "metamorphic", "differential",
 	"toctou", "churn", "error-injection", "boundary", "combinatorial",
-	"state-machine", "attack-surface", "regression",
+	"state-machine", "attack-surface", "regression", "injection",
+	"secrets", "crypto", "concurrency", "supply-chain", "ci-pipeline",
+	"mcp-security", "authz-matrix", "ai-code",
 }
 
 var root string
@@ -65,7 +67,11 @@ func methodSection(name string) (string, error) {
 		"churn": "Churn and hotspot", "error-injection": "Error-path",
 		"boundary": "Boundary", "combinatorial": "Combinatorial",
 		"state-machine": "State machine", "attack-surface": "Attack surface",
-		"regression": "Regression mining",
+		"regression": "Regression mining", "injection": "Injection and taint",
+		"secrets": "Secrets and credential", "crypto": "Crypto misuse",
+		"concurrency": "Concurrency review", "supply-chain": "Supply chain audit",
+		"ci-pipeline": "CI/CD pipeline", "mcp-security": "MCP and agent-tool",
+		"authz-matrix": "Authorization matrix", "ai-code": "AI-generated code",
 	}
 	h, ok := want[name]
 	if !ok {
@@ -326,6 +332,189 @@ func tools() []mcp.Tool {
 				return marshal(out)
 			},
 		},
+
+		{
+			Name:          "secrets_scan",
+			Description:   "Find credential-shaped literals (API keys, tokens, private key blocks, password= assignments). Values are redacted in output; every hit is a live secret until disproven.",
+			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"path": "config"}`)}},
+			InputSchema: obj(map[string]any{
+				"path":  strArg("repo-relative dir, default repo root"),
+				"limit": map[string]any{"type": "integer", "description": "max findings, default 50"},
+			}),
+			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
+				lim, sub := limitArg(args, 50, 300)
+				out, err := scan.Secrets(root, sub, lim)
+				if err != nil {
+					return "", err
+				}
+				if len(out) == 0 {
+					return "no secret-shaped literals found", nil
+				}
+				return marshal(out)
+			},
+		},
+		{
+			Name:          "injection_scan",
+			Description:   "Dangerous sinks across Go, Python and JS: shell=True, os.system, exec.Command sh -c, eval, pickle/yaml.load, f-string SQL, SSTI, SSRF, archive extractall, unsafe, text/template for HTML, pipe-to-shell.",
+			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"path": "src"}`)}},
+			InputSchema: obj(map[string]any{
+				"path":  strArg("repo-relative dir, default repo root"),
+				"limit": map[string]any{"type": "integer", "description": "max findings, default 100"},
+			}),
+			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
+				lim, sub := limitArg(args, 100, 500)
+				out, err := scan.Injection(root, sub, lim)
+				if err != nil {
+					return "", err
+				}
+				if len(out) == 0 {
+					return "no injection sinks found", nil
+				}
+				return marshal(out)
+			},
+		},
+		{
+			Name:          "crypto_scan",
+			Description:   "Weak crypto and verification bypasses: md5/sha1/des/rc4/ecb, math/rand or Math.random for secrets, InsecureSkipVerify, verify=False, old TLS, JWT alg confusion, == on secrets (timing).",
+			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"path": ""}`)}},
+			InputSchema: obj(map[string]any{
+				"path":  strArg("repo-relative dir, default repo root"),
+				"limit": map[string]any{"type": "integer", "description": "max findings, default 100"},
+			}),
+			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
+				lim, sub := limitArg(args, 100, 500)
+				out, err := scan.Crypto(root, sub, lim)
+				if err != nil {
+					return "", err
+				}
+				if len(out) == 0 {
+					return "no crypto misuse found", nil
+				}
+				return marshal(out)
+			},
+		},
+		{
+			Name:          "concurrency_scan",
+			Description:   "Go race and lifecycle heuristics: loop-var capture in goroutines, defer inside loops, WaitGroup.Add inside goroutines, unclosed response bodies, send-after-close, package-level shared maps without sync.",
+			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"path": "internal"}`)}},
+			InputSchema: obj(map[string]any{
+				"path":  strArg("repo-relative dir, default repo root"),
+				"limit": map[string]any{"type": "integer", "description": "max findings, default 50"},
+			}),
+			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
+				lim, sub := limitArg(args, 50, 300)
+				out, err := scan.Concurrency(root, sub, lim)
+				if err != nil {
+					return "", err
+				}
+				if len(out) == 0 {
+					return "no concurrency heuristics hit", nil
+				}
+				return marshal(out)
+			},
+		},
+		{
+			Name:          "taint_scan",
+			Description:   "Naive intra-file taint: identifiers assigned from request/argv/env sources reaching exec, SQL, template, file-path or HTTP sinks within 30 lines. Candidates only; confirm flow by hand.",
+			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"path": "src/backend"}`)}},
+			InputSchema: obj(map[string]any{
+				"path":  strArg("repo-relative dir, default repo root"),
+				"limit": map[string]any{"type": "integer", "description": "max findings, default 50"},
+			}),
+			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
+				lim, sub := limitArg(args, 50, 300)
+				out, err := scan.Taint(root, sub, lim)
+				if err != nil {
+					return "", err
+				}
+				if len(out) == 0 {
+					return "no tainted source-to-sink pairs found", nil
+				}
+				return marshal(out)
+			},
+		},
+		{
+			Name:          "supply_chain_scan",
+			Description:   "Audit manifests, CI workflows and install scripts: npm lifecycle scripts, unpinned deps, go.mod replace, unpinned GitHub Actions, pull_request_target plus secrets, pipe-to-shell installers, missing lockfiles.",
+			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{}`)}},
+			InputSchema: obj(map[string]any{
+				"limit": map[string]any{"type": "integer", "description": "max findings, default 100"},
+			}),
+			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
+				lim, _ := limitArg(args, 100, 500)
+				out, err := scan.SupplyChain(root, lim)
+				if err != nil {
+					return "", err
+				}
+				if len(out) == 0 {
+					return "no supply-chain indicators found", nil
+				}
+				return marshal(out)
+			},
+		},
+		{
+			Name:        "git_secrets",
+			Description: "Scan added lines in recent git history for credential-shaped literals. Bounded to the last N commits; output is redacted.",
+			InputSchema: obj(map[string]any{
+				"limit": map[string]any{"type": "integer", "description": "commits to scan, default 200, max 1000"},
+			}),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				var a struct {
+					Limit int `json:"limit"`
+				}
+				json.Unmarshal(args, &a) // #nosec G104 -- error tolerated; empty/default is handled downstream
+				if a.Limit <= 0 || a.Limit > 1000 {
+					a.Limit = 200
+				}
+				out, err := scan.GitSecrets(ctx, root, a.Limit)
+				if err != nil {
+					return "", err
+				}
+				if len(out) == 0 {
+					return "no secrets in scanned history", nil
+				}
+				return marshal(out)
+			},
+		},
+		{
+			Name:        "markers_scan",
+			Description: "Find TODO/FIXME/HACK/XXX/BUG/SECURITY comments. Markers cluster where developers already suspected problems.",
+			InputSchema: obj(map[string]any{
+				"path":  strArg("repo-relative dir, default repo root"),
+				"limit": map[string]any{"type": "integer", "description": "max findings, default 100"},
+			}),
+			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
+				lim, sub := limitArg(args, 100, 500)
+				out, err := scan.Markers(root, sub, lim)
+				if err != nil {
+					return "", err
+				}
+				if len(out) == 0 {
+					return "no annotated markers found", nil
+				}
+				return marshal(out)
+			},
+		},
+		{
+			Name:          "mcp_audit",
+			Description:   "Audit MCP/agent-tool code: tool descriptions carrying hidden directives (tool poisoning), imperative pressure on the model, and exec sinks reachable from tool arguments.",
+			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"path": "meshchatx-mcp"}`)}},
+			InputSchema: obj(map[string]any{
+				"path":  strArg("repo-relative dir, default repo root"),
+				"limit": map[string]any{"type": "integer", "description": "max findings, default 50"},
+			}),
+			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
+				lim, sub := limitArg(args, 50, 300)
+				out, err := scan.MCPAudit(root, sub, lim)
+				if err != nil {
+					return "", err
+				}
+				if len(out) == 0 {
+					return "no agent-tool issues found", nil
+				}
+				return marshal(out)
+			},
+		},
 		{
 			Name:        "charter",
 			Description: "Generate an exploratory test charter template for a target area.",
@@ -351,7 +540,7 @@ Window: one focused session
 4. Confirm with focused test runs. Report confirmed bugs only.
 5. Record intentional behaviours so they are not changed by accident.
 
-Suggested scans first: attack_surface path=%q, toctou_scan path=%q, hotspots.`,
+Suggested scans first: attack_surface path=%q, toctou_scan path=%q, injection_scan, taint_scan, hotspots.`,
 					a.Area, a.Area, a.Area, a.Area), nil
 			},
 		},

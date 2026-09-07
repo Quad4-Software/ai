@@ -19,3 +19,16 @@ func TestMethodSection(t *testing.T) {
 		t.Fatal("section bleed into next section")
 	}
 }
+
+func TestNewMethodSections(t *testing.T) {
+	for _, name := range []string{"supply-chain", "secrets", "injection", "crypto",
+		"concurrency", "ci-pipeline", "mcp-security", "authz-matrix", "ai-code"} {
+		got, err := methodSection(name)
+		if err != nil || len(got) < 100 {
+			t.Fatalf("method %q: err=%v len=%d", name, err, len(got))
+		}
+		if strings.Count(got, "\n## ") != 0 {
+			t.Fatalf("method %q section bleeds: %q", name, got[:200])
+		}
+	}
+}
