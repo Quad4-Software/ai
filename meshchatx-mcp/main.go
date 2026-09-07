@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: 0BSD
 // Command meshchatx-mcp is a stdio MCP server exposing the MeshChatX
-// documentation as searchable, section-aware tools. Stdlib only.
+// documentation as searchable, section-aware tools, plus opt-in GitHub
+// issue write tools for the MeshChatX tracker. Stdlib only.
 package main
 
 import (
@@ -629,7 +630,7 @@ func main() {
 	root = findRoot()
 	src := docs.NewSource("MeshChatX Docs", topics)
 	src.MarkdownURL = func(t docs.Topic) string { return t.URL + "/export/md" }
-	srv := mcp.NewServer("meshchatx-mcp", "0.2.0", tools(src), prompts(src))
+	srv := mcp.NewServer("meshchatx-mcp", "0.3.0", append(tools(src), issueTools()...), prompts(src))
 	if err := srv.Serve(context.Background(), os.Stdin, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, "meshchatx-mcp:", err)
 		os.Exit(1)
