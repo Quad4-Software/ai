@@ -30,6 +30,8 @@ MeshChatX. Go, stdlib-first, stdio transport, safe read-only defaults.
 
 ## Install
 
+### MCP servers
+
     git clone git@github.com:Quad4-Software/ai.git
     cd ai
     make all
@@ -38,6 +40,24 @@ MeshChatX. Go, stdlib-first, stdio transport, safe read-only defaults.
 
 make install prints an mcpServers entry for every server. Copy the
 entries you need into ~/.config/mcp/mcp.json and adjust the paths.
+Prebuilt binaries are also attached to each GitHub release.
+
+### Agent skills
+
+Skills live in .agents/skills/ and follow the Agent Skills
+specification. Install them into your agent with the skills.sh CLI:
+
+    npx skills add Quad4-Software/ai
+
+Useful flags:
+
+    npx skills add Quad4-Software/ai --list            # preview available skills
+    npx skills add Quad4-Software/ai --skill micron    # install only one skill
+    npx skills add Quad4-Software/ai -g                # global install
+
+Skill groups are defined in skills.sh.json: MCP toolkit (build, test,
+security, release, style) and Reticulum (mesh networking, LXMF,
+tooling, interface operation).
 
 ## the gateway-mcp
 
