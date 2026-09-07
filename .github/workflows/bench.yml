@@ -26,7 +26,8 @@ jobs:
           go-version: stable
       - name: benchmark
         run: |
-          for d in *-mcp; do
+          for d in mcp/*; do
+            [ "$(basename "$d")" = "scaffold" ] && continue
             (cd "$d" && go test -bench=. -benchmem -benchtime=100ms -run='^$' \
               $(go list ./... | grep -v /third_party/)) || exit 1
           done

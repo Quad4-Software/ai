@@ -2,7 +2,7 @@
 name: reticulum
 description: >
   This skill covers the Reticulum protocol, LXMF, and related concepts
-  for the rns-mcp, lxmf-mcp, lxmfy-mcp, and meshchatx-mcp servers. Use
+  for the rns, lxmf, lxmfy, and meshchatx servers. Use
   when you need mesh networking, destination, link, transport, or security
   details that apply across the Reticulum stack.
 ---
@@ -38,11 +38,11 @@ description: >
   storage directory, identities and known destinations.
 - **LXMF** is a lightweight messaging format and delivery protocol over
   Reticulum. It uses propagation nodes for offline / store-and-forward delivery.
-- **LXMFy** is a Python bot framework on LXMF. lxmfy-mcp has searchable docs and
+- **LXMFy** is a Python bot framework on LXMF. lxmfy has searchable docs and
   bot scaffolding. See the lxmfy skill for framework details.
 - **LXST** is a real-time streaming (voice / signal) protocol over Reticulum.
 - **NomadNet** is an LXMF-based mesh comms app whose pages use Micron markup.
-- **MeshChatX** is an LXMF mesh chat client, and meshchatx-mcp exposes its docs.
+- **MeshChatX** is an LXMF mesh chat client, and meshchatx exposes its docs.
 
 ## Zen of Reticulum for tool builders
 
@@ -205,7 +205,7 @@ Server and tool conventions are in [references/tools.md](references/tools.md). T
   `~/.reticulum/config`. Changing those values requires either a full daemon
   restart or a SIGHUP reload on running platforms that support it.
 - Never restart rnsd from these read-only tools.
-- `lxmf-mcp` only reads state.
+- `lxmf` only reads state.
 
 ## Diagnostics
 
@@ -216,7 +216,7 @@ Server and tool conventions are in [references/tools.md](references/tools.md). T
 - `rnid` displays or generates identity information.
 - `lxmd` runs an LXMF router / propagation node.
 - Inspect `~/.reticulum/storage` and `~/.reticulum/config` to understand state.
-- `lxmf-mcp` tools decode known destinations without needing python beyond the
+- `lxmf` tools decode known destinations without needing python beyond the
   bundled decoder usage, because python3 is used solely to decode stored blobs.
 
 ## Security, Zen and anti-footguns
@@ -336,7 +336,7 @@ Weave is a switching fabric for Reticulum under development by Mark Qvist. It ac
 ## Plugin / god-file pattern
 
 - The doc servers embed section-aware doc corpora in `internal/docs` and in
-  `internal/community` for `rns-mcp`. Keep each server's `main.go` thin with
+  `internal/community` for `rns`. Keep each server's `main.go` thin with
   tool registration plus handlers delegating to `internal` packages. Avoid
   growing a single god-file. Split handlers by domain.
 
@@ -471,7 +471,7 @@ This section is a condensed reference derived from the Reticulum manual. It is i
 
 ## CLI utilities
 
-The `rns` package installs the following command-line utilities. The `rns_util_help` tool in `rns-mcp` returns the full `--help` for each.
+The `rns` package installs the following command-line utilities. The `rns_util_help` tool in `rns` returns the full `--help` for each.
 
 ### rnsd
 Start the Reticulum daemon.

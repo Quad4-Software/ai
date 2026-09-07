@@ -3,11 +3,11 @@ name: fuzz
 on:
   push:
     paths:
-      - 'micron-mcp/**'
+      - 'mcp/micron/**'
       - '.github/workflows/fuzz.yml'
   pull_request:
     paths:
-      - 'micron-mcp/**'
+      - 'mcp/micron/**'
       - '.github/workflows/fuzz.yml'
 
 permissions:
@@ -27,5 +27,5 @@ jobs:
       - name: fuzz-micron
         run: |
           for target in FuzzParseMicron FuzzRenderHTML; do
-            (cd micron-mcp && go test -fuzz=$target -fuzztime=15s -run='^$' .) || exit 1
+            (cd mcp/micron && go test -fuzz=$target -fuzztime=15s -run='^$' .) || exit 1
           done

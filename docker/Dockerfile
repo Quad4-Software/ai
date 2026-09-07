@@ -25,10 +25,12 @@ COPY . .
 
 RUN make build
 
-RUN for d in *-mcp; do \
-      if [ -f "$d/$d" ]; then \
+RUN for d in mcp/*; do \
+      name=$(basename "$d"); \
+      if [ "$name" = "scaffold" ]; then continue; fi; \
+      if [ -f "$d/$name" ]; then \
         mkdir -p "/app/$d" && \
-        cp "$d/$d" "/app/$d/$d"; \
+        cp "$d/$name" "/app/$d/$name"; \
       fi \
     done
 
@@ -63,4 +65,4 @@ LABEL org.opencontainers.image.source="https://github.com/Quad4-Software/ai" \
       org.opencontainers.image.licenses="0BSD" \
       org.opencontainers.image.vendor="Quad4-Software"
 
-ENTRYPOINT ["/app/gateway-mcp/gateway-mcp"]
+ENTRYPOINT ["/app/mcp/gateway/gateway"]

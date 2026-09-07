@@ -5,7 +5,7 @@
 <a href="https://github.com/Quad4-Software/ai/actions/workflows/race.yml"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/race.svg" alt="race"></a>
 <a href="https://github.com/Quad4-Software/ai/actions/workflows/mcp-inspector.yml"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/mcp-inspector.svg" alt="mcp-inspector"></a>
 <a href="https://github.com/Quad4-Software/ai/releases/latest"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/release.svg" alt="release"></a>
-<a href="https://github.com/Quad4-Software/ai/blob/master/agents-mcp/go.mod"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/go.svg" alt="go version"></a>
+<a href="https://github.com/Quad4-Software/ai/blob/master/mcp/agents/go.mod"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/go.svg" alt="go version"></a>
 <a href="https://github.com/Quad4-Software/ai/blob/master/LICENSE"><img src="https://raw.githubusercontent.com/Quad4-Software/ai/badges/license.svg" alt="license"></a>
 
 Small standalone MCP servers and Skills for agents working on Reticulum and
@@ -13,21 +13,21 @@ MeshChatX. Go, stdlib-first, stdio transport, safe read-only defaults.
 
 | Server | Purpose |
 | --- | --- |
-| rns-mcp | RNS manual, zen, forum/GitHub community, rngit, read-only rn* probes |
-| reticulum-go-mcp | Reticulum-Go docs at reticulum-go.quad4.io: searchable, section-aware, fetch |
-| memory-mcp | Persistent agent memory: notes, people, RNS destinations, tasks, fuzzy recall |
-| meshchatx-mcp | MeshChatX docs, scaffolding, god-file detection, split plans, surface snapshots, opt-in GitHub issue tools (env-token gated) |
-| context-mcp | Token-efficient code access: outlines, symbol reads, repo maps |
-| agents-mcp | Repo skills, conventions, module ownership, file tree |
-| no-slop-mcp | Anti-slop linter for text, diffs, files, directories |
-| bug-hunter-mcp | Hotspots, TOCTOU, attack surface, complexity, regression mining |
-| ci-security-mcp | GitHub Actions + Dockerfile scanning, action pinning, YAML lint |
-| i18n-mcp | Locale keys, coverage, usage, hardcoded strings |
-| workspace-mcp | Taskfile list/run, git status/log/diff, test mapping and runs |
-| lxmf-mcp | Local Reticulum state: config, storage, known destinations |
-| lxmfy-mcp | LXMFy docs, bot scaffolding, diagnostics, and test guidance |
-| micron-mcp | Micron parsing, linting, rendering, extraction, search, templates, and syntax reference |
-| gateway-mcp | Multiplexes all servers behind tools/tool_schema/invoke. One config entry, tiny tool surface. |
+| rns | RNS manual, zen, forum/GitHub community, rngit, read-only rn* probes |
+| reticulum-go | Reticulum-Go docs at reticulum-go.quad4.io: searchable, section-aware, fetch |
+| memory | Persistent agent memory: notes, people, RNS destinations, tasks, fuzzy recall |
+| meshchatx | MeshChatX docs, scaffolding, god-file detection, split plans, surface snapshots, opt-in GitHub issue tools (env-token gated) |
+| context | Token-efficient code access: outlines, symbol reads, repo maps |
+| agents | Repo skills, conventions, module ownership, file tree |
+| no-slop | Anti-slop linter for text, diffs, files, directories |
+| bug-hunter | Hotspots, TOCTOU, attack surface, complexity, regression mining |
+| ci-security | GitHub Actions + Dockerfile scanning, action pinning, YAML lint |
+| i18n | Locale keys, coverage, usage, hardcoded strings |
+| workspace | Taskfile list/run, git status/log/diff, test mapping and runs |
+| lxmf | Local Reticulum state: config, storage, known destinations |
+| lxmfy | LXMFy docs, bot scaffolding, diagnostics, and test guidance |
+| micron | Micron parsing, linting, rendering, extraction, search, templates, and syntax reference |
+| gateway | Multiplexes all servers behind tools/tool_schema/invoke. One config entry, tiny tool surface. |
 
 ## Install
 
@@ -39,7 +39,7 @@ MeshChatX. Go, stdlib-first, stdio transport, safe read-only defaults.
     make gosec
     make install
 
-make install prints a single client mcp.json entry for gateway-mcp
+make install prints a single client mcp.json entry for gateway
 plus a generated quad4-mcp.json for the gateway to consume. Copy the
 gateway entry into your MCP client config, then place the gateway
 config at ~/.config/mcp/quad4-mcp.json. The gateway lazily spawns the
@@ -68,9 +68,9 @@ Skill groups are defined in skills.sh.json: MCP toolkit (build, test,
 security, release, style) and Reticulum (mesh networking, LXMF,
 tooling, interface operation).
 
-## the gateway-mcp
+## Gateway
 
-Point your client at gateway-mcp instead of the individual servers.
+Point your client at gateway instead of the individual servers.
 It spawns each configured command server lazily, exposes a compact
 tool index, and fetches full schemas only on demand. External servers
 in the same config (docker-based, etc.) are proxied too.
@@ -78,7 +78,7 @@ in the same config (docker-based, etc.) are proxied too.
 To share one gateway across every client window, use shared daemon
 mode: register the gateway with args ["--attach"], which bridges each
 window's stdio to a single long-lived daemon on an owner-only unix
-socket (auto-started on first connect). See gateway-mcp/README.md.
+socket (auto-started on first connect). See mcp/gateway/README.md.
 
 ## One manifest source
 
@@ -101,11 +101,11 @@ mcp-servers.json list also drives the skills.sh descriptions.
 Each server is one binary. Add to ~/.config/mcp/mcp.json under
 mcpServers, for example:
 
-    "rns": {"command": "/path/ai/rns-mcp/rns-mcp"},
-    "context":  {"command": "/path/ai/context-mcp/context-mcp",
+    "rns": {"command": "/path/ai/mcp/rns/rns"},
+    "context":  {"command": "/path/ai/mcp/context/context",
                  "env": {"MCP_REPO_ROOT": "/path/to/repo"}}
 
-Use `memory-mcp` to persist destinations, learned facts, and todo items.
+Use `memory` to persist destinations, learned facts, and todo items.
 
 License: [0BSD](LICENSE)
 

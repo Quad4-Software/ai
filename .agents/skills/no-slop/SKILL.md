@@ -2,11 +2,11 @@
 name: no-slop
 description: >
   This skill lints prose against AI slop and MeshChatX style rules through
-  no-slop-mcp. Use when you are writing docs, comments, or commit messages
+  no-slop. Use when you are writing docs, comments, or commit messages
   and want to remove machine tics, filler, hedging, and banned markup.
 compatibility: stdio-mcp
 metadata:
-  server: no-slop-mcp
+  server: no-slop
 ---
 
 ## When to use this skill
@@ -17,7 +17,7 @@ metadata:
 
 ## How to use
 
-1. Build no-slop-mcp: `cd no-slop-mcp && go test ./... && go build`.
+1. Build no-slop: `cd mcp/no-slop && go test ./... && go build`.
 2. Add the binary to your MCP client config as `prose` or `no-slop`.
 3. Call `check_text {text, kind}` or `check_file {path}` with `prose`, `doc`, or `comment`.
 4. Use `fix_text` for a rewrite pass and `list_rules` for the rule set.
@@ -30,7 +30,7 @@ metadata:
 
 # No slop
 
-This repo ships `no-slop-mcp`, a stdio MCP server that lints prose against
+This repo ships `no-slop`, a stdio MCP server that lints prose against
 no-AI-slop and MeshChatX style rules. The server is fully offline, stdlib only,
 and produces a single static binary.
 
@@ -40,7 +40,7 @@ replace vague, machine-shaped text with specific, checkable facts.
 
 ## Tool reference
 
-Tool details are in [references/tools.md](references/tools.md). This section is optional if no-slop-mcp is installed.
+Tool details are in [references/tools.md](references/tools.md). This section is optional if no-slop is installed.
 
 ## Core rule
 
@@ -56,7 +56,7 @@ a date, a number, a name, a file or a specific behaviour.
 
 LLMs in 2026 overuse the same small tics. The most obvious are semicolons,
 backticks, em dashes, emojis and dramatic headings. The `comment` mode in
-no-slop-mcp is especially strict about code comments.
+no-slop is especially strict about code comments.
 
 ### No semicolons in prose
 

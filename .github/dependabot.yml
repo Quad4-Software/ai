@@ -2,82 +2,82 @@
 version: 2
 updates:
   - package-ecosystem: gomod
-    directory: "/agents-mcp"
+    directory: "/mcp/agents"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/bug-hunter-mcp"
+    directory: "/mcp/bug-hunter"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/ci-security-mcp"
+    directory: "/mcp/ci-security"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/context-mcp"
+    directory: "/mcp/context"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/gateway-mcp"
+    directory: "/mcp/gateway"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/i18n-mcp"
+    directory: "/mcp/i18n"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/lxmf-mcp"
+    directory: "/mcp/lxmf"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/mcp-scaffold"
+    directory: "/mcp/scaffold"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/memory-mcp"
+    directory: "/mcp/memory"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/lxmfy-mcp"
+    directory: "/mcp/lxmfy"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/meshchatx-mcp"
+    directory: "/mcp/meshchatx"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/micron-mcp"
+    directory: "/mcp/micron"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/no-slop-mcp"
+    directory: "/mcp/no-slop"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/rns-mcp"
+    directory: "/mcp/rns"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/reticulum-go-mcp"
+    directory: "/mcp/reticulum-go"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directory: "/workspace-mcp"
+    directory: "/mcp/workspace"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5

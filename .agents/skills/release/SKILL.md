@@ -41,7 +41,7 @@ compatibility: goreleaser
 - Configuration lives in .goreleaser.yml at repo root.
 - Build artifacts land in dist/ (gitignored).
 - Because this is a multi-module repo of independent binaries, the release
-  matrix covers each *-mcp server binary (or a documented subset).
+  matrix covers each mcp/* server binary (or a documented subset).
 - Local dry run: goreleaser release --snapshot --clean, then inspect dist/.
 
 ## notes.md artifact table
@@ -52,7 +52,7 @@ every released artifact:
 ```
 | artifact | sha256 |
 |----------|--------|
-| rns-mcp_linux_amd64.tar.gz | <sha256> |
+| rns_linux_amd64.tar.gz | <sha256> |
 ```
 
 Generate with sha256sum over dist/ outputs and verify against the

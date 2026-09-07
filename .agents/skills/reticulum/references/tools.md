@@ -1,15 +1,15 @@
 ## Servers
 
-- `rns-mcp` serves the Reticulum manual as searchable, section-aware tools with
+- `rns` serves the Reticulum manual as searchable, section-aware tools with
   low memory usage.
-- `lxmf-mcp` reads `~/.reticulum` directly for sanitized config, storage
+- `lxmf` reads `~/.reticulum` directly for sanitized config, storage
   inventory, identity names and decoded known destinations.
-- `lxmf-mcp` is strictly read-only. It must never write to `~/.reticulum`,
+- `lxmf` is strictly read-only. It must never write to `~/.reticulum`,
   restart rnsd or expose private keys. Identity files are listed by name only
   and config secrets are redacted.
-- `lxmfy-mcp` provides LXMFy docs, bot scaffolding, diagnostics and test
+- `lxmfy` provides LXMFy docs, bot scaffolding, diagnostics and test
   guidance. Framework detail lives in the lxmfy skill.
-- `meshchatx-mcp` provides MeshChatX documentation tools for lookups and
+- `meshchatx` provides MeshChatX documentation tools for lookups and
   browsing, plus opt-in GitHub issue write tools (template-aware
   issue_create in the repo's issue-form style, issue_update for
   edit/close/reopen, issue_comment, issue_search, issue_references)
@@ -17,7 +17,7 @@
   and spec terms (BCP 47, LXMF, RNode, KISS, ...) to canonical URLs so
   filed issues stay readable without assumed knowledge.
 
-## Useful rns-mcp tools
+## Useful rns tools
 
 - `search_docs`, `get_topic`, `rns_status`, `rns_path_table`,
   `rns_path_lookup`, `rns_probe`, `rns_config_check`, `community_read`,
@@ -26,7 +26,7 @@
 ## Conventions for Reticulum MCP tools
 
 - Read-only by default. Tools never start, stop or reconfigure the daemon.
-  The one exception is meshchatx-mcp's GitHub issue tools, which write only
+  The one exception is meshchatx's GitHub issue tools, which write only
   to the issue tracker and only when a token env var is configured.
 - Path-jail all file access to `~/.reticulum` (or a configured root), reject
   traversal.

@@ -1,11 +1,11 @@
 ---
 name: workspace
 description: >
-  This skill wraps repo dev commands through workspace-mcp.
+  This skill wraps repo dev commands through workspace.
   Use when you need to run Taskfile targets, git commands, test mapping,
   or test triage.
 metadata:
-  server: workspace-mcp
+  server: workspace
 ---
 
 ## When to use this skill
@@ -16,7 +16,7 @@ metadata:
 
 ## How to use
 
-1. Build workspace-mcp: `cd workspace-mcp && go test ./... && go build`.
+1. Build workspace: `cd mcp/workspace && go test ./... && go build`.
 2. Add the binary to your MCP client config as `workspace`.
 3. Call `task_list` to see targets and `task_run {name}` to execute.
 4. Use `find_test {file}` and `test_triage {file}` for test workflows.

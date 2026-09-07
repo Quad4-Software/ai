@@ -2,11 +2,11 @@
 name: lxmfy
 description: >
   This skill covers the LXMFy Python bot framework and the documentation
-  exposed by lxmfy-mcp. Use when you are building LXMF bots, scaffolding
+  exposed by lxmfy. Use when you are building LXMF bots, scaffolding
   cogs, or looking up LXMFBot options.
 compatibility: stdio-mcp
 metadata:
-  server: lxmfy-mcp
+  server: lxmfy
 ---
 
 ## When to use this skill
@@ -17,7 +17,7 @@ metadata:
 
 ## How to use
 
-1. Build lxmfy-mcp: `cd lxmfy-mcp && make all`.
+1. Build lxmfy: `cd mcp/lxmfy && make all`.
 2. Add the binary to your MCP client config as `lxmfy`.
 3. Call `list_topics` or `search_docs {query}` for docs.
 4. Use `scaffold_bot` or `diagnose_bot` for bot work.
@@ -28,7 +28,7 @@ metadata:
 - "Scaffold a `reminder` bot with `scaffold_bot`."
 - "Run `diagnose_bot` on my `notesbot.py`."
 
-# LXMFy and lxmfy-mcp
+# LXMFy and lxmfy
 
 LXMFy is a Python framework for building LXMF bots on the Reticulum
 network. Docs live at https://lxmfy.quad4.io/ (English and Russian),
@@ -45,7 +45,7 @@ with Sphinx and Furo.
 
 ## The three doc pages
 
-The site is small and fixed. lxmfy-mcp mirrors it as three topics:
+The site is small and fixed. lxmfy mirrors it as three topics:
 
 - `quick-start` (quick-start.html): prerequisites, `lxmfy create`
   walkthrough, first commands, advanced feature overview.
@@ -290,7 +290,7 @@ detection (memory, fds, threads). Run with the repo test runner.
 
 ## Tool reference
 
-Tool details are in [references/tools.md](references/tools.md). This section is optional if lxmfy-mcp is installed.
+Tool details are in [references/tools.md](references/tools.md). This section is optional if lxmfy is installed.
 
 ## Conventions for lxmfy-related work
 
@@ -299,5 +299,5 @@ Tool details are in [references/tools.md](references/tools.md). This section is 
 - Follow the Zen of Reticulum (see reticulum skill): bots are
   peers, keep outputs small, never fabricate mesh state.
 - LXMFy is the rare write-capable piece of the stack (bots send
-  messages, manage storage, run script cogs). Keep lxmfy-mcp itself
+  messages, manage storage, run script cogs). Keep lxmfy itself
   read-only; scaffolding returns file contents, it does not write.

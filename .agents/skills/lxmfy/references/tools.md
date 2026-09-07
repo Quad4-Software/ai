@@ -1,6 +1,6 @@
-## lxmfy-mcp tools
+## lxmfy tools
 
-Registered in lxmfy-mcp/main.go. Docs are fetched live from
+Registered in mcp/lxmfy/main.go. Docs are fetched live from
 lxmfy.quad4.io (1 MiB page cap, 32-entry LRU, 10 min TTL, 15s timeout),
 so the server needs network at runtime though builds and tests stay
 offline.

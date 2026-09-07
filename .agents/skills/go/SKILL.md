@@ -16,7 +16,7 @@ compatibility: go-1.27
 ## How to use
 
 1. Check `AGENTS.md` and each `go.mod` for the toolchain.
-2. Run `make all` from the repo root to format, vet, test, and build all `*-mcp` servers.
+2. Run `make all` from the repo root to format, vet, test, and build all `mcp/*` servers.
 3. Use `go mod vendor` or `GOFLAGS=-mod=vendor` for offline or air-gapped builds.
 4. See the `mcp-toolkit` skill for repo-wide build and module conventions.
 
@@ -24,7 +24,7 @@ compatibility: go-1.27
 
 - "Build all servers with `make all` and `make gosec`."
 - "Vendor dependencies for offline use with `go mod vendor`."
-- "Check the `micron-mcp` vendored parser under `third_party/`."
+- "Check the `micron` vendored parser under `third_party/`."
 
 # Go
 

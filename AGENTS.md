@@ -9,19 +9,19 @@ github.com/Quad4-Software/ai/.
 From repo root:
 
 ```
-make all       # fmt + go-fix + vet + test + build for every *-mcp dir
+make all       # fmt + go-fix + vet + test + build for every mcp/* dir
 make gosec     # gosec security scan per server
 make golangci  # golangci-lint run ./... per server
 make build test vet fmt clean
 ```
 
-Per server: cd <name>-mcp && make test, or go test ./....
+Per server: cd mcp/<name> && make test, or go test ./....
 
 ## Conventions
 
 - Stdlib-first: no third-party dependencies unless vendored or justified.
 - Read-only by default: servers never mutate host state. Exception:
-  meshchatx-mcp ships opt-in GitHub issue tools (create, update, close,
+  meshchatx ships opt-in GitHub issue tools (create, update, close,
   comment, search) that only activate when a token env var is set
   (MESHCHATX_GITHUB_TOKEN, GITHUB_TOKEN, GH_TOKEN). Tokens are never
   returned in tool output and the target repo is owner/name validated.
@@ -41,8 +41,8 @@ make gosec, and CI instead. Do not switch go.mod toolchain lines to fix it.
 
 ## Vendored Micron parser
 
-micron-mcp vendors micron-parser-go under
-micron-mcp/third_party/micron-parser-go via:
+micron vendors micron-parser-go under
+mcp/micron/third_party/micron-parser-go via:
 
 ```
 require micron-parser-go v1.1.0
@@ -51,16 +51,16 @@ replace micron-parser-go => ./third_party/micron-parser-go
 
 To update: replace the vendored tree, bump the require version to match,
 keep the replace line, run go mod tidy and go test ./... inside
-micron-mcp. Never go get the parser from the network. Lint targets
+micron. Never go get the parser from the network. Lint targets
 exclude /third_party/.
 
 ## Adding an MCP server
 
-1. Copy mcp-scaffold/ to <name>-mcp/.
-2. Set module to github.com/Quad4-Software/ai/<name>-mcp in its go.mod.
+1. Copy mcp/scaffold/ to mcp/<name>/.
+2. Set module to github.com/Quad4-Software/ai/mcp/<name> in its go.mod.
 3. Register tools in main.go via mcp.NewServer(name, version, tools, nil).
 4. Keep it stdlib-only, read-only, offline-capable.
-5. The root Makefile discovers it automatically (wildcard *-mcp).
+5. The root Makefile discovers it automatically (wildcard mcp/*, excluding scaffold).
 6. Add README.md and follow SECURITY.md rules.
 
 ## CI

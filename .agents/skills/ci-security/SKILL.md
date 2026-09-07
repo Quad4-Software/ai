@@ -1,12 +1,12 @@
 ---
 name: ci-security
 description: >
-  This skill guides CI/CD security with ci-security-mcp. Use when you are
+  This skill guides CI/CD security with ci-security. Use when you are
   editing GitHub Actions, hardening Dockerfiles, pinning actions to SHAs, or
   scanning CI files for security flaws.
 compatibility: stdio-mcp
 metadata:
-  server: ci-security-mcp
+  server: ci-security
 ---
 
 ## When to use this skill
@@ -17,7 +17,7 @@ metadata:
 
 ## How to use
 
-1. Build ci-security-mcp: `cd ci-security-mcp && go test ./... && go build`.
+1. Build ci-security: `cd mcp/ci-security && go test ./... && go build`.
 2. Add the binary to your MCP client config as `ci-security`.
 3. Call `scan_workflow {yaml}` or `scan_dockerfile {dockerfile}` for a security pass.
 4. Use `pin_workflow {yaml}` to rewrite `uses:` lines to pinned SHAs.
@@ -53,7 +53,7 @@ fuzz.yml, bench.yml, leak.yml, gosec.yml, and release.yml.
 - All third-party actions must be pinned to full commit SHAs with a version
   comment, never floating tags or branches.
 - Dependabot (.github/dependabot.yml) manages gomod weekly, limit 5 PRs.
-  Keep it covering every *-mcp dir.
+  Keep it covering every mcp/* dir.
 - Never add steps that execute arbitrary shell from PR-controlled input
   (no run: on untrusted context, no pull_request_target with checkout of
   PR code).

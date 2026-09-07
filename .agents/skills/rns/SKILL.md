@@ -2,10 +2,10 @@
 name: rns
 description: >
   This skill exposes the Reticulum manual and local utilities through
-  rns-mcp. Use when you need searchable manual topics, local RNS state,
+  rns. Use when you need searchable manual topics, local RNS state,
   or utility help.
 metadata:
-  server: rns-mcp
+  server: rns
 ---
 
 ## When to use this skill
@@ -16,7 +16,7 @@ metadata:
 
 ## How to use
 
-1. Build rns-mcp: `cd rns-mcp && go test ./... && go build`.
+1. Build rns: `cd mcp/rns && go test ./... && go build`.
 2. Add the binary to your MCP client config as `reticulum`.
 3. Call `list_topics` and `search_docs {query}` for the manual, or `rns_status` for local state.
 4. Community tools and `fetch_page` use HTTPS with a cache.

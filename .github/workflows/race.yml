@@ -30,6 +30,7 @@ jobs:
           go-version: stable
       - name: race
         run: |
-          for d in *-mcp; do
+          for d in mcp/*; do
+            [ "$(basename "$d")" = "scaffold" ] && continue
             (cd "$d" && go test -race -count=1 $(go list ./... | grep -v /third_party/)) || exit 1
           done

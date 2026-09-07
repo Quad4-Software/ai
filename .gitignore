@@ -3,7 +3,20 @@ coverage.out
 *.exe
 dist/
 notes.md
-# Built server binaries (named after their directory).
-*-mcp/*-mcp
-*-mcp/your-mcp
-
+# Built server binaries (same basename as their mcp/<name> directory).
+/mcp/agents/agents
+/mcp/bug-hunter/bug-hunter
+/mcp/ci-security/ci-security
+/mcp/context/context
+/mcp/gateway/gateway
+/mcp/i18n/i18n
+/mcp/lxmf/lxmf
+/mcp/lxmfy/lxmfy
+/mcp/memory/memory
+/mcp/meshchatx/meshchatx
+/mcp/micron/micron
+/mcp/no-slop/no-slop
+/mcp/reticulum-go/reticulum-go
+/mcp/rns/rns
+/mcp/workspace/workspace
+/mcp/scaffold/your

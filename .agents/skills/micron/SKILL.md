@@ -2,11 +2,11 @@
 name: micron
 description: >
   This skill covers Micron markup, the vendored parser, and the tools in
-  micron-mcp. Use when you need to parse, lint, render, extract, or search
+  micron. Use when you need to parse, lint, render, extract, or search
   Micron, or update the vendored parser.
 compatibility: stdio-mcp
 metadata:
-  server: micron-mcp
+  server: micron
 ---
 
 ## When to use this skill
@@ -17,7 +17,7 @@ metadata:
 
 ## How to use
 
-1. Build micron-mcp: `cd micron-mcp && go test ./... && go build`.
+1. Build micron: `cd mcp/micron && go test ./... && go build`.
 2. Add the binary to your MCP client config as `micron`.
 3. Call `micron_reference` or `parse` for syntax questions, `lint` for checks, `render` for output.
 4. Update `third_party/micron-parser-go` offline, bump the require version, and keep the `replace` line.
@@ -28,7 +28,7 @@ metadata:
 - "Lint a Micron file for unsafe link schemes."
 - "Show the Micron syntax reference for headings."
 
-# Micron and micron-mcp
+# Micron and micron
 
 ## Micron syntax
 
@@ -46,24 +46,24 @@ fields, form inputs, tables, partials, and literal blocks.
 - Literal blocks are left as preformatted text.
 
 For exact syntax, call the micron_reference tool or read
-micron-mcp/third_party/micron-parser-go/micron/doc.go.
+mcp/micron/third_party/micron-parser-go/micron/doc.go.
 
 ## Tool reference
 
-Tool details are in [references/tools.md](references/tools.md). This section is optional if micron-mcp is installed.
+Tool details are in [references/tools.md](references/tools.md). This section is optional if micron is installed.
 
 ## Vendored parser
 
-The parser is vendored at micron-mcp/third_party/micron-parser-go with
+The parser is vendored at mcp/micron/third_party/micron-parser-go with
 
 ```
 require micron-parser-go v1.1.0
 replace micron-parser-go => ./third_party/micron-parser-go
 ```
 
-in micron-mcp/go.mod. To update: replace the vendored tree, bump the
+in mcp/micron/go.mod. To update: replace the vendored tree, bump the
 require version, keep the replace line, run go mod tidy offline-safe and
-go test ./... in micron-mcp. Never go get the parser from the network.
+go test ./... in mcp/micron. Never go get the parser from the network.
 
 ## Limits and HTML safety
 

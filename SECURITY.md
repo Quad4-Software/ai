@@ -16,7 +16,7 @@ boundary is the MCP client and the user whose config registers the binary.
   shell strings, and no user-controlled executable names.
 - Fetches from host allowlists only (reticulum.network, meshchatx.com,
   rns.recipes, unsigned.io, github.com, api.github.com).
-- gateway-mcp spawns servers from the client's own config file. It cannot
+- gateway spawns servers from the client's own config file. It cannot
   be pointed at arbitrary binaries through tool arguments.
 
 ## Reporting

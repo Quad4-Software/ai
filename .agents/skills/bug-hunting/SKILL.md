@@ -1,12 +1,12 @@
 ---
 name: bug-hunting
 description: >
-  This skill guides structured bug hunting with bug-hunter-mcp. Use when you
+  This skill guides structured bug hunting with bug-hunter. Use when you
   need to choose a methodology, run mechanical security scans, mine git
   history for hotspots, or audit a repo for bugs.
 compatibility: stdio-mcp
 metadata:
-  server: bug-hunter-mcp
+  server: bug-hunter
 ---
 
 ## When to use this skill
@@ -18,7 +18,7 @@ metadata:
 
 ## How to use
 
-1. Build and test bug-hunter-mcp: `cd bug-hunter-mcp && go test ./... && go build`.
+1. Build and test bug-hunter: `cd mcp/bug-hunter && go test ./... && go build`.
 2. Add the binary to your MCP client config as `bug-hunter`.
 3. Call `list_methods` to see the 22 methodologies, or run a scanner like `hotspots {since, limit}`.
 4. Treat every scanner hit as a candidate. Confirm with an oracle before calling it a bug.
@@ -31,7 +31,7 @@ metadata:
 
 # Bug hunting
 
-This repo includes bug-hunter-mcp, a read-only, stdlib-only stdio MCP server for
+This repo includes bug-hunter, a read-only, stdlib-only stdio MCP server for
 structured bug hunting: methodology guidance plus mechanical scanners over any
 repo rooted at `MCP_REPO_ROOT` (or the nearest .git ancestor).
 

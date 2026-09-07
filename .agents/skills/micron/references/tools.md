@@ -1,6 +1,6 @@
-## micron-mcp tools
+## micron tools
 
-Registered in micron-mcp/main.go:
+Registered in mcp/micron/main.go:
 
 - parse_micron - source to structured JSON AST (blocks, inlines, colors,
   spans).

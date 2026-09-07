@@ -26,7 +26,8 @@ jobs:
           go-version: stable
       - name: goroutine-leak
         run: |
-          for d in *-mcp; do
+          for d in mcp/*; do
+            [ "$(basename "$d")" = "scaffold" ] && continue
             (cd "$d" && go test -count=5 -run='TestNoGoroutineLeak' \
               $(go list ./... | grep -v /third_party/)) || exit 1
           done

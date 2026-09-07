@@ -2,11 +2,11 @@
 name: lxmf
 description: >
   This skill describes LXMF messaging and the `~/.reticulum` state exposed
-  by lxmf-mcp. Use when you need message format details, local Reticulum
+  by lxmf. Use when you need message format details, local Reticulum
   storage, or destination lookups.
 compatibility: stdio-mcp
 metadata:
-  server: lxmf-mcp
+  server: lxmf
 ---
 
 ## When to use this skill
@@ -17,7 +17,7 @@ metadata:
 
 ## How to use
 
-1. Build lxmf-mcp: `cd lxmf-mcp && go test ./... && go build`.
+1. Build lxmf: `cd mcp/lxmf && go test ./... && go build`.
 2. Add the binary to your MCP client config as `lxmf`.
 3. Call `store_config`, `store_inventory`, `store_identities`, or `store_destinations` to read state.
 4. Combine with the `reticulum` skill for mesh concepts.
@@ -161,7 +161,7 @@ lxm = LXMF.LXMessage(dest, source, message_content, desired_method=LXMF.LXMessag
 
 - User-facing clients: Sideband, MeshChat, Nomad Network.
 - Community tools: LXMFy, LXMF-Bot, LXMF Messageboard, LXMEvent, RangeMap, LXMF Tools.
-- `lxmfy-mcp` in this repo provides searchable LXMFy docs and bot scaffolding.
+- `lxmfy` in this repo provides searchable LXMFy docs and bot scaffolding.
 
 ## Installation and daemon
 

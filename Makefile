@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: 0BSD
 # Orchestrates every server dir. Per-server targets live in each Makefile.
-SERVERS := $(wildcard *-mcp)
+# mcp/scaffold is a template, not a built server.
+SERVERS := $(filter-out mcp/scaffold,$(wildcard mcp/*))
 
 .PHONY: all build test vet fmt go-fix gosec clean install golangci release
 

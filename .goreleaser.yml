@@ -1,10 +1,10 @@
 version: 2
 
 builds:
-  - id: agents-mcp
-    dir: agents-mcp
+  - id: agents
+    dir: mcp/agents
     main: .
-    binary: agents-mcp
+    binary: agents
     ldflags:
       - -s -w
     env:
@@ -17,10 +17,10 @@ builds:
       - amd64
       - arm64
 
-  - id: bug-hunter-mcp
-    dir: bug-hunter-mcp
+  - id: bug-hunter
+    dir: mcp/bug-hunter
     main: .
-    binary: bug-hunter-mcp
+    binary: bug-hunter
     ldflags:
       - -s -w
     env:
@@ -33,10 +33,10 @@ builds:
       - amd64
       - arm64
 
-  - id: ci-security-mcp
-    dir: ci-security-mcp
+  - id: ci-security
+    dir: mcp/ci-security
     main: .
-    binary: ci-security-mcp
+    binary: ci-security
     ldflags:
       - -s -w
     env:
@@ -49,10 +49,10 @@ builds:
       - amd64
       - arm64
 
-  - id: context-mcp
-    dir: context-mcp
+  - id: context
+    dir: mcp/context
     main: .
-    binary: context-mcp
+    binary: context
     ldflags:
       - -s -w
     env:
@@ -65,10 +65,10 @@ builds:
       - amd64
       - arm64
 
-  - id: gateway-mcp
-    dir: gateway-mcp
+  - id: gateway
+    dir: mcp/gateway
     main: .
-    binary: gateway-mcp
+    binary: gateway
     ldflags:
       - -s -w
     env:
@@ -81,10 +81,10 @@ builds:
       - amd64
       - arm64
 
-  - id: i18n-mcp
-    dir: i18n-mcp
+  - id: i18n
+    dir: mcp/i18n
     main: .
-    binary: i18n-mcp
+    binary: i18n
     ldflags:
       - -s -w
     env:
@@ -97,10 +97,10 @@ builds:
       - amd64
       - arm64
 
-  - id: lxmf-mcp
-    dir: lxmf-mcp
+  - id: lxmf
+    dir: mcp/lxmf
     main: .
-    binary: lxmf-mcp
+    binary: lxmf
     ldflags:
       - -s -w
     env:
@@ -113,10 +113,10 @@ builds:
       - amd64
       - arm64
 
-  - id: lxmfy-mcp
-    dir: lxmfy-mcp
+  - id: lxmfy
+    dir: mcp/lxmfy
     main: .
-    binary: lxmfy-mcp
+    binary: lxmfy
     ldflags:
       - -s -w
     env:
@@ -129,10 +129,10 @@ builds:
       - amd64
       - arm64
 
-  - id: meshchatx-mcp
-    dir: meshchatx-mcp
+  - id: meshchatx
+    dir: mcp/meshchatx
     main: .
-    binary: meshchatx-mcp
+    binary: meshchatx
     ldflags:
       - -s -w
     env:
@@ -145,10 +145,10 @@ builds:
       - amd64
       - arm64
 
-  - id: micron-mcp
-    dir: micron-mcp
+  - id: micron
+    dir: mcp/micron
     main: .
-    binary: micron-mcp
+    binary: micron
     ldflags:
       - -s -w
     env:
@@ -161,10 +161,10 @@ builds:
       - amd64
       - arm64
 
-  - id: memory-mcp
-    dir: memory-mcp
+  - id: memory
+    dir: mcp/memory
     main: .
-    binary: memory-mcp
+    binary: memory
     ldflags:
       - -s -w
     env:
@@ -177,10 +177,10 @@ builds:
       - amd64
       - arm64
 
-  - id: no-slop-mcp
-    dir: no-slop-mcp
+  - id: no-slop
+    dir: mcp/no-slop
     main: .
-    binary: no-slop-mcp
+    binary: no-slop
     ldflags:
       - -s -w
     env:
@@ -193,10 +193,10 @@ builds:
       - amd64
       - arm64
 
-  - id: reticulum-go-mcp
-    dir: reticulum-go-mcp
+  - id: reticulum-go
+    dir: mcp/reticulum-go
     main: .
-    binary: reticulum-go-mcp
+    binary: reticulum-go
     ldflags:
       - -s -w
     env:
@@ -209,10 +209,10 @@ builds:
       - amd64
       - arm64
 
-  - id: rns-mcp
-    dir: rns-mcp
+  - id: rns
+    dir: mcp/rns
     main: .
-    binary: rns-mcp
+    binary: rns
     ldflags:
       - -s -w
     env:
@@ -225,10 +225,10 @@ builds:
       - amd64
       - arm64
 
-  - id: workspace-mcp
-    dir: workspace-mcp
+  - id: workspace
+    dir: mcp/workspace
     main: .
-    binary: workspace-mcp
+    binary: workspace
     ldflags:
       - -s -w
     env:
