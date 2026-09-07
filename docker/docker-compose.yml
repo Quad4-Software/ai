@@ -1,11 +1,8 @@
 # SPDX-License-Identifier: 0BSD
-# Coolify-ready deployment of the MCP toolkit gateway.
-# The gateway exposes a status/health HTTP endpoint on port 8080
-# for reverse-proxy integration. Assign a domain in Coolify as
-# http(s)://example.com:8080.
-#
-# The stdio MCP server still runs over the process stdio; this
-# HTTP surface is read-only status data and is not the MCP transport.
+# SPDX-License-Identifier: 0BSD
+# Local/self-hosted deployment of the MCP toolkit gateway.
+# The gateway speaks stdio MCP by default. HTTP is only started when
+# HTTP_PORT is set, which is used by the Coolify-ready compose file.
 
 services:
   mcp:
@@ -19,11 +16,8 @@ services:
       - ALL
     security_opt:
       - "no-new-privileges:true"
-    expose:
-      - "8080"
     environment:
       MCP_READ_ONLY: "1"
       GATEWAY_CONFIG: "/app/config/quad4-mcp.json"
-      HTTP_PORT: "8080"
     tmpfs:
       - /tmp:rw,nosuid,nodev,noexec,size=64m

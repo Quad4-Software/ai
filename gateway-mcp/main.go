@@ -6,11 +6,20 @@
 // die. It can also run as a shared unix-socket daemon (--daemon) with
 // per-window stdio shims (--attach) so all MCP clients share one
 // gateway and one set of children.
+//
+// When HTTP_PORT is set, gateway-mcp also exposes an HTTP surface:
+//
+//	GET /          JSON status
+//	GET /healthz   health check
+//	GET /sse       MCP over Server-Sent Events (creates a session)
+//	POST /messages?session=<id>  send a JSON-RPC request to a session
 package main
 
 import (
 	"bufio"
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -227,9 +236,46 @@ func (c *child) toolList(ctx context.Context) ([]toolMeta, error) {
 	return c.tools, nil
 }
 
-var children []*child
+func main() {
+	sock := flag.String("socket", defaultSocket(), "shared-daemon unix socket path")
+	attachMode := flag.Bool("attach", false, "bridge stdio to the shared daemon, auto-starting it")
+	daemonMode := flag.Bool("daemon", false, "run as shared daemon on the socket")
+	ro := flag.Bool("read-only", false, "disable mutating tools")
+	flag.Parse()
+	_ = ro
+	if *attachMode {
+		if err := attach(*sock); err != nil {
+			fmt.Fprintln(os.Stderr, "gateway-mcp attach:", err)
+			os.Exit(1)
+		}
+		return
+	}
+	if *daemonMode {
+		srv, children := buildServer()
+		srv.ReadOnly = *ro || srv.ReadOnly
+		if port := os.Getenv("HTTP_PORT"); port != "" {
+			startHTTP(":"+port, srv, children)
+		}
+		if err := runDaemon(context.Background(), *sock, srv); err != nil {
+			fmt.Fprintln(os.Stderr, "gateway-mcp daemon:", err)
+			os.Exit(1)
+		}
+		return
+	}
+	srv, children := buildServer()
+	srv.ReadOnly = *ro || srv.ReadOnly
+	if port := os.Getenv("HTTP_PORT"); port != "" {
+		startHTTP(":"+port, srv, children)
+	}
+	if err := srv.Serve(context.Background(), os.Stdin, os.Stdout); err != nil {
+		fmt.Fprintln(os.Stderr, "gateway-mcp:", err)
+		os.Exit(1)
+	}
+}
 
-func findTool(name string) (*child, string, error) {
+// findTool resolves a namespaced <server>.<tool> string against the given
+// child list.
+func findTool(children []*child, name string) (*child, string, error) {
 	srv, tool, ok := strings.Cut(name, ".")
 	if !ok {
 		return nil, "", fmt.Errorf("tool names are namespaced: <server>.<tool>, e.g. reticulum.list_topics")
@@ -246,72 +292,9 @@ func findTool(name string) (*child, string, error) {
 	return nil, "", fmt.Errorf("no server %q; available: %s", srv, strings.Join(names, ", "))
 }
 
-func startHTTP(addr string, srv *mcp.Server) {
-	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("ok"))
-	})
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		var names []string
-		for _, c := range children {
-			names = append(names, c.def.Name)
-		}
-		b, _ := json.Marshal(map[string]any{
-			"name":      "gateway-mcp",
-			"version":   "0.1.0",
-			"read_only": srv.ReadOnly,
-			"servers":   names,
-			"config":    os.Getenv("GATEWAY_CONFIG"),
-		})
-		_, _ = w.Write(b)
-	})
-	go func() {
-		if err := http.ListenAndServe(addr, nil); err != nil {
-			fmt.Fprintln(os.Stderr, "gateway-mcp http:", err)
-		}
-	}()
-}
-
-func main() {
-	sock := flag.String("socket", defaultSocket(), "shared-daemon unix socket path")
-	attachMode := flag.Bool("attach", false, "bridge stdio to the shared daemon, auto-starting it")
-	daemonMode := flag.Bool("daemon", false, "run as shared daemon on the socket")
-	ro := flag.Bool("read-only", false, "disable mutating tools")
-	flag.Parse()
-	_ = ro
-	if *attachMode {
-		if err := attach(*sock); err != nil {
-			fmt.Fprintln(os.Stderr, "gateway-mcp attach:", err)
-			os.Exit(1)
-		}
-		return
-	}
-	if *daemonMode {
-		srv := buildServer()
-		srv.ReadOnly = *ro || srv.ReadOnly
-		if port := os.Getenv("HTTP_PORT"); port != "" {
-			startHTTP(":"+port, srv)
-		}
-		if err := runDaemon(context.Background(), *sock, srv); err != nil {
-			fmt.Fprintln(os.Stderr, "gateway-mcp daemon:", err)
-			os.Exit(1)
-		}
-		return
-	}
-	srv := buildServer()
-	srv.ReadOnly = *ro || srv.ReadOnly
-	if port := os.Getenv("HTTP_PORT"); port != "" {
-		startHTTP(":"+port, srv)
-	}
-	if err := srv.Serve(context.Background(), os.Stdin, os.Stdout); err != nil {
-		fmt.Fprintln(os.Stderr, "gateway-mcp:", err)
-		os.Exit(1)
-	}
-}
-
-// buildServer loads the child config and returns the gateway MCP server.
-func buildServer() *mcp.Server {
+// buildServer loads the child config and returns the gateway MCP server
+// plus the child list. Callers must not share child state across calls.
+func buildServer() (*mcp.Server, []*child) {
 	cfgPath := os.Getenv("GATEWAY_CONFIG")
 	if cfgPath == "" {
 		home, _ := os.UserHomeDir()
@@ -322,8 +305,9 @@ func buildServer() *mcp.Server {
 		fmt.Fprintln(os.Stderr, "gateway-mcp:", err)
 		os.Exit(1)
 	}
-	for _, d := range defs {
-		children = append(children, &child{def: d})
+	children := make([]*child, len(defs))
+	for i, d := range defs {
+		children[i] = &child{def: d}
 	}
 
 	tools := []mcp.Tool{
@@ -436,7 +420,7 @@ func buildServer() *mcp.Server {
 				if err := json.Unmarshal(args, &a); err != nil || a.Name == "" {
 					return "", fmt.Errorf("missing required argument: name")
 				}
-				c, tool, err := findTool(a.Name)
+				c, tool, err := findTool(children, a.Name)
 				if err != nil {
 					return "", err
 				}
@@ -477,7 +461,7 @@ func buildServer() *mcp.Server {
 				if err := json.Unmarshal(args, &a); err != nil || a.Name == "" {
 					return "", fmt.Errorf("missing required argument: name")
 				}
-				c, tool, err := findTool(a.Name)
+				c, tool, err := findTool(children, a.Name)
 				if err != nil {
 					return "", err
 				}
@@ -513,5 +497,134 @@ func buildServer() *mcp.Server {
 		},
 	}
 
-	return mcp.NewServer("gateway-mcp", "0.1.0", tools, nil)
+	return mcp.NewServer("gateway-mcp", "0.1.0", tools, nil), children
+}
+
+// httpSession is one SSE MCP session. The stdio transport for a single
+// mcp.Server is split into an incoming pipe (inPr/inPw) and an outgoing
+// pipe (outPr/outPw).
+type httpSession struct {
+	id string
+	mu sync.Mutex
+	in *io.PipeWriter
+}
+
+var (
+	sessionMu sync.Mutex
+	sessions  = map[string]*httpSession{}
+)
+
+func newSessionID() string {
+	b := make([]byte, 8)
+	if _, err := rand.Read(b); err != nil {
+		return fmt.Sprintf("%d", time.Now().UnixNano())
+	}
+	return hex.EncodeToString(b)
+}
+
+func startHTTP(addr string, srv *mcp.Server, children []*child) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("ok"))
+	})
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		var names []string
+		for _, c := range children {
+			names = append(names, c.def.Name)
+		}
+		b, _ := json.Marshal(map[string]any{
+			"name":      "gateway-mcp",
+			"version":   "0.1.0",
+			"read_only": srv.ReadOnly,
+			"servers":   names,
+			"config":    os.Getenv("GATEWAY_CONFIG"),
+		})
+		_, _ = w.Write(b)
+	})
+	mux.HandleFunc("/sse", func(w http.ResponseWriter, r *http.Request) {
+		sid := newSessionID()
+		inPr, inPw := io.Pipe()
+		outPr, outPw := io.Pipe()
+
+		s := &httpSession{id: sid, in: inPw}
+		sessionMu.Lock()
+		sessions[sid] = s
+		sessionMu.Unlock()
+
+		gw, _ := buildServer()
+		go func() {
+			_ = gw.Serve(r.Context(), inPr, outPw)
+			_ = outPw.Close()
+		}()
+
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Connection", "keep-alive")
+		w.WriteHeader(http.StatusOK)
+
+		flusher, ok := w.(http.Flusher)
+		if !ok {
+			http.Error(w, "streaming not supported", http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintf(w, "event: endpoint\ndata: /messages?session=%s\n\n", sid)
+		flusher.Flush()
+
+		scanner := bufio.NewScanner(outPr)
+		for scanner.Scan() {
+			fmt.Fprintf(w, "event: message\ndata: %s\n\n", scanner.Text())
+			flusher.Flush()
+		}
+
+		_ = outPr.Close()
+		s.mu.Lock()
+		_ = s.in.Close()
+		s.mu.Unlock()
+		sessionMu.Lock()
+		delete(sessions, sid)
+		sessionMu.Unlock()
+	})
+	mux.HandleFunc("/messages", func(w http.ResponseWriter, r *http.Request) {
+		sid := r.URL.Query().Get("session")
+		sessionMu.Lock()
+		s, ok := sessions[sid]
+		sessionMu.Unlock()
+		if !ok {
+			http.Error(w, "unknown session", http.StatusNotFound)
+			return
+		}
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "read body", http.StatusBadRequest)
+			return
+		}
+		if len(body) == 0 {
+			http.Error(w, "empty body", http.StatusBadRequest)
+			return
+		}
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		if s.in == nil {
+			http.Error(w, "session closed", http.StatusNotFound)
+			return
+		}
+		if _, err := s.in.Write(body); err != nil {
+			http.Error(w, "session closed", http.StatusNotFound)
+			return
+		}
+		w.WriteHeader(http.StatusAccepted)
+	})
+	server := &http.Server{
+		Addr:        addr,
+		Handler:     mux,
+		ReadTimeout: 5 * time.Second,
+	}
+	go func() {
+		if err := server.ListenAndServe(); err != nil {
+			fmt.Fprintln(os.Stderr, "gateway-mcp http:", err)
+		}
+	}()
 }

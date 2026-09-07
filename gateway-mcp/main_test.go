@@ -30,16 +30,15 @@ func TestLoadConfig(t *testing.T) {
 }
 
 func TestFindToolNamespacing(t *testing.T) {
-	children = []*child{{def: serverDef{Name: "s1"}}}
-	_, tool, err := findTool("s1.do_thing")
+	children := []*child{{def: serverDef{Name: "s1"}}}
+	_, tool, err := findTool(children, "s1.do_thing")
 	if err != nil || tool != "do_thing" {
 		t.Fatalf("%v %v", tool, err)
 	}
-	if _, _, err := findTool("no-dot"); err == nil {
+	if _, _, err := findTool(children, "no-dot"); err == nil {
 		t.Fatal("should reject unnamespaced name")
 	}
-	if _, _, err := findTool("other.x"); err == nil {
+	if _, _, err := findTool(children, "other.x"); err == nil {
 		t.Fatal("should reject unknown server")
 	}
-	children = nil
 }
