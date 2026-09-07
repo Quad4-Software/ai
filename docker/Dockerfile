@@ -37,7 +37,7 @@ RUN python3 scripts/gen-configs.py \
       --repo /app \
       --out /app/config
 
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM gcr.io/distroless/static-debian13:nonroot
 
 WORKDIR /app
 
