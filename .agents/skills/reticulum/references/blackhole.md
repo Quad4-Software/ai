@@ -19,4 +19,4 @@ Distributed blackhole lists let communities share abuse signals.
 
 ## Tool reference
 
-Tool-building rules are in [references/tools.md](references/tools.md). This section is optional if the related MCP server is installed.
+Tool-building rules are in [references/tools.md](tools.md). This section is optional if the related MCP server is installed.

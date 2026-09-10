@@ -39,4 +39,4 @@ The IFAC flag in the first header byte is set to 1 when an IFAC is present.
 
 ## Tool reference
 
-Tool-building rules are in [references/tools.md](references/tools.md). This section is optional if the related MCP server is installed.
+Tool-building rules are in [references/tools.md](tools.md). This section is optional if the related MCP server is installed.
