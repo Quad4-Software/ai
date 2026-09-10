@@ -328,8 +328,23 @@ func (p *Parser) consumeTableFenceBlocks(doc *Document, line string, lineSpan Sp
 		if len(micronLines) == 0 {
 			return
 		}
+		base := len(doc.Blocks)
 		for _, ml := range micronLines {
 			p.appendBlocksFromLine(doc, ml, lineSpan, srcLine, s, collectDiag, diags)
+		}
+		// Synthesized box-drawing text is wider than the fence line it maps
+		// to, so inline offsets can run past the source. Clamp them onto the
+		// closing fence span.
+		for i := base; i < len(doc.Blocks); i++ {
+			for j := range doc.Blocks[i].Inlines {
+				in := &doc.Blocks[i].Inlines[j]
+				if in.Span.Start > lineSpan.End {
+					in.Span.Start = lineSpan.End
+				}
+				if in.Span.End > lineSpan.End {
+					in.Span.End = lineSpan.End
+				}
+			}
 		}
 		return
 	}
