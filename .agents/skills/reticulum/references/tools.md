@@ -14,8 +14,9 @@
   issue_create in the repo's issue-form style, issue_update for
   edit/close/reopen, issue_comment, issue_search, issue_references)
   gated behind a GitHub token env var. Issue text auto-links ecosystem
-  and spec terms (BCP 47, LXMF, RNode, KISS, ...) to canonical URLs so
-  filed issues stay readable without assumed knowledge.
+  and spec terms (BCP 47, LXMF, RNode, KISS, zipapp, MeshChat, MeshChatX,
+  RRC, ...) to canonical URLs so filed issues stay readable without
+  assumed knowledge.
 
 ## Useful rns tools
 

@@ -42,7 +42,8 @@ description: >
   bot scaffolding. See the lxmfy skill for framework details.
 - **LXST** is a real-time streaming (voice / signal) protocol over Reticulum.
 - **NomadNet** is an LXMF-based mesh comms app whose pages use Micron markup.
-- **MeshChatX** is an LXMF mesh chat client, and meshchatx exposes its docs.
+- **MeshChat** is the original web LXMF client by Liam Cottle. It runs a Python Reticulum instance with a WebSocket web UI, supports Sideband and NomadNet interop, images, voice, attachments and propagation nodes. Source: https://github.com/liamcottle/reticulum-meshchat.
+- **MeshChatX** is an actively developed, feature-rich fork of MeshChat with LXST voice, RRC chat, maps, Micron and other features. Source: https://github.com/Quad4-Software/MeshChatX, site: https://meshchatx.com/.
 
 ## Zen of Reticulum for tool builders
 
@@ -139,7 +140,7 @@ tools should be designed in its spirit:
   propagation node.
 - Overhead is 111 bytes for the non-payload portion.
 - Install with `pip install lxmf` or `pipx install lxmf`.
-- User-facing clients: Sideband, MeshChat, Nomad Network.
+- User-facing clients: Sideband, MeshChat (original by Liam Cottle), MeshChatX, Nomad Network.
 
 ## LXST
 
@@ -167,6 +168,20 @@ tools should be designed in its spirit:
 - Screenshot: ![nnimgs.png](https://rns.recipes/storage/forum/XClxgw3Xynkh1DZYiNnKMj5pwp90moVGIiIVxg3T.png)
 - Source thread: https://rns.recipes/forum/general/so-this-is-possible-but
 
+## MeshChat
+
+- The original MeshChat is a web-based LXMF client by Liam Cottle. It is written in Python with a Vue frontend and communicates over a WebSocket to a local Reticulum instance.
+- It interops with Sideband and NomadNet, supports text, images, voice, file attachments, announces, peer discovery and propagation-node sync.
+- Prebuilt releases are available for Windows, macOS and Linux; the source can also run on a Raspberry Pi, in Docker or on Android via Termux.
+- The rns.recipes forum notes that the original MeshChat is now maintenance-only; users are encouraged to move to MeshChatX for active development and new features such as LXST voice and RRC.
+- Source: https://github.com/liamcottle/reticulum-meshchat
+
+## MeshChatX
+
+- MeshChatX is an active fork of MeshChat maintained by Ivan. It adds LXST voice calls, RRC relay chat, map support with remote overlays, sandboxed browser panes, Micron rendering and extended platform support.
+- It is published on PyPI as `reticulum-meshchatx` and its docs live at https://meshchatx.com/.
+- Source: https://github.com/Quad4-Software/MeshChatX
+
 ## pip-rns
 
 - `pip-rns` installs Python packages directly from Reticulum `rngit` remotes.
@@ -181,6 +196,19 @@ tools should be designed in its spirit:
 - `rns://id/group/repo` is the remote path format.
 - `--verify IDENTITY` pins a publisher. `--require-release` / `--insecure` are
   fail-open / fail-closed flags.
+
+## Python zipapp
+
+- `zipapp` is a Python stdlib module for creating executable zip archives from Python code: https://docs.python.org/3/library/zipapp.html.
+- It can bundle an application and its dependencies into a single `.pyz` file that runs with `python myapp.pyz`, or with a shebang line as a directly executable script.
+- The CLI is `python -m zipapp source [options]`. Common options:
+  - `-o/--output` - output filename
+  - `-p/--python` - shebang interpreter (e.g. `/usr/bin/env python3`)
+  - `-m/--main` - entry point in `pkg.mod:fn` form
+  - `-c/--compress` - deflate-compress archive contents
+- The Python API provides `zipapp.create_archive(source, target, interpreter, main, filter, compressed)` and `zipapp.get_interpreter(archive)`.
+- C-extension packages cannot be loaded from inside a zip, so they must be shipped alongside or installed separately.
+- zipapp is useful for distributing single-file Python tools over Reticulum, for offline `.opip` bundles and for utilities like `pip-rns`/`pipx-rns`.
 
 ## Latest source and mirrors
 
@@ -319,6 +347,15 @@ Weave is a switching fabric for Reticulum under development by Mark Qvist. It ac
 - Early tests achieved about 150 kbps raw throughput over 6.5 km using ESP32 2.4 GHz radios.
 - Weave is more general than "RNode over IP". It is a universal switching fabric that can transport Reticulum traffic and backhaul many RNodes to a remote `rnsd` instance.
 
+## RRC (Reticulum Relay Chat)
+
+- RRC is an IRC-like real-time group chat protocol over Reticulum Links.
+- It uses `RNS.Resource` for larger payloads and CBOR envelopes for room messages.
+- The reference hub daemon is `rrcd` (https://github.com/kc1awv/rrcd).
+- Clients include `rrc-web`, `rrc-gui`, `rrc-tui`, NomadNet (1.1.0+) and MeshChatX (4.7.0+).
+- rns.recipes runs a public RRC hub at `<28c7c1a68c735693aa8e6b8193ed44b2>`.
+- MeshChatX and lxmfy bots can join RRC hubs as regular clients.
+
 ## Quick reference
 
 - State and config live in `~/.reticulum`: `config`, `storage` and `identities`.
@@ -332,6 +369,16 @@ Weave is a switching fabric for Reticulum under development by Mark Qvist. It ac
 - Bootstrap and directory references: `directory.rns.recipes` and `rmap.world`.
 - Public source mirrors: `github.com/markqvist/Reticulum` and `rns://7649a50d84610232d1416b41d2896aff/reticulum/reticulum`.
 - A destination hash is a 16-byte hex value in angle brackets, e.g. `<13425ec15b621c1d928589718000d814>`.
+
+## Community sources
+
+- `unsigned.io` is Mark Qvist's site for articles, guides, software and hardware notes: https://unsigned.io/.
+- `rns.recipes` hosts the community forum, public interface directory, RRC hub and RSS feed: https://rns.recipes/.
+- `reticulum.miraheze.org` is a community wiki with pages for RRC, Weave, rngit, rncp and other topics.
+- `directory.rns.recipes` lists submitted public Reticulum interfaces.
+- `rmap.world` is a community node map.
+- Recent unsigned.io posts cover the Reticulum API, RNode ecosystem, performance work and the `Carrier Switch` announcement that GitHub repos are public mirrors.
+- Notable rns.recipes forum threads include the NomadNet image-rendering prototype, MeshChatX roadmap, RRC hub, RNS 1.5 releases and the `null_ident` blocklist for abusive scrapers.
 
 ## Plugin / god-file pattern
 

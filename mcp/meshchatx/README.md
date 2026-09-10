@@ -69,6 +69,7 @@ api.github.com and is never returned in tool output.
 - `issue_references {}` - the terms that get auto-linked to canonical sources.
 
 Bodies and comments pass through reference linking: the first plain-text
-occurrence of each known term (BCP 47, LXMF, RNode, KISS, Landlock, ...)
-becomes a markdown link to its canonical URL, once per document. Terms
-inside fenced code blocks, existing links, or URLs are left alone.
+occurrence of each known term (BCP 47, LXMF, RNode, KISS, Landlock, zipapp,
+MeshChat, MeshChatX, RRC, ...) becomes a markdown link to its canonical URL,
+once per document. Terms inside fenced code blocks, existing links, or URLs are
+left alone.

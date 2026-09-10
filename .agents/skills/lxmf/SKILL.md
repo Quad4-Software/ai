@@ -159,7 +159,7 @@ lxm = LXMF.LXMessage(dest, source, message_content, desired_method=LXMF.LXMessag
 
 ## Clients and ecosystem
 
-- User-facing clients: Sideband, MeshChat, Nomad Network.
+- User-facing clients: Sideband, MeshChat (original by Liam Cottle), MeshChatX, Nomad Network.
 - Community tools: LXMFy, LXMF-Bot, LXMF Messageboard, LXMEvent, RangeMap, LXMF Tools.
 - `lxmfy` in this repo provides searchable LXMFy docs and bot scaffolding.
 

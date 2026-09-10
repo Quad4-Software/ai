@@ -34,7 +34,7 @@ var topics = []docs.Topic{
 	{ID: "networks", Title: "Building Networks", URL: base + "networks.html", Summary: "Network concepts, transport nodes, trustless networking, heterogeneous connectivity"},
 	{ID: "distributed", Title: "Distributed Development", URL: base + "distributed.html", Summary: "Protocols over platforms, artifact-centered workflows, composable primitives"},
 	{ID: "git", Title: "Git Over Reticulum", URL: base + "git.html", Summary: "rngit, repositories, permissions, aliases, page nodes, signed releases, commit signing, work documents"},
-	{ID: "software", Title: "Programs Using Reticulum", URL: base + "software.html", Summary: "NomadNet, Sideband, MeshChatX, RRC, LXMF, LXST, RNS FileSync and other ecosystem programs"},
+	{ID: "software", Title: "Programs Using Reticulum", URL: base + "software.html", Summary: "NomadNet, Sideband, MeshChat, MeshChatX, RRC, LXMF, LXST, RNS FileSync and other ecosystem programs"},
 	{ID: "examples", Title: "Code Examples", URL: base + "examples.html", Summary: "Minimal, announce, broadcast, echo, link, requests and responses, channel, buffer, filetransfer, custom interfaces"},
 	{ID: "reference", Title: "API Reference", URL: base + "reference.html", Summary: "Reticulum, Identity, Destination, Packet, Link, Resource, Channel, Buffer, Transport classes"},
 	{ID: "support", Title: "Support Reticulum", URL: base + "support.html", Summary: "Donations and feedback"},
