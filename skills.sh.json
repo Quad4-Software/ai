@@ -12,6 +12,7 @@
         "release",
         "micron",
         "go",
+        "typescript",
         "vendor-all"
       ]
     },
