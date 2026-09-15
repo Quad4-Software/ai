@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: 0BSD
 // Command kaneo is a stdio MCP server for the Kaneo project management
 // API (cloud or self-hosted). Read tools work with no key on public
-// projects; write tools need an API key from KANEO_API_KEY or
-// ~/.config/kaneo/config.json. The key is never printed. Run
-// "kaneo setup" to store a key interactively.
+// projects; write tools need an API key from KANEO_API_KEY or the OS
+// keyring (secret-tool/pass). The key is never printed and never
+// written to config.json. Run "kaneo setup" to store a key in the
+// keyring and pick a default project interactively.
 package main
 
 import (
@@ -15,6 +16,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/Quad4-Software/ai/mcp/kaneo/internal/kaneo"
@@ -62,15 +64,52 @@ func tools() []mcp.Tool {
 	return []mcp.Tool{
 		{
 			Name:        "auth_status",
-			Description: "Report whether a Kaneo API key is configured and where it came from. The key itself is never shown.",
+			Description: "Report whether a Kaneo API key is configured, where it came from, and which projects are configured. The key itself is never shown.",
 			InputSchema: obj(map[string]any{}),
 			Handle: func(_ context.Context, _ json.RawMessage) (string, error) {
+				var names []string
+				for _, p := range cfg.Projects {
+					names = append(names, p.Name)
+				}
 				return marshal(map[string]any{
-					"configured":  client.Configured(),
-					"source":      cfg.Source,
-					"apiUrl":      cfg.APIURL,
-					"workspaceId": cfg.WorkspaceID,
-					"projectId":   cfg.ProjectID,
+					"configured":     client.Configured(),
+					"source":         cfg.Source,
+					"apiUrl":         cfg.APIURL,
+					"workspaceId":    cfg.WorkspaceID,
+					"defaultProject": client.DefaultProject(),
+					"projects":       names,
+				})
+			},
+		},
+		{
+			Name:        "list_workspaces",
+			Description: "List the workspaces (organizations) the API key can access. Use the ids with list_projects.",
+			InputSchema: obj(map[string]any{}),
+			Handle: func(ctx context.Context, _ json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				ws, err := client.ListWorkspaces(ctx)
+				if err != nil {
+					return "", err
+				}
+				return marshal(ws)
+			},
+		},
+		{
+			Name:        "use_project",
+			Description: "Set the session default project. Accepts a configured project name, slug, or id. Afterwards tools that omit projectId use this project.",
+			InputSchema: obj(map[string]any{
+				"project": strArg("project name, slug, or id"),
+			}, "project"),
+			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
+				a, err := str(args, "project")
+				if err != nil {
+					return "", err
+				}
+				client.SetDefaultProject(a["project"])
+				return marshal(map[string]any{
+					"defaultProject": client.DefaultProject(),
 				})
 			},
 		},
@@ -78,7 +117,7 @@ func tools() []mcp.Tool {
 			Name:        "list_projects",
 			Description: "List projects in a workspace.",
 			InputSchema: obj(map[string]any{
-				"workspaceId": strArg("workspace id, default from config"),
+				"workspaceId": strArg("workspace name or id; default from config"),
 			}),
 			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
 				var a struct {
@@ -96,7 +135,7 @@ func tools() []mcp.Tool {
 			Name:        "get_board",
 			Description: "Fetch a project board: columns plus every task in each column (id, number, title, priority, position). Descriptions are omitted; use get_task for those.",
 			InputSchema: obj(map[string]any{
-				"projectId": strArg("project id, default from config"),
+				"projectId": strArg("project name, slug, or id; default from config"),
 			}),
 			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
 				var a struct {
@@ -147,7 +186,7 @@ func tools() []mcp.Tool {
 			Description: "Search board tasks by title substring. Use for dedupe before create_task.",
 			InputSchema: obj(map[string]any{
 				"query":     strArg("case-insensitive substring of the title"),
-				"projectId": strArg("project id, default from config"),
+				"projectId": strArg("project name, slug, or id; default from config"),
 			}, "query"),
 			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
 				a, err := str(args, "query")
@@ -176,7 +215,7 @@ func tools() []mcp.Tool {
 			Name:        "list_labels",
 			Description: "List workspace labels.",
 			InputSchema: obj(map[string]any{
-				"workspaceId": strArg("workspace id, default from config"),
+				"workspaceId": strArg("workspace name or id; default from config"),
 			}),
 			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
 				var a struct {
@@ -216,7 +255,7 @@ func tools() []mcp.Tool {
 				"priority":    strArg("no-priority|low|medium|high|urgent"),
 				"status":      strArg("column slug, default to-do"),
 				"dueDate":     strArg("ISO date-time, optional"),
-				"projectId":   strArg("project id, default from config"),
+				"projectId":   strArg("project name, slug, or id; default from config"),
 			}, "title"),
 			InputExamples: []map[string]any{
 				{"arguments": json.RawMessage(`{"title": "Add RSS feed", "priority": "medium"}`)},
@@ -385,12 +424,14 @@ func brief(t kaneo.Task) taskBrief {
 		Status: t.Status, Priority: t.Priority}
 }
 
-// setup stores connection settings in ~/.config/kaneo/config.json with
-// owner-only permissions. The key is read from the terminal with echo
+// setup stores the API key in the OS keyring (secret-tool or pass) and
+// writes connection settings to ~/.config/kaneo/config.json with
+// owner-only permissions and no key material. It then lists the
+// workspaces and projects the key can see and lets the user pick a
+// default project. The key is read from the terminal with echo
 // disabled where the platform supports it, so it never lands in shell
 // history, logs, or tool output.
 func setup() error {
-	cfg := kaneo.Config{APIURL: kaneo.DefaultAPI}
 	reader := bufio.NewReader(os.Stdin)
 	ask := func(label, cur string) string {
 		if cur != "" {
@@ -406,21 +447,99 @@ func setup() error {
 		return line
 	}
 
-	cfg.APIURL = ask("API URL", getenvOr("KANEO_API_URL", kaneo.DefaultAPI))
-	cfg.WorkspaceID = ask("Workspace ID", getenvOr("KANEO_WORKSPACE_ID", ""))
-	cfg.ProjectID = ask("Default project ID", getenvOr("KANEO_PROJECT_ID", ""))
+	existing, _ := kaneo.LoadConfig()
+	cfg := kaneo.Config{APIURL: kaneo.DefaultAPI}
+	if existing != nil {
+		cfg = *existing
+		cfg.APIKey = ""
+	}
 
-	fmt.Fprint(os.Stderr, "API key: ")
+	cfg.APIURL = ask("API URL", getenvOr("KANEO_API_URL", firstNonEmpty(cfg.APIURL, kaneo.DefaultAPI)))
+
+	backend := kaneo.DetectBackend()
+	if backend == kaneo.BackendNone {
+		return fmt.Errorf("no secret backend found; install libsecret (secret-tool) or pass")
+	}
+	fmt.Fprintf(os.Stderr, "storing key via %s\n", backend)
+
+	fmt.Fprint(os.Stderr, "API key (leave empty to keep existing): ")
 	key, err := readSecret(reader)
 	fmt.Fprintln(os.Stderr)
 	if err != nil {
 		return err
 	}
-	if key == "" {
-		return fmt.Errorf("empty key, nothing written")
+	if key != "" {
+		if err := kaneo.StoreKey(backend, cfg.APIURL, key); err != nil {
+			return fmt.Errorf("store key: %w", err)
+		}
+		cfg.KeyBackend = backend
+	} else if k, _ := kaneo.LoadKey(cfg.APIURL); k != "" {
+		key = k
+	} else {
+		return fmt.Errorf("no key given and none stored; nothing to configure")
 	}
-	cfg.APIKey = key
 
+	// autodetect workspaces and projects with the fresh key
+	probe, err := kaneo.NewClient(kaneo.Config{APIURL: cfg.APIURL, APIKey: key})
+	if err != nil {
+		return err
+	}
+	ctx := context.Background()
+	workspaces, err := probe.ListWorkspaces(ctx)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "warning: could not list workspaces (%v); enter ids manually\n", err)
+		cfg.WorkspaceID = ask("Workspace ID", cfg.WorkspaceID)
+		cfg.DefaultProject = ask("Default project ID", cfg.DefaultProject)
+		return writeConfig(&cfg)
+	}
+
+	var refs []kaneo.ProjectRef
+	for _, w := range workspaces {
+		projects, err := probe.ListProjects(ctx, w.ID)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "warning: workspace %s: %v\n", w.Name, err)
+			continue
+		}
+		for _, pr := range projects {
+			refs = append(refs, kaneo.ProjectRef{
+				Name: pr.Name, Slug: pr.Slug,
+				Workspace: w.Name, WorkspaceID: w.ID, ProjectID: pr.ID,
+			})
+		}
+	}
+	if len(refs) == 0 {
+		fmt.Fprintln(os.Stderr, "no projects found for this key")
+		return writeConfig(&cfg)
+	}
+	cfg.Projects = refs
+	if cfg.WorkspaceID == "" && len(workspaces) == 1 {
+		cfg.WorkspaceID = workspaces[0].ID
+	}
+
+	fmt.Fprintln(os.Stderr, "\nprojects:")
+	for i, r := range refs {
+		fmt.Fprintf(os.Stderr, "  %d) %s / %s\n", i+1, r.Workspace, r.Name)
+	}
+	cur := cfg.DefaultProject
+	for i, r := range refs {
+		if r.ProjectID == cur {
+			cur = fmt.Sprintf("%d", i+1)
+		}
+	}
+	choice := ask("default project number", cur)
+	if idx, err := strconv.Atoi(choice); err == nil && idx >= 1 && idx <= len(refs) {
+		cfg.DefaultProject = refs[idx-1].ProjectID
+	} else if choice != "" {
+		cfg.DefaultProject = cfg.ResolveProject(choice)
+	}
+	if cfg.DefaultProject == "" {
+		cfg.DefaultProject = refs[0].ProjectID
+	}
+
+	return writeConfig(&cfg)
+}
+
+func writeConfig(cfg *kaneo.Config) error {
 	p, err := kaneo.ConfigPath()
 	if err != nil {
 		return err
@@ -428,16 +547,18 @@ func setup() error {
 	if err := os.MkdirAll(filepath.Dir(p), 0o700); err != nil {
 		return err
 	}
-	// #nosec G117 -- setup exists to persist the key into a 0600 file
-	data, err := json.MarshalIndent(cfg, "", "  ")
-	if err != nil {
+	if err := kaneo.SaveConfig(p, cfg); err != nil {
 		return err
 	}
-	if err := os.WriteFile(p, data, 0o600); err != nil {
-		return err
-	}
-	fmt.Fprintf(os.Stderr, "wrote %s (0600)\n", p)
+	fmt.Fprintf(os.Stderr, "wrote %s (0600, no key material)\n", p)
 	return nil
+}
+
+func firstNonEmpty(a, b string) string {
+	if strings.TrimSpace(a) != "" {
+		return a
+	}
+	return b
 }
 
 func getenvOr(k, def string) string {

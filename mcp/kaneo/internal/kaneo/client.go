@@ -3,9 +3,11 @@
 // It targets self-hosted and cloud instances alike.
 //
 // Token handling rules:
-//   - the API key comes from KANEO_API_KEY or ~/.config/kaneo/config.json
+//   - the API key comes from KANEO_API_KEY or the OS keyring
+//     (secret-tool / pass); it is never written to config.json
 //   - the key is never returned in tool output or error strings
-//   - a config file holding a key must not be group/world readable
+//   - a legacy plaintext key in config.json is migrated to the keyring
+//     and stripped from the file on load
 //   - write tools are opt-in: they only work when a key is configured
 package kaneo
 
@@ -19,7 +21,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 )
@@ -28,15 +29,30 @@ import (
 // KANEO_API_URL or apiUrl in the config file.
 const DefaultAPI = "https://cloud.kaneo.app/api"
 
-// Config holds connection settings. APIKey stays unexported-facing:
-// methods use it for the Authorization header and never surface it.
-type Config struct {
-	APIURL      string `json:"apiUrl"`
-	APIKey      string `json:"apiKey"`
+// ProjectRef names one project so tools can take "melovian" instead
+// of a raw id.
+type ProjectRef struct {
+	Name        string `json:"name"`
+	Slug        string `json:"slug,omitempty"`
+	Workspace   string `json:"workspace,omitempty"`
 	WorkspaceID string `json:"workspaceId"`
 	ProjectID   string `json:"projectId"`
+}
 
-	// Source reports where the key came from: "env", "config", or "".
+// Config holds connection settings. APIKey is json:"-": it is loaded
+// from env or the OS keyring and can never be serialized back out.
+type Config struct {
+	APIURL         string       `json:"apiUrl"`
+	KeyBackend     string       `json:"keyBackend,omitempty"`
+	WorkspaceID    string       `json:"workspaceId,omitempty"`
+	ProjectID      string       `json:"projectId,omitempty"`
+	DefaultProject string       `json:"defaultProject,omitempty"`
+	Projects       []ProjectRef `json:"projects,omitempty"`
+
+	APIKey string `json:"-"`
+
+	// Source reports where the key came from: "env", "secret-service",
+	// "pass", or "".
 	Source string `json:"-"`
 }
 
@@ -52,40 +68,46 @@ func ConfigPath() (string, error) {
 var getenv = os.Getenv
 
 // LoadConfig resolves connection settings. Environment wins over the
-// config file. A config file containing an API key must be
-// owner-readable only; anything looser is rejected with guidance.
+// config file. The key itself comes from env or the OS keyring; a
+// plaintext apiKey left in config.json is migrated into the keyring
+// and removed from the file. When no keyring exists the file key is
+// still used so existing setups keep working, with a warning.
 func LoadConfig() (*Config, error) {
 	cfg := &Config{
 		APIURL:      strings.TrimSpace(getenv("KANEO_API_URL")),
 		WorkspaceID: strings.TrimSpace(getenv("KANEO_WORKSPACE_ID")),
-		ProjectID:   strings.TrimSpace(getenv("KANEO_PROJECT_ID")),
 	}
 	if k := strings.TrimSpace(getenv("KANEO_API_KEY")); k != "" {
 		cfg.APIKey = k
 		cfg.Source = "env"
 	}
+	if pid := strings.TrimSpace(getenv("KANEO_PROJECT_ID")); pid != "" {
+		cfg.DefaultProject = pid
+	}
 
 	p, err := ConfigPath()
+	var legacyKey string
 	if err == nil {
 		if data, err := os.ReadFile(p); err == nil { // #nosec G304 -- fixed config path under user config dir
+			// decode as a map first so unknown keys survive rewrites
+			var raw map[string]any
+			if json.Unmarshal(data, &raw) == nil {
+				legacyKey, _ = raw["apiKey"].(string)
+			}
 			var file Config
 			if json.Unmarshal(data, &file) == nil {
 				if cfg.APIURL == "" {
 					cfg.APIURL = file.APIURL
 				}
+				cfg.KeyBackend = file.KeyBackend
 				if cfg.WorkspaceID == "" {
 					cfg.WorkspaceID = file.WorkspaceID
 				}
-				if cfg.ProjectID == "" {
-					cfg.ProjectID = file.ProjectID
+				cfg.ProjectID = file.ProjectID
+				if cfg.DefaultProject == "" {
+					cfg.DefaultProject = file.DefaultProject
 				}
-				if cfg.APIKey == "" && file.APIKey != "" {
-					if err := checkPerms(p); err != nil {
-						return nil, err
-					}
-					cfg.APIKey = file.APIKey
-					cfg.Source = "config"
-				}
+				cfg.Projects = file.Projects
 			}
 		}
 	}
@@ -93,22 +115,85 @@ func LoadConfig() (*Config, error) {
 		cfg.APIURL = DefaultAPI
 	}
 	cfg.APIURL = strings.TrimRight(cfg.APIURL, "/")
+
+	if cfg.APIKey == "" {
+		if k, src := LoadKey(cfg.APIURL); k != "" {
+			cfg.APIKey = k
+			cfg.Source = src
+		}
+	}
+
+	if legacyKey != "" {
+		if cfg.APIKey == "" {
+			cfg.APIKey = legacyKey
+			cfg.Source = "config-file (plaintext, deprecated)"
+		}
+		if err := migrateKey(p, cfg.APIURL, legacyKey); err != nil {
+			fmt.Fprintf(os.Stderr, "kaneo: plaintext apiKey in %s could not be migrated to a keyring: %v\n", p, err)
+		}
+	}
 	return cfg, nil
 }
 
-// checkPerms refuses to load a key from a file others can read.
-func checkPerms(p string) error {
-	if runtime.GOOS == "windows" {
-		return nil // ACLs differ; owner-only is the platform default
+// migrateKey moves a plaintext config key into the OS keyring and
+// rewrites the file without it, preserving every other field.
+func migrateKey(path, apiURL, key string) error {
+	backend := DetectBackend()
+	if backend == BackendNone {
+		return fmt.Errorf("no secret backend (install libsecret/secret-tool or pass)")
 	}
-	st, err := os.Stat(p)
+	if err := StoreKey(backend, apiURL, key); err != nil {
+		return err
+	}
+	data, err := os.ReadFile(path) // #nosec G304 -- fixed config path
 	if err != nil {
 		return err
 	}
-	if st.Mode().Perm()&0o077 != 0 {
-		return fmt.Errorf("config %s is readable by others; run: chmod 600 %s", p, p)
+	var raw map[string]any
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
 	}
+	delete(raw, "apiKey")
+	raw["keyBackend"] = backend
+	out, err := json.MarshalIndent(raw, "", "  ")
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(path, out, 0o600); err != nil {
+		return err
+	}
+	fmt.Fprintf(os.Stderr, "kaneo: migrated api key into %s and removed it from %s\n", backend, path)
 	return nil
+}
+
+// SaveConfig writes the non-secret parts of cfg to the config file,
+// preserving unknown fields already present. The key is never written.
+func SaveConfig(path string, cfg *Config) error {
+	raw := map[string]any{}
+	if data, err := os.ReadFile(path); err == nil { // #nosec G304 -- fixed config path
+		_ = json.Unmarshal(data, &raw) // #nosec G104 -- corrupt file gets rewritten anyway
+	}
+	delete(raw, "apiKey")
+	raw["apiUrl"] = cfg.APIURL
+	if cfg.KeyBackend != "" {
+		raw["keyBackend"] = cfg.KeyBackend
+	}
+	if cfg.WorkspaceID != "" {
+		raw["workspaceId"] = cfg.WorkspaceID
+	}
+	if cfg.DefaultProject != "" {
+		raw["defaultProject"] = cfg.DefaultProject
+	} else if cfg.ProjectID != "" {
+		raw["defaultProject"] = cfg.ProjectID
+	}
+	if len(cfg.Projects) > 0 {
+		raw["projects"] = cfg.Projects
+	}
+	out, err := json.MarshalIndent(raw, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, out, 0o600)
 }
 
 // Client talks to one Kaneo instance.
@@ -136,21 +221,50 @@ func NewClient(cfg Config) (*Client, error) {
 // Configured reports whether an API key is available.
 func (c *Client) Configured() bool { return c.cfg.APIKey != "" }
 
-// ProjectID returns the default project when pid is empty.
-func (c *Client) ProjectID(pid string) string {
-	if pid != "" {
-		return pid
+// ResolveProject maps a project name, slug, or id from the config's
+// projects list to its id. Unknown values pass through as ids.
+func (c *Config) ResolveProject(ref string) string {
+	for _, p := range c.Projects {
+		if strings.EqualFold(p.Name, ref) || p.Slug == ref || p.ProjectID == ref {
+			return p.ProjectID
+		}
+	}
+	return ref
+}
+
+// ProjectID resolves the default project when ref is empty. ref may be
+// a configured project name, slug, or raw id.
+func (c *Client) ProjectID(ref string) string {
+	if ref != "" {
+		return c.cfg.ResolveProject(ref)
+	}
+	if c.cfg.DefaultProject != "" {
+		return c.cfg.ResolveProject(c.cfg.DefaultProject)
 	}
 	return c.cfg.ProjectID
 }
 
-// WorkspaceID returns the default workspace when wid is empty.
+// WorkspaceID resolves the default workspace when wid is empty. wid
+// may be a workspace name matching a configured project entry, or a
+// raw id.
 func (c *Client) WorkspaceID(wid string) string {
 	if wid != "" {
+		for _, p := range c.cfg.Projects {
+			if strings.EqualFold(p.Workspace, wid) {
+				return p.WorkspaceID
+			}
+		}
 		return wid
 	}
 	return c.cfg.WorkspaceID
 }
+
+// SetDefaultProject switches the session default project. ref may be a
+// name, slug, or id.
+func (c *Client) SetDefaultProject(ref string) { c.cfg.DefaultProject = ref }
+
+// DefaultProject reports the resolved default project id.
+func (c *Client) DefaultProject() string { return c.ProjectID("") }
 
 // do performs one API call. payload may be nil for GET/DELETE. When out
 // is non-nil the response body is decoded into it. Error text never

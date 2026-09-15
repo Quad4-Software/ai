@@ -2,6 +2,8 @@ package kaneo
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -41,15 +43,39 @@ func TestLoadConfigEnvWins(t *testing.T) {
 	if cfg.APIKey != "env-key" || cfg.Source != "env" {
 		t.Fatalf("env should win: %+v", cfg)
 	}
-	if cfg.APIURL != "https://env.example.com/api" || cfg.ProjectID != "pe" {
+	if cfg.APIURL != "https://env.example.com/api" || cfg.DefaultProject != "pe" {
 		t.Fatalf("env fields not applied: %+v", cfg)
 	}
 }
 
-func TestLoadConfigFilePerms(t *testing.T) {
-	if strings.Contains(strings.ToLower(os.Getenv("OS")), "windows") {
-		t.Skip("perm bits are posix-only")
+// fakeKeyring stubs the secret backend so tests never touch the real
+// OS keyring.
+func fakeKeyring(t *testing.T) (stored map[string]string) {
+	t.Helper()
+	stored = map[string]string{}
+	oldLook, oldST, oldPass := lookPath, runSecretTool, runPass
+	lookPath = func(name string) (string, error) {
+		if name == "secret-tool" {
+			return "/fake/secret-tool", nil
+		}
+		return "", os.ErrNotExist
 	}
+	runSecretTool = func(args []string, stdin string) (string, error) {
+		if args[0] == "store" {
+			stored["key"] = stdin
+			return "", nil
+		}
+		return stored["key"], nil
+	}
+	runPass = func(args []string, stdin string) (string, error) {
+		return "", fmt.Errorf("not found")
+	}
+	t.Cleanup(func() { lookPath, runSecretTool, runPass = oldLook, oldST, oldPass })
+	return stored
+}
+
+func TestLoadConfigMigratesPlaintextKey(t *testing.T) {
+	stored := fakeKeyring(t)
 	dir := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", dir)
 	t.Setenv("HOME", dir)
@@ -60,21 +86,73 @@ func TestLoadConfigFilePerms(t *testing.T) {
 	if err := os.MkdirAll(filepath.Dir(p), 0o700); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(p, []byte(`{"apiKey":"k","apiUrl":"https://x/api"}`), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := LoadConfig(); err == nil || !strings.Contains(err.Error(), "chmod 600") {
-		t.Fatalf("world-readable key file must error, got %v", err)
-	}
-	if err := os.Chmod(p, 0o600); err != nil {
+	if err := os.WriteFile(p, []byte(`{"apiKey":"k","apiUrl":"https://x/api","repos":{"a":"b"}}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	cfg, err := LoadConfig()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cfg.APIKey != "k" || cfg.Source != "config" || cfg.APIURL != "https://x/api" {
-		t.Fatalf("config load wrong: %+v", cfg)
+	if cfg.APIKey != "k" {
+		t.Fatalf("key not loaded: %+v", cfg)
+	}
+	if stored["key"] != "k" {
+		t.Fatalf("key not migrated to keyring: %v", stored)
+	}
+	data, err := os.ReadFile(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(data), "apiKey") || strings.Contains(string(data), `"k"`) {
+		t.Fatalf("key still in config file: %s", data)
+	}
+	var rewritten map[string]any
+	if err := json.Unmarshal(data, &rewritten); err != nil {
+		t.Fatal(err)
+	}
+	if rewritten["keyBackend"] != BackendKeyring || rewritten["repos"] == nil {
+		t.Fatalf("rewrite lost fields: %s", data)
+	}
+	if st, _ := os.Stat(p); st.Mode().Perm() != 0o600 {
+		t.Fatalf("config perms %o, want 600", st.Mode().Perm())
+	}
+}
+
+func TestKeyringBeatsPlaintext(t *testing.T) {
+	stored := fakeKeyring(t)
+	stored["key"] = "ring-key"
+	dir := t.TempDir()
+	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
+	for _, k := range []string{"KANEO_API_KEY", "KANEO_API_URL", "KANEO_PROJECT_ID", "KANEO_WORKSPACE_ID"} {
+		t.Setenv(k, "")
+	}
+	p := filepath.Join(dir, "kaneo", "config.json")
+	if err := os.MkdirAll(filepath.Dir(p), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(p, []byte(`{"apiKey":"old","apiUrl":"https://x/api"}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := LoadConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.APIKey != "ring-key" || cfg.Source != BackendKeyring {
+		t.Fatalf("keyring should win: %+v", cfg)
+	}
+}
+
+func TestResolveProject(t *testing.T) {
+	cfg := &Config{Projects: []ProjectRef{
+		{Name: "Melovian", Slug: "melovian", WorkspaceID: "w1", ProjectID: "p1"},
+	}}
+	for ref, want := range map[string]string{
+		"melovian": "p1", "Melovian": "p1", "p1": "p1", "unknown": "unknown",
+	} {
+		if got := cfg.ResolveProject(ref); got != want {
+			t.Fatalf("ResolveProject(%q) = %q, want %q", ref, got, want)
+		}
 	}
 }
 

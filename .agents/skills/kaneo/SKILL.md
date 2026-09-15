@@ -10,21 +10,36 @@ self-hosted instances (todo.quad4.io is the local instance).
 
 ## Auth
 
-The API key never appears in tool output. Sources, in order:
+The API key never appears in tool output and is never stored in the
+config file. Sources, in order:
 
 1. `KANEO_API_KEY` env var
-2. `~/.config/kaneo/config.json` (must be `0600`, written by
-   `mcp/kaneo/kaneo setup` which prompts on the terminal with echo off)
+2. OS keyring via `secret-tool` (libsecret) or `pass`, stored by
+   `mcp/kaneo/kaneo setup`, which prompts on the terminal with echo
+   off, then autodetects workspaces and projects for a default picker
+
+A legacy plaintext `apiKey` in `~/.config/kaneo/config.json` is
+migrated into the keyring on startup and stripped from the file.
 
 `KANEO_API_URL` / `apiUrl` defaults to `https://cloud.kaneo.app/api`.
 `KANEO_WORKSPACE_ID` and `KANEO_PROJECT_ID` supply defaults so most
 calls need no ids. `auth_status` reports what is configured.
 
+## Multiple projects
+
+`config.json` can hold a `projects` list (name, slug, workspaceId,
+projectId). Anywhere a tool takes `projectId` it also accepts a
+configured project name or slug. `use_project` switches the session
+default; `list_workspaces` + `list_projects` discover ids the config
+does not know yet.
+
 ## Tool map
 
 | Tool | Write | Purpose |
 |---|---|---|
-| `auth_status` | | configured?, source, apiUrl, default ids |
+| `auth_status` | | configured?, source, apiUrl, default project, known projects |
+| `list_workspaces` | | workspaces the key can access |
+| `use_project` | | switch session default project by name/slug/id |
 | `list_projects` | | projects in a workspace |
 | `get_board` | | columns + compact task rows (no descriptions) |
 | `get_task` | | full task incl. description, labels |

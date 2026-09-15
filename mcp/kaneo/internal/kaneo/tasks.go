@@ -72,6 +72,23 @@ func toTask(r rawTask) Task {
 	return t
 }
 
+// Workspace is one Kaneo workspace (a better-auth organization).
+type Workspace struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Slug string `json:"slug"`
+}
+
+// ListWorkspaces returns the workspaces the API key can see. Kaneo
+// exposes these through better-auth's organization list endpoint.
+func (c *Client) ListWorkspaces(ctx context.Context) ([]Workspace, error) {
+	var out []Workspace
+	if err := c.do(ctx, http.MethodGet, "/auth/organization/list", nil, nil, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Project is one Kaneo project.
 type Project struct {
 	ID          string `json:"id"`
