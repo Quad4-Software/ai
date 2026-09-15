@@ -73,7 +73,7 @@ step-security/harden-runner (pinned). No arbitrary shell on untrusted
 input. Dependabot handles gomod weekly.
 
 See .agents/skills/ for detailed guides: mcp-toolkit, reticulum,
-lxmfy, micron, ci-security, release.
+lxmfy, micron, ci-security, release, nebula.
 
 ## Agent Skills distribution
 

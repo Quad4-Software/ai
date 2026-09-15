@@ -28,6 +28,13 @@
       ]
     },
     {
+      "title": "Nebula",
+      "description": "Reference skill for the Nebula overlay network (slackhq/nebula): config, PKI, firewall, NAT traversal, relays and releases.",
+      "skills": [
+        "nebula"
+      ]
+    },
+    {
       "title": "MCP servers",
       "description": "Skills for each stdio MCP server in the repo.",
       "skills": [
