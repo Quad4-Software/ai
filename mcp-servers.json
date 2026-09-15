@@ -141,6 +141,19 @@
         "KANEO_WORKSPACE_ID",
         "KANEO_PROJECT_ID"
       ]
+    },
+    {
+      "name": "melovian",
+      "module": "melovian",
+      "command": "mcp/melovian/melovian",
+      "description": "Melovian instance control: library search/stats, playlists and smart playlists, metadata lookup and autofix, extension settings and scaffolding, optional SearXNG web search. Session-cookie auth in memory only.",
+      "version": "0.1.0",
+      "env": [
+        "MELOVIAN_URL",
+        "MELOVIAN_USERNAME",
+        "MELOVIAN_PASSWORD",
+        "MELOVIAN_SEARXNG_URL"
+      ]
     }
   ]
 }
