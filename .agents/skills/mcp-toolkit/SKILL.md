@@ -52,10 +52,18 @@ Current servers and purposes:
   (servers, tools, tool_schema, invoke, gateway_stats): lazy child spawn and respawn.
 - i18n - locale coverage checks: missing keys, per-key lookups,
   hardcoded UI string candidates.
+- kaneo - Kaneo task board access (todo.quad4.io): find, get, create,
+  update, move and comment on tasks, list projects and labels, sync task
+  lists to a board.
 - lxmf - reads local Reticulum state (~/.reticulum): sanitized config,
   storage inventory, identity names, decoded destinations. Never returns key
   material, secrets are redacted.
 - lxmfy - LXMFy docs, bot scaffolding, static diagnostics, test guidance.
+- melovian - exposes a running Melovian instance: library search and
+  stats, playlist and smart-playlist management, metadata lookups and
+  autofix, extension inspection and settings, optional SearXNG web search.
+- memory - short-term agent memory: remember, recall, update and forget
+  notes, people, destinations, tasks and snippets.
 - meshchatx - MeshChatX documentation as searchable, section-aware tools,
   plus opt-in GitHub issue tools (issue_templates, issue_create, issue_view,
   issue_update for edit/close/reopen, issue_comment, issue_search,
@@ -67,6 +75,8 @@ Current servers and purposes:
   HTML/ANSI, extract links/headings (including fold state), search,
   templates, syntax reference. Vendors micron-parser-go v1.1.4.
 - no-slop - lints prose against no-AI-slop and MeshChatX style rules.
+- reticulum-go - Reticulum-Go docs (reticulum-go.quad4.io) as searchable,
+  section-aware tools: topics, sections, search, allowlisted fetch_page.
 - rns - Reticulum manual and API reference as searchable, section-aware tools. Any manual page can be fetched with `get_topic` or `search_docs`. Also exposes the `zen_review` and `nomadnet_context` prompts.
 - workspace - wraps repo dev commands: Taskfile targets, git health,
   test-file mapping. Commands are validated and bounded.
@@ -78,6 +88,13 @@ provides the stdio JSON-RPC server scaffolding (mcp.NewServer(name, version,
 tools, resources)), plus domain packages (internal/docs, internal/codemap,
 internal/cisec, internal/lint, internal/community, internal/templates).
 
+The scaffolding speaks the legacy session-based MCP revisions
+(2024-11-05, 2025-03-26, 2025-06-18, 2025-11-25) and negotiates per
+initialize. The latest spec revision is 2026-07-28, which removes the
+initialize handshake in favour of per-request version metadata; the repo
+has not adopted it, so client-side dual-era handling may be needed when
+talking to newer servers.
+
 ## Build and test
 
 From repo root:
@@ -88,6 +105,11 @@ make gosec     # gosec security scan per server
 make golangci  # golangci-lint run ./... per server
 make build / test / vet / fmt / clean   # delegated to each server Makefile
 ```
+
+Other root targets: go-fix (modernizers), install, mcp-config and
+server-json (client config generation via scripts/gen-configs.py),
+inspector (scripts/mcp-inspector.py), links (scripts/link-check.py),
+release (GoReleaser plumbing, see the release skill).
 
 Per server: cd mcp/<name> && make test (or go test ./...).
 

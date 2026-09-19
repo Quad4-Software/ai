@@ -15,6 +15,11 @@ make golangci  # golangci-lint run ./... per server
 make build test vet fmt clean
 ```
 
+Other root targets: go-fix (modernizers), install, mcp-config and
+server-json (client config generation via scripts/gen-configs.py),
+inspector (scripts/mcp-inspector.py), links (scripts/link-check.py),
+release (GoReleaser plumbing, see .agents/skills/release).
+
 Per server: cd mcp/<name> && make test, or go test ./....
 
 ## Conventions
@@ -67,13 +72,17 @@ exclude /third_party/. Read the vendored CHANGELOG.md when bumping
 ## CI
 
 Workflows in .github/workflows/: ci.yml, dependency-review.yml,
-gosec.yml, race.yml, fuzz.yml, bench.yml, leak.yml, release.yml, scorecard.yml.
+gosec.yml, race.yml, fuzz.yml, bench.yml, leak.yml, release.yml,
+scorecard.yml, badges.yml, docker.yml, links.yml, mcp-inspector.yml.
 All actions pinned to full SHAs. Every job begins with
 step-security/harden-runner (pinned). No arbitrary shell on untrusted
 input. Dependabot handles gomod weekly.
 
 See .agents/skills/ for detailed guides: mcp-toolkit, reticulum,
-lxmfy, micron, ci-security, release, nebula.
+lxmfy, micron, ci-security, release, nebula. Documentation-only
+reference skills (no MCP servers) cover self-hosted infrastructure:
+media-stack, docker, mesh-vpn, xmpp, coolify, opensubsonic. App
+platform skills: wails, android-connectivity.
 
 ## Agent Skills distribution
 

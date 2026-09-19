@@ -20,7 +20,9 @@ metadata:
 1. Build no-slop: `cd mcp/no-slop && go test ./... && go build`.
 2. Add the binary to your MCP client config as `prose` or `no-slop`.
 3. Call `check_text {text, kind}` or `check_file {path}` with `prose`, `doc`, or `comment`.
-4. Use `fix_text` for a rewrite pass and `list_rules` for the rule set.
+4. Use `fix_text` for a rewrite pass, `check_diff`/`check_commit` for
+   changed lines only, and `list_rules` for the rule set. The
+   `review_prose` prompt returns the ruleset plus rewrite instructions.
 
 ## Examples
 
@@ -41,6 +43,14 @@ replace vague, machine-shaped text with specific, checkable facts.
 ## Tool reference
 
 Tool details are in [references/tools.md](references/tools.md). This section is optional if no-slop is installed.
+
+Measured 2026 tell data and worked slop examples are in
+[references/detection-notes.md](references/detection-notes.md).
+
+Scope: this is a style linter for text you write. It is not an AI
+detector. Published detectors report false-positive rates from roughly
+5% to over 60%, biased against non-native speakers. Never use these
+rules as evidence about who wrote a text.
 
 ## Core rule
 
@@ -116,7 +126,9 @@ output, not in documentation:
 
 - Bulleted or numbered lists where every item starts with a bold term, a
   colon, then a description. This is the single most characteristic chat-shape
-  artifact. In docs, use a plain list or rewrite as prose.
+  artifact. In docs, use a plain list or rewrite as prose. Note the tell is
+  the bold-colon shape, not list use itself. Measured data shows humans use
+  lists more than 2026 models do, so removing plain lists is not a fix.
 - Bolding key terms mechanically, "key takeaways" style. Bold is for genuine
   warnings, not emphasis.
 - Title Case On Every Heading. Use sentence case.
@@ -311,7 +323,10 @@ Ask: could this heading be a thriller chapter title? If yes, rewrite it.
 ### Paragraph uniformity
 
 If every paragraph in a section is the same length, the section looks machine
-made. Vary paragraph length to match the complexity of the point.
+made. Vary paragraph length to match the complexity of the point. This is the
+strongest measured tell: 13.2% of AI documents hold the coefficient of
+variation of paragraph length under 0.2, against 0.8% of structured human
+documents (Opace, 2026-08-31).
 
 - WRONG: four paragraphs, each exactly three sentences
 - RIGHT: one short paragraph, one long explanation, one short punch
@@ -365,6 +380,18 @@ a named source:
 - "Research suggests..."
 - "It is widely believed..." or "It is widely acknowledged..."
 - "Some argue..." or "Many believe..."
+
+### Self-announcing structure
+
+AI documents announce and then execute their own plan: an intro that names
+what the text will cover, sections in that order, a conclusion that closes
+the loop. SlopShape (arXiv:2609.15369) detects this shape at 98 macro-F1
+and it survives rewording, because the signal is structure, not words.
+
+- WRONG: "This report examines the factors that influence adoption and
+  outlines the key findings."
+- RIGHT: open on the first finding. The reader learns the structure by
+  reading it.
 
 ### Canned conclusions
 

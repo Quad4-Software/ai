@@ -23,6 +23,6 @@ metadata:
 
 ## Examples
 
-- "List configured servers and show the tools for `reticulum`."
-- "Fetch the schema for `reticulum.list_topics`."
+- "List configured servers and show the tools for `rns`."
+- "Fetch the schema for `rns.list_topics`."
 - "Call `rns.search_docs` through the gateway for `interface types`."

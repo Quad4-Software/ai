@@ -10,3 +10,9 @@
 - `fix_text {text, kind}`: same findings plus rewrite instructions
 - `list_rules`: the full embedded ruleset
 - `check_commit {ref}`: lint added lines of a commit or range
+
+## Prompts
+
+- `review_prose {text}`: returns the full ruleset plus instructions to list
+  each violation by rule number and produce a clean rewrite that keeps all
+  verifiable facts

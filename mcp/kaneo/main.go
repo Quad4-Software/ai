@@ -34,6 +34,42 @@ func obj(props map[string]any, req ...string) map[string]any {
 	return map[string]any{"type": "object", "properties": props, "required": req}
 }
 
+func boolArg(desc string) map[string]any {
+	return map[string]any{"type": "boolean", "description": desc}
+}
+
+// orderArg is the shared schema for reorder tools: a list of
+// {id, position} pairs expressing relative order.
+func orderArg() map[string]any {
+	return map[string]any{
+		"type":        "array",
+		"description": "list of {id, position} pairs",
+		"items": map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"id":       strArg("object id"),
+				"position": map[string]any{"type": "integer", "description": "relative order"},
+			},
+			"required": []string{"id", "position"},
+		},
+	}
+}
+
+// deriveSlug builds a task prefix from a project name: uppercase
+// alphanumerics, at most 5 chars (MESHCHATX -> MESHC).
+func deriveSlug(name string) string {
+	var b strings.Builder
+	for _, r := range strings.ToUpper(name) {
+		if r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' {
+			b.WriteRune(r)
+		}
+		if b.Len() >= 5 {
+			break
+		}
+	}
+	return b.String()
+}
+
 // needKey gates write tools on a configured API key.
 func needKey() error {
 	if client == nil || !client.Configured() {
@@ -129,6 +165,163 @@ func tools() []mcp.Tool {
 					return "", err
 				}
 				return marshal(ps)
+			},
+		},
+		{
+			Name:        "get_project",
+			Description: "Fetch one project by name, slug, or id.",
+			InputSchema: obj(map[string]any{
+				"projectId": strArg("project name, slug, or id; default from config"),
+			}),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				var a struct {
+					ProjectID string `json:"projectId"`
+				}
+				_ = json.Unmarshal(args, &a)
+				p, err := client.GetProject(ctx, a.ProjectID)
+				if err != nil {
+					return "", err
+				}
+				return marshal(p)
+			},
+		},
+		{
+			Name:        "create_project",
+			Description: "Create a project in a workspace. slug is the task-id prefix (e.g. MEL); derived from name when omitted. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"name":        strArg("project name"),
+				"slug":        strArg("task prefix, e.g. MEL; derived from name when omitted"),
+				"icon":        strArg("icon name, default folder"),
+				"description": strArg("project description"),
+				"workspaceId": strArg("workspace name or id; default from config"),
+			}, "name"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "name")
+				if err != nil {
+					return "", err
+				}
+				slug := a["slug"]
+				if slug == "" {
+					slug = deriveSlug(a["name"])
+				}
+				p, err := client.CreateProject(ctx, a["name"], slug,
+					a["icon"], a["description"], a["workspaceId"])
+				if err != nil {
+					return "", err
+				}
+				return marshal(p)
+			},
+		},
+		{
+			Name:        "update_project",
+			Description: "Update a project's name, slug, icon, description, or visibility. Omitted fields keep their current values. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"id":          strArg("project id"),
+				"name":        strArg("new name"),
+				"slug":        strArg("new task prefix"),
+				"icon":        strArg("new icon"),
+				"description": strArg("new description"),
+				"isPublic":    map[string]any{"type": "boolean", "description": "make the project publicly readable"},
+			}, "id"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				var a struct {
+					ID          string `json:"id"`
+					Name        string `json:"name"`
+					Slug        string `json:"slug"`
+					Icon        string `json:"icon"`
+					Description string `json:"description"`
+					Public      *bool  `json:"isPublic"`
+				}
+				if err := json.Unmarshal(args, &a); err != nil || a.ID == "" {
+					return "", fmt.Errorf("missing required argument: id")
+				}
+				p, err := client.UpdateProject(ctx, a.ID, kaneo.ProjectPatch{
+					Name: a.Name, Slug: a.Slug, Icon: a.Icon,
+					Description: a.Description, Public: a.Public,
+				})
+				if err != nil {
+					return "", err
+				}
+				return marshal(p)
+			},
+		},
+		{
+			Name:        "archive_project",
+			Description: "Archive a project to hide it, or restore it with archive=false. Keeps all data. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"id":      strArg("project id"),
+				"archive": map[string]any{"type": "boolean", "description": "default true; false restores (unarchives)"},
+			}, "id"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				var a struct {
+					ID      string `json:"id"`
+					Archive *bool  `json:"archive"`
+				}
+				if err := json.Unmarshal(args, &a); err != nil || a.ID == "" {
+					return "", fmt.Errorf("missing required argument: id")
+				}
+				archive := a.Archive == nil || *a.Archive
+				if err := client.ArchiveProject(ctx, a.ID, archive); err != nil {
+					return "", err
+				}
+				if archive {
+					return "archived", nil
+				}
+				return "unarchived", nil
+			},
+		},
+		{
+			Name:        "reorder_projects",
+			Description: "Set the sidebar order of a workspace's projects. order is a list of {id, position}; positions express relative order only. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"order": orderArg(),
+			}, "order"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				var a struct {
+					Order []kaneo.IDPos `json:"order"`
+				}
+				if err := json.Unmarshal(args, &a); err != nil || len(a.Order) == 0 {
+					return "", fmt.Errorf("missing required argument: order")
+				}
+				if err := client.ReorderProjects(ctx, a.Order); err != nil {
+					return "", err
+				}
+				return "reordered", nil
+			},
+		},
+		{
+			Name:        "delete_project",
+			Description: "Permanently delete a project and everything in it. Destructive; confirm with the user first. Consider archive_project instead. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{"id": strArg("project id")}, "id"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "id")
+				if err != nil {
+					return "", err
+				}
+				if err := client.DeleteProject(ctx, a["id"]); err != nil {
+					return "", err
+				}
+				return "deleted", nil
 			},
 		},
 		{
@@ -256,6 +449,7 @@ func tools() []mcp.Tool {
 				"status":      strArg("column slug, default to-do"),
 				"dueDate":     strArg("ISO date-time, optional"),
 				"projectId":   strArg("project name, slug, or id; default from config"),
+				"assignee":    strArg("user id to assign, optional"),
 			}, "title"),
 			InputExamples: []map[string]any{
 				{"arguments": json.RawMessage(`{"title": "Add RSS feed", "priority": "medium"}`)},
@@ -269,7 +463,7 @@ func tools() []mcp.Tool {
 					return "", err
 				}
 				t, err := client.CreateTask(ctx, a["projectId"], a["title"],
-					a["description"], a["priority"], a["status"], a["dueDate"])
+					a["description"], a["priority"], a["status"], a["dueDate"], a["assignee"])
 				if err != nil {
 					return "", err
 				}
@@ -287,6 +481,7 @@ func tools() []mcp.Tool {
 				"priority":    strArg("no-priority|low|medium|high|urgent"),
 				"status":      strArg("column slug"),
 				"dueDate":     strArg("ISO date-time"),
+				"assignee":    strArg("user id to assign, or \"none\" to unassign"),
 			}, "id"),
 			InputExamples: []map[string]any{
 				{"arguments": json.RawMessage(`{"id": "abc", "status": "in-progress", "priority": "high"}`)},
@@ -302,6 +497,7 @@ func tools() []mcp.Tool {
 				t, err := client.UpdateTask(ctx, a["id"], kaneo.Patch{
 					Title: a["title"], Description: a["description"],
 					Priority: a["priority"], Status: a["status"], DueDate: a["dueDate"],
+					Assignee: a["assignee"],
 				})
 				if err != nil {
 					return "", err
@@ -385,6 +581,583 @@ func tools() []mcp.Tool {
 					return "label attached", nil
 				}
 				return "label detached", nil
+			},
+		},
+		{
+			Name:        "list_columns",
+			Description: "List a project's board columns in order (id, slug, name, isFinal, position).",
+			InputSchema: obj(map[string]any{
+				"projectId": strArg("project name, slug, or id; default from config"),
+			}),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				var a struct {
+					ProjectID string `json:"projectId"`
+				}
+				_ = json.Unmarshal(args, &a)
+				cols, err := client.ListColumns(ctx, a.ProjectID)
+				if err != nil {
+					return "", err
+				}
+				return marshal(cols)
+			},
+		},
+		{
+			Name:        "create_column",
+			Description: "Add a board column to a project. isFinal marks the done column. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"projectId": strArg("project name, slug, or id; default from config"),
+				"name":      strArg("column name"),
+				"icon":      strArg("icon name"),
+				"color":     strArg("hex color like #e11d48"),
+				"isFinal":   boolArg("marks the column that counts tasks as done"),
+			}, "name"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				var a struct {
+					ProjectID string `json:"projectId"`
+					Name      string `json:"name"`
+					Icon      string `json:"icon"`
+					Color     string `json:"color"`
+					IsFinal   *bool  `json:"isFinal"`
+				}
+				if err := json.Unmarshal(args, &a); err != nil || a.Name == "" {
+					return "", fmt.Errorf("missing required argument: name")
+				}
+				col, err := client.CreateColumn(ctx, a.ProjectID, a.Name, a.Icon, a.Color, a.IsFinal)
+				if err != nil {
+					return "", err
+				}
+				return marshal(col)
+			},
+		},
+		{
+			Name:        "update_column",
+			Description: "Rename or restyle a board column. Omitted fields keep their values. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"id":      strArg("column id"),
+				"name":    strArg("new name"),
+				"icon":    strArg("new icon"),
+				"color":   strArg("new hex color"),
+				"isFinal": boolArg("marks the done column"),
+			}, "id"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				var a struct {
+					ID      string `json:"id"`
+					Name    string `json:"name"`
+					Icon    string `json:"icon"`
+					Color   string `json:"color"`
+					IsFinal *bool  `json:"isFinal"`
+				}
+				if err := json.Unmarshal(args, &a); err != nil || a.ID == "" {
+					return "", fmt.Errorf("missing required argument: id")
+				}
+				col, err := client.UpdateColumn(ctx, a.ID, a.Name, a.Icon, a.Color, a.IsFinal)
+				if err != nil {
+					return "", err
+				}
+				return marshal(col)
+			},
+		},
+		{
+			Name:        "reorder_columns",
+			Description: "Set column order within a project. order is a list of {id, position}. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"projectId": strArg("project name, slug, or id; default from config"),
+				"order":     orderArg(),
+			}, "order"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				var a struct {
+					ProjectID string        `json:"projectId"`
+					Order     []kaneo.IDPos `json:"order"`
+				}
+				if err := json.Unmarshal(args, &a); err != nil || len(a.Order) == 0 {
+					return "", fmt.Errorf("missing required argument: order")
+				}
+				if err := client.ReorderColumns(ctx, a.ProjectID, a.Order); err != nil {
+					return "", err
+				}
+				return "reordered", nil
+			},
+		},
+		{
+			Name:        "delete_column",
+			Description: "Remove a board column. Destructive when it holds tasks; confirm with the user first. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{"id": strArg("column id")}, "id"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "id")
+				if err != nil {
+					return "", err
+				}
+				if err := client.DeleteColumn(ctx, a["id"]); err != nil {
+					return "", err
+				}
+				return "deleted", nil
+			},
+		},
+		{
+			Name:        "update_comment",
+			Description: "Edit a comment's body. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"id":      strArg("comment id"),
+				"content": strArg("new markdown body"),
+			}, "id", "content"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "id", "content")
+				if err != nil {
+					return "", err
+				}
+				if err := client.UpdateComment(ctx, a["id"], a["content"]); err != nil {
+					return "", err
+				}
+				return "comment updated", nil
+			},
+		},
+		{
+			Name:        "delete_comment",
+			Description: "Delete a comment. Destructive; confirm with the user first. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{"id": strArg("comment id")}, "id"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "id")
+				if err != nil {
+					return "", err
+				}
+				if err := client.DeleteComment(ctx, a["id"]); err != nil {
+					return "", err
+				}
+				return "deleted", nil
+			},
+		},
+		{
+			Name:        "create_label",
+			Description: "Create a workspace label. color is a hex string like #e11d48. taskId optionally attaches it at creation. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"name":        strArg("label name"),
+				"color":       strArg("hex color like #e11d48"),
+				"workspaceId": strArg("workspace name or id; default from config"),
+				"taskId":      strArg("optional task to attach"),
+			}, "name", "color"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "name", "color")
+				if err != nil {
+					return "", err
+				}
+				l, err := client.CreateLabel(ctx, a["name"], a["color"], a["workspaceId"], a["taskId"])
+				if err != nil {
+					return "", err
+				}
+				return marshal(l)
+			},
+		},
+		{
+			Name:        "update_label",
+			Description: "Rename or recolor a workspace label. Omitted fields keep their values. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"id":    strArg("label id"),
+				"name":  strArg("new name"),
+				"color": strArg("new hex color"),
+			}, "id"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "id")
+				if err != nil {
+					return "", err
+				}
+				l, err := client.UpdateLabel(ctx, a["id"], a["name"], a["color"])
+				if err != nil {
+					return "", err
+				}
+				return marshal(l)
+			},
+		},
+		{
+			Name:        "delete_label",
+			Description: "Delete a workspace label. Destructive; confirm with the user first. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{"id": strArg("label id")}, "id"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "id")
+				if err != nil {
+					return "", err
+				}
+				if err := client.DeleteLabel(ctx, a["id"]); err != nil {
+					return "", err
+				}
+				return "deleted", nil
+			},
+		},
+		{
+			Name:        "get_task_relations",
+			Description: "List a task's relations (subtask, blocks, related).",
+			InputSchema: obj(map[string]any{"taskId": strArg("task id")}, "taskId"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				a, err := str(args, "taskId")
+				if err != nil {
+					return "", err
+				}
+				rels, err := client.GetTaskRelations(ctx, a["taskId"])
+				if err != nil {
+					return "", err
+				}
+				return marshal(rels)
+			},
+		},
+		{
+			Name:        "link_tasks",
+			Description: "Create a relation between two tasks: subtask, blocks, or related. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"sourceTaskId": strArg("source task id"),
+				"targetTaskId": strArg("target task id"),
+				"relation":     strArg("subtask|blocks|related"),
+			}, "sourceTaskId", "targetTaskId", "relation"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "sourceTaskId", "targetTaskId", "relation")
+				if err != nil {
+					return "", err
+				}
+				rel, err := client.LinkTasks(ctx, a["sourceTaskId"], a["targetTaskId"], a["relation"])
+				if err != nil {
+					return "", err
+				}
+				return marshal(rel)
+			},
+		},
+		{
+			Name:        "unlink_tasks",
+			Description: "Remove a task relation by its id (from get_task_relations). Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{"id": strArg("relation id")}, "id"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "id")
+				if err != nil {
+					return "", err
+				}
+				if err := client.UnlinkTasks(ctx, a["id"]); err != nil {
+					return "", err
+				}
+				return "unlinked", nil
+			},
+		},
+		{
+			Name:        "list_time_entries",
+			Description: "List time logged on a task. An empty endTime means the timer is still running.",
+			InputSchema: obj(map[string]any{"taskId": strArg("task id")}, "taskId"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				a, err := str(args, "taskId")
+				if err != nil {
+					return "", err
+				}
+				entries, err := client.ListTimeEntries(ctx, a["taskId"])
+				if err != nil {
+					return "", err
+				}
+				return marshal(entries)
+			},
+		},
+		{
+			Name:        "log_time",
+			Description: "Record a time entry on a task. Omit endTime to start a running timer. Timestamps are ISO 8601. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"taskId":      strArg("task id"),
+				"startTime":   strArg("ISO 8601 start, e.g. 2026-01-31T09:00:00Z"),
+				"endTime":     strArg("ISO 8601 end; omit for a running timer"),
+				"description": strArg("what the time was spent on"),
+			}, "taskId", "startTime"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "taskId", "startTime")
+				if err != nil {
+					return "", err
+				}
+				e, err := client.LogTime(ctx, a["taskId"], a["startTime"], a["endTime"], a["description"])
+				if err != nil {
+					return "", err
+				}
+				return marshal(e)
+			},
+		},
+		{
+			Name:        "update_time_entry",
+			Description: "Edit a time entry; startTime is required by the API. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"id":          strArg("time entry id"),
+				"startTime":   strArg("ISO 8601 start"),
+				"endTime":     strArg("ISO 8601 end"),
+				"description": strArg("new description"),
+			}, "id", "startTime"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "id", "startTime")
+				if err != nil {
+					return "", err
+				}
+				e, err := client.UpdateTimeEntry(ctx, a["id"], a["startTime"], a["endTime"], a["description"])
+				if err != nil {
+					return "", err
+				}
+				return marshal(e)
+			},
+		},
+		{
+			Name:        "get_task_activity",
+			Description: "List a task's event history (status changes, comments, edits).",
+			InputSchema: obj(map[string]any{"taskId": strArg("task id")}, "taskId"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				a, err := str(args, "taskId")
+				if err != nil {
+					return "", err
+				}
+				acts, err := client.GetTaskActivity(ctx, a["taskId"])
+				if err != nil {
+					return "", err
+				}
+				return marshal(acts)
+			},
+		},
+		{
+			Name:        "search",
+			Description: "Workspace-wide search over tasks, projects, comments, and activities.",
+			InputSchema: obj(map[string]any{
+				"q":           strArg("search text"),
+				"type":        strArg("all|tasks|projects|workspaces|comments|activities"),
+				"projectId":   strArg("limit to one project; name, slug, or id"),
+				"workspaceId": strArg("workspace name or id; default from config"),
+				"limit":       map[string]any{"type": "integer", "description": "max results, up to 50"},
+			}, "q"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				var a struct {
+					Q           string `json:"q"`
+					Type        string `json:"type"`
+					ProjectID   string `json:"projectId"`
+					WorkspaceID string `json:"workspaceId"`
+					Limit       int    `json:"limit"`
+				}
+				if err := json.Unmarshal(args, &a); err != nil || a.Q == "" {
+					return "", fmt.Errorf("missing required argument: q")
+				}
+				raw, err := client.Search(ctx, a.Q, a.Type, a.ProjectID, a.WorkspaceID, a.Limit)
+				if err != nil {
+					return "", err
+				}
+				return string(raw), nil
+			},
+		},
+		{
+			Name:        "github_app_info",
+			Description: "Report the GitHub App this Kaneo instance is configured with. Empty appName means the admin has not set one up yet.",
+			InputSchema: obj(map[string]any{}),
+			Handle: func(ctx context.Context, _ json.RawMessage) (string, error) {
+				info, err := client.GitHubAppInfo(ctx)
+				if err != nil {
+					return "", err
+				}
+				return marshal(info)
+			},
+		},
+		{
+			Name:        "github_repositories",
+			Description: "List GitHub repositories reachable through the installed GitHub App, for picking one to link to a project.",
+			InputSchema: obj(map[string]any{
+				"projectId": strArg("project name, slug, or id; default from config"),
+			}),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				var a struct {
+					ProjectID string `json:"projectId"`
+				}
+				_ = json.Unmarshal(args, &a)
+				repos, err := client.GitHubRepositories(ctx, a.ProjectID)
+				if err != nil {
+					return "", err
+				}
+				return marshal(repos)
+			},
+		},
+		{
+			Name:        "get_github_integration",
+			Description: "Show which GitHub repository a project is linked to, or null.",
+			InputSchema: obj(map[string]any{
+				"projectId": strArg("project name, slug, or id; default from config"),
+			}),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				var a struct {
+					ProjectID string `json:"projectId"`
+				}
+				_ = json.Unmarshal(args, &a)
+				gi, err := client.GetGitHubIntegration(ctx, a.ProjectID)
+				if err != nil {
+					return "", err
+				}
+				return marshal(gi)
+			},
+		},
+		{
+			Name:        "github_verify",
+			Description: "Check that the GitHub App is installed on owner/repo with the permissions Kaneo needs. Always answers with a result object describing any problems. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"projectId": strArg("project name, slug, or id; default from config"),
+				"repo":      strArg("owner/name, e.g. Quad4-Software/ai"),
+			}, "repo"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "repo")
+				if err != nil {
+					return "", err
+				}
+				owner, repo, err := kaneo.SplitRepo(a["repo"])
+				if err != nil {
+					return "", err
+				}
+				raw, err := client.GitHubVerify(ctx, a["projectId"], owner, repo)
+				if err != nil {
+					return "", err
+				}
+				return string(raw), nil
+			},
+		},
+		{
+			Name:        "connect_github",
+			Description: "Link a project to a GitHub repository for two-way sync. The instance's GitHub App must already be installed on the repo. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"projectId": strArg("project name, slug, or id; default from config"),
+				"repo":      strArg("owner/name, e.g. Quad4-Software/ai"),
+			}, "repo"),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				a, err := str(args, "repo")
+				if err != nil {
+					return "", err
+				}
+				owner, repo, err := kaneo.SplitRepo(a["repo"])
+				if err != nil {
+					return "", err
+				}
+				gi, err := client.ConnectGitHub(ctx, a["projectId"], owner, repo)
+				if err != nil {
+					return "", err
+				}
+				return marshal(gi)
+			},
+		},
+		{
+			Name:        "update_github_integration",
+			Description: "Toggle a project's GitHub link: isActive pauses sync, commentTaskLinkOnGitHubIssue controls the back-link comment. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"projectId":                    strArg("project name, slug, or id; default from config"),
+				"isActive":                     boolArg("false pauses sync"),
+				"commentTaskLinkOnGitHubIssue": boolArg("comment a task link on linked GitHub issues"),
+			}),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				var a struct {
+					ProjectID   string `json:"projectId"`
+					IsActive    *bool  `json:"isActive"`
+					CommentLink *bool  `json:"commentTaskLinkOnGitHubIssue"`
+				}
+				if err := json.Unmarshal(args, &a); err != nil {
+					return "", fmt.Errorf("invalid arguments: %v", err)
+				}
+				gi, err := client.UpdateGitHubIntegration(ctx, a.ProjectID, a.IsActive, a.CommentLink)
+				if err != nil {
+					return "", err
+				}
+				return marshal(gi)
+			},
+		},
+		{
+			Name:        "disconnect_github",
+			Description: "Unlink a project from its GitHub repository. Existing tasks stay. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"projectId": strArg("project name, slug, or id; default from config"),
+			}),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				var a struct {
+					ProjectID string `json:"projectId"`
+				}
+				_ = json.Unmarshal(args, &a)
+				if err := client.DisconnectGitHub(ctx, a.ProjectID); err != nil {
+					return "", err
+				}
+				return "disconnected", nil
+			},
+		},
+		{
+			Name:        "import_github_issues",
+			Description: "Import the linked repository's GitHub issues as tasks. Issues that already have a task are skipped. Write tool; needs an API key.",
+			Write:       true,
+			InputSchema: obj(map[string]any{
+				"projectId": strArg("project name, slug, or id; default from config"),
+			}),
+			Handle: func(ctx context.Context, args json.RawMessage) (string, error) {
+				if err := needKey(); err != nil {
+					return "", err
+				}
+				var a struct {
+					ProjectID string `json:"projectId"`
+				}
+				_ = json.Unmarshal(args, &a)
+				raw, err := client.ImportGitHubIssues(ctx, a.ProjectID)
+				if err != nil {
+					return "", err
+				}
+				return string(raw), nil
 			},
 		},
 		{

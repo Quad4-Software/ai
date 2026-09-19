@@ -121,8 +121,10 @@ Urwid palettes via `low_color` and `high_color` in MicronParser.py. Go
 | `` `:name `` | Explicit zero-width marker (`A-Z` `a-z` `0-9` `_` `-`) |
 | heading text | Auto-slug anchor shared with explicit names |
 
-micron-parser-go currently keeps `` `:name `` as visible text in HTML. Prefer
-`#name` links for portable jump targets.
+The vendored micron-parser-go 1.1.4 keeps `` `:name `` as visible text in
+HTML; upstream 1.3.0 emits it as `<a id="name" class="micron-anchor">` and
+generates slug anchors on headings. Prefer `#name` links for portable jump
+targets either way.
 
 ## Fields
 
@@ -164,7 +166,9 @@ Block-level, own line, WebP only:
 ```
 
 Options: `w=` / `h=` as columns, rows, percent, or `n` (near native).
-`a=` is `l`, `r`, or `c`. micron-parser-go does not render images yet.
+`a=` is `l`, `r`, or `c`. The vendored micron-parser-go 1.1.4 renders
+these as plain links; upstream 1.2.0+ emits a deferred placeholder with
+`data-mu-image-*` attributes so hosts can wire click-to-load.
 
 ## Partials
 

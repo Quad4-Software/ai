@@ -32,23 +32,29 @@ metadata:
 
 ## Workflows
 
-.github/workflows/ contains: ci.yml, dependency-review.yml, race.yml,
-fuzz.yml, bench.yml, leak.yml, gosec.yml, and release.yml.
+.github/workflows/ contains: badges.yml, bench.yml, ci.yml,
+dependency-review.yml, docker.yml, fuzz.yml, gosec.yml, leak.yml,
+links.yml, mcp-inspector.yml, race.yml, release.yml, and scorecard.yml.
 
 - ci.yml - fmt/vet/test/build plus gosec via
-  go install github.com/securego/gosec/v2/cmd/gosec@latest then make gosec.
+  go install github.com/securego/gosec/v2/cmd/gosec@v2.29.0 then make gosec.
 - dependency-review.yml - dependency review on PRs.
 - race.yml - go test -race.
 - fuzz.yml - fuzz targets per server.
 - bench.yml - benchmark regression checks.
 - leak.yml - goroutine/resource leak checks.
 - gosec.yml - standalone gosec badge workflow.
+- badges.yml - README badge regeneration.
+- docker.yml - container image build checks.
+- links.yml - markdown link checking (scripts/link-check.py).
+- mcp-inspector.yml - runs scripts/mcp-inspector.py over the servers.
+- scorecard.yml - OpenSSF Scorecard supply-chain checks.
 - release.yml - v*.*.* tag triggered release (see release skill).
 
 ## Rules for editing workflows
 
 - Every job starts with step-security/harden-runner at a pinned SHA
-  (current: 5c6294f65b6e27a9f0b85a469efb074d601c8c26 # v2.0.0). Use
+  (current: e14015d583714f6e62063499dc959a02595150a1 # v2.21.1). Use
   egress audit or blocking as appropriate.
 - All third-party actions must be pinned to full commit SHAs with a version
   comment, never floating tags or branches.

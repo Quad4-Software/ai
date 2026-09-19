@@ -41,16 +41,41 @@ does not know yet.
 | `list_workspaces` | | workspaces the key can access |
 | `use_project` | | switch session default project by name/slug/id |
 | `list_projects` | | projects in a workspace |
+| `get_project` | | one project by name/slug/id |
 | `get_board` | | columns + compact task rows (no descriptions) |
+| `list_columns` | | board columns with ids, positions, isFinal |
 | `get_task` | | full task incl. description, labels |
 | `find_tasks` | | title substring search, use before create for dedupe |
+| `search` | | workspace-wide search (q, type, projectId, limit) |
 | `list_labels` | | workspace labels |
 | `get_task_comments` | | comments on a task |
-| `create_task` | yes | title, description, priority, status, dueDate |
-| `update_task` | yes | partial update: title, description, priority, status, dueDate |
+| `get_task_relations` | | subtask/blocks/related links |
+| `list_time_entries` | | time logged on a task |
+| `get_task_activity` | | task event history |
+| `github_app_info` | | instance GitHub App slug, or null when unconfigured |
+| `github_repositories` | | repos reachable via the installed App |
+| `get_github_integration` | | project's repo link, or null |
+| `create_task` | yes | title, description, priority, status, dueDate, assignee |
+| `update_task` | yes | partial update incl. assignee (user id or "none") |
 | `move_task` | yes | column move, or cross-project via destinationProjectId |
-| `add_comment` | yes | post markdown comment |
+| `add_comment`, `update_comment`, `delete_comment` | yes | comment CRUD |
 | `set_label` | yes | attach/detach by label id or exact name |
+| `create_label`, `update_label`, `delete_label` | yes | label CRUD (hex color) |
+| `link_tasks`, `unlink_tasks` | yes | relations: subtask, blocks, related |
+| `log_time`, `update_time_entry` | yes | ISO 8601; omit endTime for a running timer |
+| `create_project` | yes | name + slug (auto-derived), icon, description |
+| `update_project` | yes | name, slug, icon, description, isPublic |
+| `archive_project` | yes | hide or restore (archive=false), keeps data |
+| `reorder_projects` | yes | sidebar order via [{id, position}] |
+| `delete_project` | yes | permanent incl. all tasks, confirm first |
+| `create_column`, `update_column` | yes | name, icon, color, isFinal |
+| `reorder_columns` | yes | [{id, position}] |
+| `delete_column` | yes | confirm first when it holds tasks |
+| `github_verify` | yes | check App install + permissions on owner/repo |
+| `connect_github` | yes | link project to owner/repo |
+| `update_github_integration` | yes | isActive / commentTaskLinkOnGitHubIssue |
+| `disconnect_github` | yes | unlink repo |
+| `import_github_issues` | yes | issues -> tasks, skips linked ones |
 | `delete_task` | yes | permanent, confirm first |
 
 Write tools fail cleanly without a key. `MCP_READ_ONLY=1` or
@@ -61,6 +86,11 @@ Write tools fail cleanly without a key. `MCP_READ_ONLY=1` or
 - Statuses: `backlog`, `to-do`, `in-progress`, `in-review`, `done`,
   `cancelled`. Priorities: `no-priority`, `low`, `medium`, `high`,
   `urgent`.
+- GitHub integration needs a GitHub App on the server first
+  (`GITHUB_APP_ID`, `GITHUB_PRIVATE_KEY`, `GITHUB_WEBHOOK_SECRET`,
+  `GITHUB_APP_NAME` env vars on the API). `github_app_info` reports
+  whether one is set. Linking endpoints need workspace
+  manage_settings permission.
 - When the user says "move X to in progress", use `update_task` with
   `status`, or `move_task`.
 - Always `find_tasks` before `create_task` to avoid duplicates.

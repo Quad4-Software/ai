@@ -180,7 +180,7 @@ For modules that cannot be fetched from a proxy, use a local `third_party/`
 directory and a `replace` directive:
 
 ```
-require micron-parser-go v1.1.0
+require micron-parser-go v1.1.4
 replace micron-parser-go => ./third_party/micron-parser-go
 ```
 
@@ -227,7 +227,7 @@ The `thongtech/go-legacy-win7` fork keeps Go running on legacy Windows systems:
 
 - Supports Windows 7, 8, 8.1, Server 2008 R2, Server 2012 and Server 2012 R2
 - Restores classic `go get` behaviour for `GO111MODULE=off` or `auto`
-- Based on Go 1.27.0 as of release `go-legacy-win7-1.27.0-2`
+- Based on Go 1.27.1 as of release `v1.27.1-1`
 - Reverts changes that break older Windows, including `RtlGenRandom` /
   `ProcessPrng`, `LoadLibraryA`, socket syscalls, and the race detector
 

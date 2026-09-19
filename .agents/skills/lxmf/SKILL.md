@@ -32,7 +32,7 @@ metadata:
 
 ## Core concepts
 
-- LXMF is a simple, flexible messaging format and delivery protocol built on Reticulum.
+- LXMF is a simple, flexible messaging format and delivery protocol built on Reticulum. Current upstream release is 1.1.x on PyPI (latest 1.1.1); the 0.9.x beta series redesigned propagation-node sync and stamps.
 - It provides zero-conf message routing, end-to-end encryption, forward secrecy and delivery confirmations.
 - It is efficient enough for LoRa, packet radio and other low-bandwidth links.
 - An LXMF message has 111 bytes of overhead: 16 bytes destination hash, 16 bytes source hash, 64 bytes Ed25519 signature, then a msgpacked payload.
@@ -115,19 +115,32 @@ metadata:
 
 ## LXMF fields
 
-This page is under construction and most fields are experimental. All fields are packed by LXMF before sending. Internally LXMF uses MessagePack.
+Most fields are experimental and client support varies. All fields are packed by LXMF before sending. Internally LXMF uses MessagePack. Constants allocated in `LXMF.py` as of 1.1.x:
 
-- `FIELD_EMBEDDED_LXMS` = `0x01` - not yet fully implemented.
+- `FIELD_EMBEDDED_LXMS` = `0x01` - embedded LXMF messages.
 - `FIELD_TELEMETRY` = `0x02` - node telemetry, all enabled sensors. See Sideband source for format.
 - `FIELD_TELEMETRY_STREAM` = `0x03` - aggregated downstream telemetry for bulk transfer.
 - `FIELD_ICON_APPEARANCE` = `0x04` - icon for the situation map. Format: `[string ICON, byte[3] FG_COLOR, byte[3] BG_COLOR]`. Icon is a Material symbol name. Colors are RGB.
 - `FIELD_FILE_ATTACHMENTS` = `0x05` - list of `[file_name, file_bytes]`.
 - `FIELD_IMAGE` = `0x06` - image container. Format: `["webp", image_bytes]`.
 - `FIELD_AUDIO` = `0x07` - audio container for non-realtime purposes. Format: `[audio_mode, audio_data]`. See `LXMF.py` for audio modes such as `AM_CODEC2_2400`.
-- `FIELD_THREAD` = `0x08` - not yet fully implemented.
+- `FIELD_THREAD` = `0x08` - bytes, full thread ID hash.
 - `FIELD_COMMANDS` = `0x09` - direct commands. Built-ins include Ping, Echo and Signal. See Sideband source for format.
 - `FIELD_RESULTS` = `0x0A` - command results.
-- `FIELD_GROUP` = `0x0B` - not yet fully implemented.
+- `FIELD_GROUP` = `0x0B` - group addressing data.
+- `FIELD_TICKET` = `0x0C` - stamp ticket (see Stamps and tickets).
+- `FIELD_EVENT` = `0x0D` - event data.
+- `FIELD_RNR_REFS` = `0x0E` - Reticulum Networking Resource references.
+- `FIELD_RENDERER` = `0x0F` - content renderer hint.
+- `FIELD_REPLY_TO` = `0x30` - bytes, full `LXMessage.hash` being replied to.
+- `FIELD_REPLY_QUOTE` = `0x31` - bytes, quoted content in UTF-8.
+- `FIELD_REACTION` = `0x40` - dict, see Reaction dict indices in `LXMF.py`.
+- `FIELD_COMMENT` = `0x41` - dict, see Comment dict indices in `LXMF.py`.
+- `FIELD_CONTINUATION` = `0x42` - dict, see Continuation dict indices in `LXMF.py`.
+
+Unallocated fields between `0x00` and `0x80` are reserved for future
+extensibility. Experimental fields should use values above `0xFF`; the
+`CUSTOM_TYPE`/`CUSTOM_DATA` pair exists for bridging non-native payloads.
 
 Example appearance field:
 ```python

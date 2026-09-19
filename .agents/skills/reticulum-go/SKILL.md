@@ -20,13 +20,13 @@ metadata:
 1. Build reticulum-go: `cd mcp/reticulum-go && go test ./... && go build`.
 2. Add the binary to your MCP client config as `reticulum-go`.
 3. Call `list_topics` or `search_docs {query}` for docs.
-4. Use `fetch_page {url}` for a specific page or `github_repo` for repository info.
+4. Use `fetch_page {url}` for a specific page.
 
 ## Examples
 
 - "Search the Reticulum-Go docs for `packet` handling."
 - "Show the package map topic."
-- "List open issues on the Reticulum-Go GitHub repo."
+- "Fetch the cryptography section of the API reference."
 
 # Reticulum-Go
 

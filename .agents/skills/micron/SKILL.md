@@ -62,7 +62,8 @@ Full tag and color tables live in
 - Fields: text, masked, multi-row, checkbox `` `? ``, radio `` `^ ``
 - Tables: GitHub-style pipes inside `` `t `` fences
 - Images: `` `(alt`w=`h=`a=`:url.webp) `` (NomadNet / Kitty, WebP only,
-  not rendered by micron-parser-go yet)
+  rendered as a deferred placeholder by upstream micron-parser-go 1.2.0+,
+  still a plain link in the vendored 1.1.4)
 - Partials `` `{url`refresh`fields} ``
 - Literals `` `= `` and `#` comments
 
@@ -93,7 +94,24 @@ vendored tree before bumping. To update: replace the vendored tree, bump
 the require version, keep the replace line, run go mod tidy offline-safe
 and go test ./... in mcp/micron. Never go get the parser from the network.
 
-### Recent changelog (v1.1.0 through v1.1.4)
+### Changelog (v1.1.0 through v1.3.0)
+
+The vendored tree is v1.1.4. Later upstream releases (not vendored yet):
+
+- v1.3.0: `Parser.Accessibility` (ARIA roles, sr-only text pairing) and
+  `Parser.Serif` options, `WxR` field flags for textareas, explicit
+  `` `:name `` anchors emitted as `<a id>`, generated heading slug
+  anchors, `#` links rewritten to the next heading slug, CRLF
+  normalization, wasm/libmicron option plumbing. `FormatNomadnetworkURL`
+  now passes `#` URLs through unchanged.
+- v1.2.0: image links render as deferred placeholders with
+  `data-mu-image-*` attributes matching MeshChatX markup; `img=` fields or
+  `/media/` URLs (NomadNet 1.4.2 layout) qualify; `:/file/` stays
+  WebP-only.
+- v1.1.5: ForceMonospace keeps consecutive ASCII spaces via
+  `Mu-mnt-group` spans (ASCII art fix).
+
+Vendored v1.1.x:
 
 - v1.1.4: NomadNet 1.4.0 folding headings (`` `+> ``, `` `-> ``, `#!fold`)
   and HTML `<details class="Mu-fold">` output.

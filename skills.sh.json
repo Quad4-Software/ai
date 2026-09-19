@@ -35,6 +35,26 @@
       ]
     },
     {
+      "title": "Self-hosted stack",
+      "description": "Reference skills for self-hosted infrastructure: media automation, containers, mesh VPNs, messaging and PaaS. Documentation only, no MCP servers.",
+      "skills": [
+        "media-stack",
+        "docker",
+        "mesh-vpn",
+        "xmpp",
+        "coolify",
+        "opensubsonic"
+      ]
+    },
+    {
+      "title": "App development",
+      "description": "Reference skills for application frameworks and platform APIs. Documentation only, no MCP servers.",
+      "skills": [
+        "wails",
+        "android-connectivity"
+      ]
+    },
+    {
       "title": "MCP servers",
       "description": "Skills for each stdio MCP server in the repo.",
       "skills": [

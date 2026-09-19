@@ -17,7 +17,7 @@ metadata:
 ## How to use
 
 1. Build rns: `cd mcp/rns && go test ./... && go build`.
-2. Add the binary to your MCP client config as `reticulum`.
+2. Add the binary to your MCP client config as `rns`.
 3. Call `list_topics` and `search_docs {query}` for the manual, or `rns_status` for local state.
 4. Community tools and `fetch_page` use HTTPS with a cache.
 

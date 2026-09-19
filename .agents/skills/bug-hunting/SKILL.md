@@ -96,3 +96,4 @@ not "fixed" by accident. Every scanner hit is a hypothesis, not a bug.
   sinks, prompt injection, AI-generated code review
 - `references/web-checklist.md` - JWT confusion, request smuggling, prototype
   pollution, open redirects, secrets-in-git workflows
+- `references/tools.md` - the 22 named methods and scanner tool arguments

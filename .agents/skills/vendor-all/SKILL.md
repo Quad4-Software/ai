@@ -76,7 +76,7 @@ wget --no-clobber -P assets/vendor/ -i urls.txt
 
 Keep vendored files under a single directory, for example `assets/vendor/` or
 `static/vendor/`. Preserve the original filename or rename to a clear,
-version-pinned name such as `jquery-3.7.1.min.js`.
+version-pinned name such as `jquery-4.0.0.min.js`.
 
 Suggested layout:
 
@@ -86,9 +86,9 @@ assets/vendor/
     inter-400.woff2
     inter-700.woff2
   css/
-    bootstrap-5.3.2.min.css
+    bootstrap-5.3.8.min.css
   js/
-    htmx-1.9.12.min.js
+    htmx-2.0.10.min.js
 ```
 
 ## Rewriting HTML
@@ -96,8 +96,8 @@ assets/vendor/
 Replace remote URLs with local paths:
 
 ```
-<link rel="stylesheet" href="assets/vendor/css/bootstrap-5.3.2.min.css">
-<script src="assets/vendor/js/htmx-1.9.12.min.js"></script>
+<link rel="stylesheet" href="assets/vendor/css/bootstrap-5.3.8.min.css">
+<script src="assets/vendor/js/htmx-2.0.10.min.js"></script>
 ```
 
 For CSS that imports fonts from a remote URL, edit the `@font-face` `src` lines

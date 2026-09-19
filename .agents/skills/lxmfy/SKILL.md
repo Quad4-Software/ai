@@ -248,7 +248,8 @@ packets.
 
 - `lxmfy create <name>` scaffolds `name.py`, `cogs/` (with
   `__init__.py` and a `basic.py` example), `data/`, `config/`.
-- `lxmfy create --template echo|note|reminder|rrc|cogtest <name>`.
+- `lxmfy create --template minimal|echo|note|reminder|rrc|cogtest <name>`.
+  `minimal` scaffolds a bare `LXMFBot` with one `hello` command.
 - `lxmfy run <template>` runs a template directly.
 - Template classes in `lxmfy.templates`: `EchoBot`, `NoteBot` (JSON
   storage), `ReminderBot` (SQLite), `RRCBot` (hubs, rooms, nick,

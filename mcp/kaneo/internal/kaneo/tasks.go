@@ -94,17 +94,24 @@ type Project struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Slug        string `json:"slug"`
+	Icon        string `json:"icon"`
 	Description string `json:"description"`
 	IsPublic    bool   `json:"isPublic"`
 	WorkspaceID string `json:"workspaceId"`
+	Position    int    `json:"position"`
 }
 
-// Column is one board column with its tasks.
+// Column is one board column. Tasks is only populated by GetBoard.
 type Column struct {
-	ID    string `json:"id"`
-	Slug  string `json:"slug"`
-	Name  string `json:"name"`
-	Tasks []Task `json:"-"`
+	ID        string `json:"id"`
+	Slug      string `json:"slug"`
+	Name      string `json:"name"`
+	Icon      string `json:"icon"`
+	Color     string `json:"color"`
+	IsFinal   bool   `json:"isFinal"`
+	Position  int    `json:"position"`
+	ProjectID string `json:"projectId"`
+	Tasks     []Task `json:"-"`
 }
 
 type rawColumn struct {
@@ -192,7 +199,7 @@ func (c *Client) GetTask(ctx context.Context, id string) (*Task, error) {
 
 // CreateTask opens a task. Empty status/priority fall back to
 // to-do/no-priority.
-func (c *Client) CreateTask(ctx context.Context, projectID, title, description, priority, status, dueDate string) (*Task, error) {
+func (c *Client) CreateTask(ctx context.Context, projectID, title, description, priority, status, dueDate, assignee string) (*Task, error) {
 	pid := c.ProjectID(projectID)
 	if pid == "" {
 		return nil, fmt.Errorf("missing projectId (arg or KANEO_PROJECT_ID)")
@@ -219,6 +226,9 @@ func (c *Client) CreateTask(ctx context.Context, projectID, title, description, 
 	if dueDate != "" {
 		payload["dueDate"] = dueDate
 	}
+	if assignee != "" && assignee != "none" {
+		payload["userId"] = assignee
+	}
 	var rt rawTask
 	if err := c.do(ctx, http.MethodPost, "/task/"+url.PathEscape(pid), nil, payload, &rt); err != nil {
 		return nil, err
@@ -228,13 +238,14 @@ func (c *Client) CreateTask(ctx context.Context, projectID, title, description, 
 }
 
 // Patch is the set of task fields update_task can change. Empty fields
-// are left untouched.
+// are left untouched. Assignee takes a user id, or "none" to unassign.
 type Patch struct {
 	Title       string
 	Description string
 	Priority    string
 	Status      string
 	DueDate     string
+	Assignee    string
 }
 
 // UpdateTask applies the non-empty fields of p via the granular
@@ -273,8 +284,15 @@ func (c *Client) UpdateTask(ctx context.Context, id string, p Patch) (*Task, err
 	if p.DueDate != "" {
 		steps = append(steps, step{"/task/due-date/" + id, map[string]any{"dueDate": p.DueDate}})
 	}
+	if p.Assignee != "" {
+		var uid any = p.Assignee
+		if p.Assignee == "none" {
+			uid = nil
+		}
+		steps = append(steps, step{"/task/assignee/" + id, map[string]any{"userId": uid}})
+	}
 	if len(steps) == 0 {
-		return nil, fmt.Errorf("nothing to update; pass title, description, priority, status, or dueDate")
+		return nil, fmt.Errorf("nothing to update; pass title, description, priority, status, dueDate, or assignee")
 	}
 	for _, s := range steps {
 		if err := c.do(ctx, http.MethodPut, s.path, nil, s.payload, nil); err != nil {
