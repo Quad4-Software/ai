@@ -158,13 +158,15 @@ tools should be designed in its spirit:
 
 ## NomadNet
 
-- NomadNet 1.4.0 is available from https://pypi.org/project/nomadnet/.
-- A prototype for inline image rendering was discussed in a rns.recipes forum thread. The screenshot is live in nomadnet, not a mockup.
+- NomadNet 1.4.x is available from https://pypi.org/project/nomadnet/ (latest 1.4.3).
+- Collapsible ("folding") headings landed in 1.4.0: `+>` expanded, `->` collapsed, `#!fold` custom glyphs. See the micron skill.
+- Inline image rendering shipped in 1.4.x: pages serve images from a `/media/` folder (1.4.2 layout) and the client renders them in the terminal.
 - It uses the Kitty Terminal Graphics Protocol with zero new dependencies and pure Python.
 - Supports image buffer re-use, sizing in cols/rows or percentages, and left/right/center alignment.
 - On unsupported terminals it falls back to an alt-text placeholder.
 - For low-bandwidth links the serving side needs scaling, compression, selective retrieval and a user-selectable text-only mode.
 - Terminals tested: Kitty, Konsole and Wezterm. Ghostty appears supported. Windows Terminal support is being explored.
+- RNS 1.5.3 added a media request handler to `rngit` that serves images to nomadnet clients, with automatic webp conversion.
 - Screenshot: ![nnimgs.png](https://rns.recipes/storage/forum/XClxgw3Xynkh1DZYiNnKMj5pwp90moVGIiIVxg3T.png)
 - Source thread: https://rns.recipes/forum/general/so-this-is-possible-but
 
@@ -223,6 +225,15 @@ tools should be designed in its spirit:
 - These `rns://` paths are only resolvable inside a running Reticulum network.
   Tools should not attempt HTTP access to them and should not fabricate content.
 
+## Evaluating implementations
+
+[Evaluating a Reticulum Implementation](https://reticulum.network/manual/brandolinis.html)
+in the official manual describes the criteria the author applies to third-party
+implementations: provenance and honest authorship, credit to the reference
+implementation, license conditions on derived work, interop with reality,
+honest network presence and no unilateral wire-protocol inventions. Use it when
+assessing or documenting how an implementation relates to upstream RNS.
+
 ## Reticulum MCP tools
 
 Server and tool conventions are in [references/tools.md](references/tools.md). This section is optional if the relevant MCP server is installed.
@@ -261,7 +272,7 @@ The Zen of Reticulum is not only for the core stack. Apply it to every Reticulum
 
 ### Security-relevant fixes from upstream history
 
-Recent RNS releases (especially 1.4.x through 1.5.2) include fixes worth knowing about:
+Recent RNS releases (especially 1.4.x through 1.5.4) include fixes worth knowing about:
 
 - **Resource decompression bomb** - fixed a `bz2` decompression bomb vulnerability in Resource transfer assembly and Buffer `StreamDataMessage` unpacking. Do not accept arbitrary resources from untrusted sources on unpatched versions.
 - **rnsh security** - fixed a critical security issue in `rnsh`. Keep `rnsh` updated and never run `rnsh -n` (no auth) on untrusted or public networks.
@@ -282,7 +293,7 @@ Recent RNS releases (especially 1.4.x through 1.5.2) include fixes worth knowing
 - **No auth on remote utilities** - `rnsh -n` and `rnx -n` accept commands from any identity. Only use them on fully trusted, closed links, never on public interfaces.
 - **IFAC on public carriers** - any interface over the Internet, public WiFi, or shared radio should use IFAC with a strong passphrase or authentication. Without it, anyone can inject packets.
 - **Monitor and blackhole** - use `rnstatus -b` to watch blocked IPs and `rnpath -B` to blackhole abusive identities. Combine with `null_ident` blocking for unknown peers.
-- **Keep software updated** - 1.5.2 fixed a resource transfer regression and an I2P keepalive bug; earlier releases fixed `rnsh`, decompression bombs, and discovery issues. Use `rngit` or `pip` to stay current.
+- **Keep software updated** - 1.5.2 fixed a resource transfer regression and an I2P keepalive bug, 1.5.3 hardened `rngit` workdoc permissions and added media serving, 1.5.4 fixed RNode BLE reconnection deadlocks; earlier releases fixed `rnsh`, decompression bombs, and discovery issues. Use `rngit` or `pip` to stay current.
 - **Redact and bound output** - tools should sanitize local state, never return key material, and keep responses short for low-bandwidth links.
 - **Do not fake source addresses** - Reticulum uses cryptographic addresses. Do not invent destination hashes, fabricate announces, or replay signed messages.
 - **Test on real links** - behaviour on fast TCP differs from LoRa. Test latency, packet loss, and retransmission before assuming a design works.

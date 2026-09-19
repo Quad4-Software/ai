@@ -33,8 +33,13 @@ rngit node that serves repositories, and the git-remote-rns helper that lets Git
 use the rns:// URL scheme. Once RNS is installed, ordinary Git commands work with
 Reticulum-hosted repositories the same way they work with any other remote.
 
-This feature was introduced in RNS 1.2.0. It has not been tested extensively in
-public or semi-public deployments, so be careful when hosting repositories.
+This feature was introduced in RNS 1.2.0 and has grown steadily since: work
+documents, permissions, signed releases and page nodes arrived across 1.2.x,
+media serving to nomadnet clients and instant permission activation landed in
+1.5.3. Upstream RNS releases are now distributed and verified through rngit
+itself, so it is the reference deployment. Still treat a public page node as
+infrastructure: keep RNS updated and review the `[access]` and `stats_ignore`
+defaults before exposing repositories.
 
 ## URLs
 
@@ -594,6 +599,48 @@ Verify with standard Git commands:
 
 `rngcs` handles all verification. A `.mailmap` file can resolve identity hashes to
 LXMF addresses for author display.
+
+### Operational details
+
+- `rngcs` ships inside the `rns` Python package (`RNS.Utilities.rngit.commitsigs`).
+  `pip install rns` is enough to get it; there is no separate rngcs package.
+- `git log --format=%G?` reports `G` for a verified rngcs signature, `E` when the
+  verifier is not installed or the signature cannot be checked, and `N` for
+  unsigned commits. CI signature audits can rely on these codes.
+- Because the author field must equal the identity hash, `git commit -s`
+  produces `Signed-off-by: Name <identity-hash>`. DCO checks that accept any
+  `Name <addr>` trailer keep working.
+- A `.mailmap` entry such as `Name <canonical-addr> <identity-hash>` keeps
+  `git log` and shortlog output readable while the author field stays
+  identity-bound.
+- The signature is self-contained: commit SHA-256, signer identity hash,
+  public key and Ed25519 signature travel inside the commit header. Verification
+  needs no keyserver, no allowed-signers file and no network. A verifier only
+  needs `rngcs` installed.
+- Forges and tampering are caught at verify time: a different commit hash,
+  different author hash or stripped signature all fail verification.
+- `git config --local` keeps rngcs signing scoped to one repository while other
+  projects keep using GPG. The `--global` form applies it everywhere.
+
+### CI verification recipe
+
+To verify rngcs-signed commits in CI (GitHub Actions example):
+
+    python3 -m pip install "rns==<pinned version>"
+    git config --global gpg.ssh.program rngcs
+    git config --global gpg.ssh.allowedsignersfile none
+    git log --show-signature            # or %G? checks per commit
+
+Without these steps, rngcs signatures report as `E` (signed but unverifiable),
+which is still distinct from `N` (unsigned) for advisory jobs.
+
+### Ecosystem trade-off
+
+GitHub and other forges cannot parse the RSG payload inside the SSH armor, so
+rngcs-signed commits show no verified badge there. Verification is meaningful
+on the rns side and anywhere `rngcs` is installed. Teams that need forge-side
+badges keep GPG; teams that want identity-bound, offline-verifiable signing
+inside Reticulum use rngcs.
 
 ## Notes
 
