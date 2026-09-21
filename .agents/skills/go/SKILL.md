@@ -12,6 +12,7 @@ compatibility: go-1.27
 - You need to know which Go version or toolchain this repo uses.
 - You are deciding between vendored, offline, or local `third_party/` builds.
 - You are writing code for TinyGo, embedded targets, or legacy Windows.
+- You are hunting goroutine leaks or tuning allocation-heavy code on Go 1.27.
 
 ## How to use
 
@@ -69,16 +70,63 @@ runtime and libraries. The Go 1 compatibility promise is preserved.
 
 ### Runtime and standard library
 
-- **Faster small allocations**: specialized routines for objects under 80 bytes
-  reduce their allocation cost by up to 30%, with about 1% overall improvement
-  in allocation-heavy programs. Binaries grow by about 60 KB. Disable with
-  `GOEXPERIMENT=nosizespecializedmalloc` if needed.
-- **Goroutine leak profile**: `runtime/pprof` now supports the `goroutineleak`
-  profile type, also exposed at `/debug/pprof/goroutineleak`.
 - `encoding/json/v2` and `encoding/json/jsontext` provide a new JSON API.
 - `crypto/mldsa` implements the ML-DSA post-quantum signature scheme.
 - `crypto/tls` adds MLKEM1024 and ML-DSA for TLS 1.3.
 - `uuid` is added to the standard library.
+
+#### Goroutine leak profiles
+
+Go 1.27 adds a `goroutineleak` profile to `runtime/pprof`, also auto-exposed
+at `/debug/pprof/goroutineleak` when `net/http/pprof` is imported. It finds
+goroutines permanently blocked on channels or `sync` primitives (Mutex,
+RWMutex, WaitGroup, Cond), including nil-channel and no-default `select`
+blocks. Unlike the plain `goroutine` profile it is precise, with little to
+no false positives, and safe to run in production.
+
+How it works: a goroutine is live if it is not blocked, or if a primitive
+blocking it is reachable from a live goroutine. Detection reuses the GC:
+only unblocked goroutines are mark roots, then any blocked goroutine on a
+marked primitive becomes a root in the next round. Whatever never gets
+marked is leaked. From the ASPLOS 2025 work by Aarhus, WashU and Uber.
+
+Limits and cost:
+
+- Memory overreach: a primitive kept reachable through globals or runnable
+  goroutines masks the leak even if never used again. Regiment primitive
+  lifecycles to help it.
+- Only first-class blocking counts. File and network IO, syscalls, and
+  custom spin locks are never reported.
+- Detection is after the fact. For tests use `goleak` and `synctest`
+  (Go 1.25) alongside.
+- Worst case O(n^2) marking rounds on daisy-chained blocking. Since a leak
+  observable once stays observable, profile on a slow period (e.g. every
+  4 hours) to keep overhead near zero.
+
+Common leak shapes it catches: unbuffered sends after an early error
+return, double sends on the error path, sends racing a context timeout,
+`range ch` workers where nobody closes the channel, and missed unlocks.
+
+#### Size-specialized allocation
+
+Go 1.27 specializes `mallocgc` per span class for allocations of 80 bytes
+or less: 20-30% faster allocations, about 1% faster allocation-heavy
+programs, ~60 KB larger binaries. The compiler emits a direct call to a
+specialized variant (for example `mallocgcSmallNoScanSC3`) when the size
+is known at compile time. `mallocgc` itself dispatches dynamically for
+unknown sizes like slices of dynamic length.
+
+Why it is faster: constant-size clearing compiles to inline instructions
+instead of `memclrNoHeapPointers` calls, the span class is not computed,
+and pointer-bitmap bookkeeping is constant-folded. Size classes: 1-8,
+9-16, 17-24, 25-32, 33-48, 49-64, 65-80 bytes. The 80 byte cutoff was
+tuned against instruction cache pressure. The biggest wins land on 16 and
+24 byte objects, which cover strings, interface values and slices.
+
+The variants are generated, not hand-written: shared parts are inlined by
+a generator built on `go/ast` and `astutil`, so the copies cannot drift.
+No code changes needed. Disable with
+`GOEXPERIMENT=nosizespecializedmalloc` if you suspect a regression.
 
 ## Go 1.26
 
