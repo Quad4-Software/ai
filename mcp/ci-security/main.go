@@ -28,6 +28,12 @@ var topics = []docs.Topic{
 	{ID: "security-hardening", Title: "Security hardening for Actions", URL: "https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions", Summary: "Script injection, third-party actions, OpenID Connect, compromised actions"},
 	{ID: "docker-owasp", Title: "OWASP Docker Security Cheat Sheet", URL: "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html", Summary: "Container hardening: user, capabilities, resources, images, secrets"},
 	{ID: "immutable-releases", Title: "Immutable releases", URL: "https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/immutable-releases", Summary: "Prevent tag re-pointing and release asset tampering"},
+	{ID: "zizmor", Title: "zizmor overview", URL: "https://docs.zizmor.sh/", Summary: "Static analysis for CI/CD: GitHub Actions, Dependabot, pre-commit"},
+	{ID: "zizmor-install", Title: "zizmor installation", URL: "https://docs.zizmor.sh/installation/", Summary: "Install zizmor via brew, PyPI (pip/pipx/uvx), cargo, or the ghcr.io image"},
+	{ID: "zizmor-usage", Title: "zizmor usage", URL: "https://docs.zizmor.sh/usage/", Summary: "Input collection, online/offline modes, output formats (plain, json, sarif, github), exit codes, personas, autofix, ignores"},
+	{ID: "zizmor-audits", Title: "zizmor audit rules", URL: "https://docs.zizmor.sh/audits/", Summary: "Audit index: template-injection, unpinned-uses, cache-poisoning, excessive-permissions, dangerous-triggers, and more"},
+	{ID: "zizmor-config", Title: "zizmor configuration", URL: "https://docs.zizmor.sh/configuration/", Summary: "zizmor.yml config file: per-rule ignores, persona and severity settings"},
+	{ID: "zizmor-integrations", Title: "zizmor integrations", URL: "https://docs.zizmor.sh/integrations/", Summary: "GitHub Actions via zizmorcore/zizmor-action or manual SARIF/annotations, pre-commit, IDE LSP"},
 }
 
 func strArg(desc string) map[string]any {
@@ -53,7 +59,7 @@ func tools(src *docs.Source) []mcp.Tool {
 	return []mcp.Tool{
 		{
 			Name:        "list_guides",
-			Description: "List CI security guides (GitHub Actions secure use, workflow syntax, secrets, pull_request_target, OWASP Docker, immutable releases).",
+			Description: "List CI security guides (GitHub Actions secure use, workflow syntax, secrets, pull_request_target, OWASP Docker, immutable releases, zizmor docs).",
 			InputSchema: obj(map[string]any{}),
 			Handle: func(_ context.Context, _ json.RawMessage) (string, error) {
 				b, _ := json.MarshalIndent(src.List(), "", "  ")

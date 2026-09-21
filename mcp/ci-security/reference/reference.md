@@ -85,3 +85,94 @@ into run: directly, the value is attacker-controlled. Use an intermediate env:
   step-level hardening).
 - Treat caches as untrusted input across trust boundaries (PR caches can
   poison default-branch builds).
+
+## zizmor
+
+zizmor (github.com/zizmorcore/zizmor) is a static analyzer for CI/CD
+definitions: GitHub Actions workflows and action.yml files, Dependabot
+configs, and pre-commit configs. Its audits cover template-injection,
+unpinned-uses, excessive-permissions, cache-poisoning, dangerous-triggers,
+artipacked (credential persistence via actions/checkout), ref-confusion,
+known-vulnerable-actions, self-hosted-runner, secrets-in-herit, and more.
+See docs.zizmor.sh/audits for the full index.
+
+Install:
+
+    uvx zizmor --help              # runs the latest wheel from PyPI
+    uvx zizmor@1.30.1 .            # pinned version
+    pipx install zizmor            # or: brew install zizmor
+    cargo install --locked zizmor
+    docker pull ghcr.io/zizmorcore/zizmor:latest
+
+Local runs:
+
+    zizmor .                       # audit a whole repo (workflows, actions,
+                                   # dependabot, pre-commit)
+    zizmor .github/workflows/      # workflows only
+    zizmor owner/repo              # audit a remote repo (needs a token)
+    cat workflow.yml | zizmor -    # stdin
+
+Operating modes: offline is the default when no token is present. Setting
+GH_TOKEN, GITHUB_TOKEN, or ZIZMOR_GITHUB_TOKEN enables online audits (for
+example known-vulnerable-actions, which queries the GitHub advisory
+database). --offline forces offline, --no-online-audits fetches inputs but
+skips online audits. Local tip: zizmor --gh-token $(gh auth token) ...
+
+Output and exit codes: --format plain (default), json, sarif, or github
+(workflow annotations, capped at 10 per step by GitHub). Exit code 0 means
+clean; 11-14 mean findings, where the code maps to the highest severity
+(informational, low, medium, high). --format=sarif always exits 0 so SARIF
+consumers see results inside the file, not via exit code. Filter noise with
+--min-severity and --min-confidence. Personas: regular (default, high
+signal), --persona=pedantic (code smells), --persona=auditor (everything).
+--fix rewrites fixable findings in place (safe fixes only; --fix=all also
+applies unsafe ones).
+
+Ignoring findings:
+
+    run: | # zizmor: ignore[template-injection] reason here
+      echo "${{ github.event.issue.title }}"
+
+or a zizmor.yml (repo root or .github/zizmor.yml) with per-rule ignore
+lists keyed by file[:line[:col]]:
+
+    rules:
+      template-injection:
+        ignore:
+          - safe.yml
+          - wf.yml:123
+          - wf.yml:123:45
+
+### zizmor in GitHub Actions
+
+Easiest: zizmorcore/zizmor-action (pin to SHA like any action). It runs a
+digest-pinned ghcr.io image and exposes persona, min-severity,
+min-confidence, version, collect, and online-audits inputs.
+
+    - uses: zizmorcore/zizmor-action@<sha> # vX.Y.Z
+      with:
+        advanced-security: false   # plain output, fails the job on findings
+
+Modes:
+
+- advanced-security: true (default) writes SARIF and uploads it via
+  github/codeql-action/upload-sarif to the Security tab. Needs
+  security-events: write (plus contents/actions: read on private repos).
+  It never fails on findings; use rulesets ("code scanning merge
+  protection") to block merges on alerts.
+- advanced-security: false uses plain output and propagates zizmor's exit
+  code, so findings fail the job. Add annotations: true for inline
+  annotations instead (remember the 10-annotation cap).
+- token defaults to github.token and enables online audits; set
+  online-audits: false for a fully offline run.
+
+Manual equivalent without the action:
+
+    - uses: astral-sh/setup-uv@<sha> # vX.Y.Z
+    - run: uvx "zizmor@1.30.1" --format=sarif . > results.sarif
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: github/codeql-action/upload-sarif@<sha> # vX.Y.Z
+      with:
+        sarif_file: results.sarif
+        category: zizmor

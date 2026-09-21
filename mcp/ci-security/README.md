@@ -6,9 +6,10 @@ workflow and Dockerfile scanning, and SHA pinning. Stdlib only.
 ## Tools
 
 - `list_guides` / `get_guide {id}` - GitHub secure-use, pull_request_target,
-  secrets, workflow syntax, security hardening, OWASP Docker, immutable releases
+  secrets, workflow syntax, security hardening, OWASP Docker, immutable
+  releases, zizmor docs (install, usage, audits, config, integrations)
 - `reference` - embedded offline cheat sheet (pinning, secrets, permissions,
-  injection, Docker hardening)
+  injection, Docker hardening, zizmor usage)
 - `scan_workflow {yaml}` - unpinned actions, pull_request_target + head checkout,
   script injection (including inside run blocks), missing permissions, secret
   echo, pipe-to-shell, hardcoded credentials
