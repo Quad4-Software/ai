@@ -103,8 +103,9 @@ Null or empty password means opportunistic pairing. Callbacks:
 `onPairingSetupRequestReceived`, `onPairingSetupSucceeded`,
 `onPairingSetupFailed`.
 
-`AwarePairingConfig` (API 34): `setBootstrappingMethods` +
-`NCS_PK_PASN_128/256` cipher suites. Bootstrapping methods:
+`AwarePairingConfig` (API 34): `setBootstrappingMethods` is API 34,
+while `setSupportedCipherSuites` with `NCS_PK_PASN_128/256` landed in
+API 36. Bootstrapping methods:
 `OPPORTUNISTIC`, `PIN_CODE_DISPLAY`, `PASSPHRASE_DISPLAY`,
 `QR_DISPLAY`, `QR_SCAN`, `PIN_CODE_KEYPAD`, `PASSPHRASE_KEYPAD`,
 `NFC_TAG`, `NFC_READER`. `SERVICE_MANAGED` and `SKIPPED` added API 37.

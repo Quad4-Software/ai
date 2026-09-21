@@ -23,7 +23,7 @@ mgr.connect(channel, config, actionListener);
   (commonly `192.168.49.1`). Clients open sockets to it. The GO
   accepts. If the local device is GO, the address is anonymized
   unless the caller holds `LOCAL_MAC_ADDRESS` (signature).
-- `createGroup` makes an autonomous GO (legacy-device hotspot); `requestGroupInfo` returns `WifiP2pGroup` (`getInterface`,
+- `createGroup` makes an autonomous GO (legacy-device hotspot).`requestGroupInfo` returns `WifiP2pGroup` (`getInterface`,
   `getNetworkName`, `getPassphrase`, `getFrequency`, `getClientList`,
   `getNetworkId` API 30, `getSecurityType` + `SECURITY_TYPE_WPA2_PSK`/
   `WPA3_SAE`/`WPA3_COMPATIBILITY` + `getGroupOwnerBssid` API 36). R2

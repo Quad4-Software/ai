@@ -34,6 +34,15 @@ Third-party apps can use:
   degrade gracefully.
 - **`NtnSignalStrength`** (public API 37): `NONE/POOR/MODERATE/GOOD/
   GREAT`, `getLevel()`.
+- **`TelephonyCallback.CarrierRoamingNtnListener`** (public interface,
+  API 37): `onCarrierRoamingNtnModeChanged`,
+  `onCarrierRoamingNtnSignalStrengthChanged`, plus eligibility and
+  available-services callbacks. Caveat: the underlying
+  `EVENT_CARRIER_ROAMING_NTN_*` constants remain `@SystemApi` +
+  `READ_PHONE_STATE` + `FLAG_SATELLITE_SYSTEM_APIS` in the
+  android17-release tree, so whether a third-party app can actually
+  register and receive these events is unverified and likely
+  privileged in practice.
 
 ## What is carrier/system gated
 

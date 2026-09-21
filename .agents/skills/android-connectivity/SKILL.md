@@ -121,6 +121,13 @@ are excluded. LAN DNS on :53 is exempt. Expect it to gate socket
 traffic over Wi-Fi Direct group and Aware link interfaces for
 targetSdk 37 apps, and request it alongside `NEARBY_WIFI_DEVICES`.
 
+Android 16 already carries the enforcement behind a compat flag for
+testing: `adb shell am compat enable RESTRICT_LOCAL_NETWORK <pkg>`
+plus a reboot. During the opt-in phase the platform relies on
+`NEARBY_WIFI_DEVICES` as a temporary stand-in. Denial count for
+`ACCESS_LOCAL_NETWORK` resets with the NEARBY_DEVICES group, so a
+user who denied twice can be re-prompted after the reset window.
+
 ## API-level matrix
 
 | API | Android | What lands |
@@ -131,8 +138,8 @@ targetSdk 37 apps, and request it alongside `NEARBY_WIFI_DEVICES`.
 | 31 | 12 | `getAvailableAwareResources`. OOB `createNetworkSpecifier*` deprecated |
 | 33 | 13 | `NEARBY_WIFI_DEVICES`. `WifiAwareDataPathSecurityConfig`. Instant comm mode. Session-count characteristics |
 | 34 | 14 | NAN pairing + bootstrapping (`AwarePairingConfig`, `initiatePairingRequest`). Mandatory FGS types |
-| 35 | 15 | AOSP satellite stack (hidden `SatelliteManager`, `FEATURE_TELEPHONY_SATELLITE`). `WifiP2pListener` |
-| 36 | 16 | `SatelliteManager` public + `SatelliteStateChangeListener` + `READ_BASIC_PHONE_STATE`. `TRANSPORT_SATELLITE`/`NET_CAPABILITY_NOT_BANDWIDTH_CONSTRAINED`. P2P R2: pairing bootstrapping, PCC mode, USD discovery |
+| 35 | 15 | AOSP satellite stack (hidden `SatelliteManager`, `FEATURE_TELEPHONY_SATELLITE`). `TRANSPORT_SATELLITE`/`NET_CAPABILITY_NOT_BANDWIDTH_CONSTRAINED` (also via U Extensions 12). `WifiP2pListener` |
+| 36 | 16 | `SatelliteManager` public + `SatelliteStateChangeListener` + `READ_BASIC_PHONE_STATE`. `AwarePairingConfig.setSupportedCipherSuites` (NCS_PK_PASN_*). P2P R2: pairing bootstrapping, PCC mode, USD discovery |
 | 36.1 | 16 minor | `PROPERTY_SATELLITE_DATA_OPTIMIZED` manifest opt-in |
 | 37 | 17 | `ACCESS_LOCAL_NETWORK` enforcement. Aware in-band data-path requests (`AwareDataPathRequest`). `NtnSignalStrength` public |
 
