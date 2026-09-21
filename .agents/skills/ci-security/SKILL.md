@@ -34,7 +34,8 @@ metadata:
 
 .github/workflows/ contains: badges.yml, bench.yml, ci.yml,
 dependency-review.yml, docker.yml, fuzz.yml, gosec.yml, leak.yml,
-links.yml, mcp-inspector.yml, race.yml, release.yml, and scorecard.yml.
+links.yml, mcp-inspector.yml, race.yml, release.yml, scorecard.yml, and
+zizmor.yml.
 
 - ci.yml - fmt/vet/test/build plus gosec via
   go install github.com/securego/gosec/v2/cmd/gosec@v2.29.0 then make gosec.
@@ -49,6 +50,11 @@ links.yml, mcp-inspector.yml, race.yml, release.yml, and scorecard.yml.
 - links.yml - markdown link checking (scripts/link-check.py).
 - mcp-inspector.yml - runs scripts/mcp-inspector.py over the servers.
 - scorecard.yml - OpenSSF Scorecard supply-chain checks.
+- zizmor.yml - zizmor static analysis of the workflow files via
+  zizmorcore/zizmor-action (advanced-security: false, so findings fail
+  the job). Local equivalent: make zizmor (or zizmor .). Get_guide topic
+  ids zizmor, zizmor-install, zizmor-usage, zizmor-audits, zizmor-config,
+  zizmor-integrations fetch docs.zizmor.sh pages.
 - release.yml - v*.*.* tag triggered release (see release skill).
 
 ## Rules for editing workflows

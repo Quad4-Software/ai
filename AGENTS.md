@@ -73,7 +73,9 @@ exclude /third_party/. Read the vendored CHANGELOG.md when bumping
 
 Workflows in .github/workflows/: ci.yml, dependency-review.yml,
 gosec.yml, race.yml, fuzz.yml, bench.yml, leak.yml, release.yml,
-scorecard.yml, badges.yml, docker.yml, links.yml, mcp-inspector.yml.
+scorecard.yml, badges.yml, docker.yml, links.yml, mcp-inspector.yml,
+zizmor.yml (zizmor static analysis of the workflow files themselves,
+gates on findings; local equivalent: make zizmor).
 All actions pinned to full SHAs. Every job begins with
 step-security/harden-runner (pinned). No arbitrary shell on untrusted
 input. Dependabot handles gomod weekly.
@@ -82,7 +84,8 @@ See .agents/skills/ for detailed guides: mcp-toolkit, reticulum,
 lxmfy, micron, ci-security, release, nebula. Documentation-only
 reference skills (no MCP servers) cover self-hosted infrastructure:
 media-stack, docker, mesh-vpn, xmpp, coolify, opensubsonic. App
-platform skills: wails, android-connectivity.
+platform skills: wails, android-connectivity, android-dev,
+android-media, android-performance.
 
 ## Agent Skills distribution
 

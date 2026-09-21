@@ -3,7 +3,7 @@
 # mcp/scaffold is a template, not a built server.
 SERVERS := $(filter-out mcp/scaffold,$(wildcard mcp/*))
 
-.PHONY: all build test vet fmt go-fix gosec clean install golangci release inspector mcp-config server-json links
+.PHONY: all build test vet fmt go-fix gosec clean install golangci release inspector mcp-config server-json links zizmor
 
 all: fmt go-fix vet test build
 
@@ -32,6 +32,9 @@ inspector: build mcp-config
 
 links:
 	@python3 scripts/link-check.py
+
+zizmor:
+	zizmor .
 
 build test vet fmt gosec clean:
 	@for d in $(SERVERS); do \
