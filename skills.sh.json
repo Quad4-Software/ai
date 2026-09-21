@@ -8,6 +8,8 @@
         "mcp-toolkit",
         "bug-hunting",
         "no-slop",
+        "no-trickery",
+        "anti-hallucination",
         "ci-security",
         "release",
         "micron",
@@ -59,7 +61,9 @@
         "android-connectivity",
         "android-dev",
         "android-media",
-        "android-performance"
+        "android-performance",
+        "web-perf",
+        "void-theme"
       ]
     },
     {
@@ -67,7 +71,8 @@
       "description": "Skills for JS and Python package management and supply chain hardening: pnpm workspaces and lockfiles, uv, and Poetry.",
       "skills": [
         "pnpm",
-        "python-packaging"
+        "python-packaging",
+        "dep-versions"
       ]
     },
     {
@@ -91,7 +96,9 @@
         "devops",
         "research-methods",
         "microservices-ha",
-        "project-scaffold"
+        "project-scaffold",
+        "writing",
+        "stylometry"
       ]
     },
     {
