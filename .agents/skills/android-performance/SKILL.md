@@ -19,10 +19,15 @@ description: >
 ## How to use
 
 1. Read this file for the methodology and the common jank causes.
-2. Load [references/jankstats.md](references/jankstats.md) for the
+2. Script the measurement so before and after runs are identical:
+   `dumpsys gfxinfo <pkg> reset`, run the interaction via
+   `adb shell input ...`, then parse `dumpsys gfxinfo <pkg> framestats`
+   for janky count, p50-p99, slow UI/draw counts and the worst
+   populated histogram bucket.
+3. Load [references/jankstats.md](references/jankstats.md) for the
    JankStats integration code, throttled logging, and the unit-testable
    helper pattern.
-3. Pair with `android-dev` for the adb verification loop and
+4. Pair with `android-dev` for the adb verification loop and
    `android-media` for streaming-specific buffering fixes.
 
 ## Examples
@@ -140,8 +145,19 @@ A good fix shows as fewer janky frames on the same swipe script.
 ## Heavier tools when the simple answer is wrong
 
 - `adb shell dumpsys gfxinfo <pkg> framestats` for raw per-stage
-  nanosecond timing.
-- Perfetto/`systrace` for CPU vs GPU vs binder breakdown.
+  nanosecond timing. Reset with `dumpsys gfxinfo <pkg> reset`, run the
+  scripted interaction, read the summary block: janky count/percent,
+  percentiles, slow UI/draw counts, and the frame-time histogram tail.
+  Warm the app with a few uncounted runs first so install-time JIT
+  does not pollute the measurement.
+- `am profile start <pid> /data/local/tmp/x.trace` /
+  `am profile stop <pid>` captures a method trace on debuggable builds.
+  Pull it and parse with trace_processor; the slice table resolves
+  method names and durations. This is the reliable fallback when
+  Perfetto comes back empty.
+- Perfetto/`systrace` for CPU vs GPU vs binder breakdown. Note ftrace
+  is blocked on many production builds, so a Perfetto trace may return
+  no kernel events.
 - Macrobenchmark (`androidx.benchmark.macro`) with `FrameTimingMetric`
   for a repeatable scroll test that runs in CI. Needs a separate
   benchmark module and a non-debuggable build variant, so it is
@@ -159,3 +175,23 @@ A good fix shows as fewer janky frames on the same swipe script.
   unremembered `ImageRequest`s.
 - Measure before optimizing. One janky frame in 66 is not the same as
   one in 6.
+
+## Views (non-Compose) jank causes worth checking
+
+- Whole-fragment layout inflation on the main thread. Heavy layouts
+  with Material widgets can take hundreds of ms. Pre-inflate a copy on
+  a background thread into a one-slot pool and bind it in onCreateView
+  with `DataBindingUtil.bind`. Views that create a `Handler()` in a
+  field initializer break off-main inflation: bind handlers to
+  `Looper.getMainLooper()` instead.
+- Rebuilding the display list on the UI thread: copying a synchronized
+  collection, inserting date separators, and computing status rows on
+  every refresh. Inserting into the middle of an ArrayList while
+  iterating is quadratic. Build a prepared list on a serial executor
+  and swap it in under one lock on the UI thread, with a generation
+  counter to drop stale results.
+- `notifyDataSetChanged` after every refresh request. Coalesce refresh
+  requests so offline reconnect churn does not rebind the list
+  repeatedly.
+- FLAG_SECURE windows: screenshots come out black, use
+  `adb shell uiautomator dump` to verify UI state instead.
