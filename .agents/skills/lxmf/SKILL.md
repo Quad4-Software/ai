@@ -32,7 +32,7 @@ metadata:
 
 ## Core concepts
 
-- LXMF is a simple, flexible messaging format and delivery protocol built on Reticulum. Current upstream release is 1.1.x on PyPI (latest 1.1.1); the 0.9.x beta series redesigned propagation-node sync and stamps.
+- LXMF is a simple, flexible messaging format and delivery protocol built on Reticulum. Current upstream release is 1.1.x on PyPI (latest 1.1.1). The 0.9.x beta series redesigned propagation-node sync and stamps.
 - It provides zero-conf message routing, end-to-end encryption, forward secrecy and delivery confirmations.
 - It is efficient enough for LoRa, packet radio and other low-bandwidth links.
 - An LXMF message has 111 bytes of overhead: 16 bytes destination hash, 16 bytes source hash, 64 bytes Ed25519 signature, then a msgpacked payload.
@@ -74,7 +74,7 @@ metadata:
 - `LXStamper` generates it by creating a workblock from the message-id through repeated HKDF rounds, then searching for a random 32-byte stamp that, when hashed with the workblock, produces a value below a target threshold.
 - `stamp_cost` controls the difficulty. A higher cost requires more CPU work.
 - Stamps limit abuse on public-facing or resource-constrained nodes, such as propagation nodes or paper-message gateways.
-- Stamp generation is CPU-bound; it uses multiprocessing on supported platforms.
+- Stamp generation is CPU-bound. It uses multiprocessing on supported platforms.
 - A `ticket` is a stamp-like token that can be included with a message to pre-pay or defer stamp validation. Default ticket expiry is 21 days with a 5-day grace period. Tickets automatically renew when less than 14 days remain.
 - Set `include_ticket=True` on a message to attach a ticket.
 
@@ -94,7 +94,7 @@ metadata:
 - This pattern is often called sneakernet: messages are moved by people on foot, by printed QR, by USB or any other physical carrier.
 - To read a paper message, the recipient needs the destination identity (or source identity, depending on encoding) imported into an LXMF client such as Sideband.
 - Paper messages bypass radio and network links entirely. This is useful for extreme off-grid, censorship-resistant or long-delay scenarios.
-- `PAPER_MDU` is sized for QR-code storage; the `lxm://` URI is a single string that contains the full encrypted message.
+- `PAPER_MDU` is sized for QR-code storage. The `lxm://` URI is a single string that contains the full encrypted message.
 
 ## LXM Router and API
 
@@ -139,7 +139,7 @@ Most fields are experimental and client support varies. All fields are packed by
 - `FIELD_CONTINUATION` = `0x42` - dict, see Continuation dict indices in `LXMF.py`.
 
 Unallocated fields between `0x00` and `0x80` are reserved for future
-extensibility. Experimental fields should use values above `0xFF`; the
+extensibility. Experimental fields should use values above `0xFF`. The
 `CUSTOM_TYPE`/`CUSTOM_DATA` pair exists for bridging non-native payloads.
 
 Example appearance field:

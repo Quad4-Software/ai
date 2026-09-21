@@ -35,7 +35,7 @@
   that could identify or compromise a mesh peer.
 - Return destination hashes in canonical angle-bracket hex form, e.g.
   `<13425ec15b621c1d928589718000d814>`, and never display private key data.
-- Cap and paginate large outputs; RNS networks may be low bandwidth and the
+- Cap and paginate large outputs. RNS networks may be low bandwidth and the
   consumers of these tools may be remote.
 - Use `#nosec` sparingly and only with an inline justification comment.
 
@@ -43,7 +43,7 @@
 
 When building MCP tools around blackhole data, keep responses bounded, redact
 operator and victim identities, and never expose private key material. Only read
-state; do not restart rnsd or rewrite `~/.reticulum/config`.
+state. Do not restart rnsd or rewrite `~/.reticulum/config`.
 
 ## Discovery tool rules
 

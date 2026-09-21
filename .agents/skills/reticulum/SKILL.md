@@ -52,7 +52,7 @@ user philosophy, it is a set of engineering constraints. Reticulum-related MCP
 tools should be designed in its spirit:
 
 - **No center.** Tools must not act as privileged servers that users "connect
-  to". They are peers that read and report; they do not restart rnsd or modify
+  to". They are peers that read and report. They do not restart rnsd or modify
   host state.
 - **Assume a hostile network.** Every tool that surfaces local state must treat
   paths, config and storage as potentially sensitive. Redact keys, passphrases
@@ -108,7 +108,7 @@ tools should be designed in its spirit:
 ## Building networks
 
 - Reticulum is a toolkit for creating networks, not a single network you join.
-- Add interfaces; routing and convergence are automatic.
+- Add interfaces. Routing and convergence are automatic.
 - A **transport node** or **transport instance** forwards traffic blindly for
   others. It only knows its immediate neighbours. Any node can become a
   transport node, but too many degrade performance.
@@ -153,7 +153,7 @@ tools should be designed in its spirit:
   Reticulum.
 - Ships with the `rnphone` telephony example.
 - Install with `pip install lxst`.
-- The repository is a public mirror; development happens elsewhere.
+- The repository is a public mirror. Development happens elsewhere.
 - It is early alpha: APIs are unstable, documentation is sparse.
 
 ## NomadNet
@@ -174,8 +174,8 @@ tools should be designed in its spirit:
 
 - The original MeshChat is a web-based LXMF client by Liam Cottle. It is written in Python with a Vue frontend and communicates over a WebSocket to a local Reticulum instance.
 - It interops with Sideband and NomadNet, supports text, images, voice, file attachments, announces, peer discovery and propagation-node sync.
-- Prebuilt releases are available for Windows, macOS and Linux; the source can also run on a Raspberry Pi, in Docker or on Android via Termux.
-- The rns.recipes forum notes that the original MeshChat is now maintenance-only; users are encouraged to move to MeshChatX for active development and new features such as LXST voice and RRC.
+- Prebuilt releases are available for Windows, macOS and Linux. The source can also run on a Raspberry Pi, in Docker or on Android via Termux.
+- The rns.recipes forum notes that the original MeshChat is now maintenance-only. Users are encouraged to move to MeshChatX for active development and new features such as LXST voice and RRC.
 - Source: https://github.com/liamcottle/reticulum-meshchat
 
 ## MeshChatX
@@ -278,7 +278,7 @@ Recent RNS releases (especially 1.4.x through 1.5.4) include fixes worth knowing
 - **rnsh security** - fixed a critical security issue in `rnsh`. Keep `rnsh` updated and never run `rnsh -n` (no auth) on untrusted or public networks.
 - **Interface Access Codes** - added early protocol violation checks for invalid frames, fixed incorrect default IFAC sizes for discovered interfaces and optimized IFAC validation. Always enable IFAC on any interface that can be reached by untrusted peers.
 - **Null identity blocking** - added the ability to block unidentified or null-identity peers. Use the `null_ident` options in config when you want to reject anonymous stations.
-- **Blackhole / distributed blackhole** - blackhole handling lets you drop announces and traffic from identified spammers; distributed blackhole lists let communities share abuse signals. Use `rnpath -B` and `rnstatus -b` to manage and inspect.
+- **Blackhole / distributed blackhole** - blackhole handling lets you drop announces and traffic from identified spammers. Distributed blackhole lists let communities share abuse signals. Use `rnpath -B` and `rnstatus -b` to manage and inspect.
 - **Discovery hardening** - invalid discovery stamps are now cached, corrupted interface discovery files are handled, and discovery sanitizer None-checks were added. Treat unknown discovery info as untrusted.
 - **Link and request race fixes** - fixed race conditions in link watchdog, request timeout handling, and `BackboneInterface` fast-flap detection. These avoid stalls and potential resource leaks.
 - **Ratchet and identity handling** - fixed ratchet cleaning, retained preservation and various identity handling bugs. Keep Reticulum updated so keys and ratchets are handled correctly.
@@ -289,11 +289,11 @@ Recent RNS releases (especially 1.4.x through 1.5.4) include fixes worth knowing
 - **Private keys are everything** - `rnid -P` prints private keys. Never log, share, or commit output that contains private keys. Back up identity files offline and encrypted.
 - **Do not restart or reconfigure `rnsd` from a read-only tool** - the first `RNS.Reticulum` instance on a system owns the hardware interfaces. MCP tools should never `SIGKILL` it or rewrite `~/.reticulum/config`.
 - **Transport node placement** - do not enable `enable_transport = Yes` on every node. It degrades the network on mobile, battery or low-bandwidth nodes. Use stationary, well-connected nodes as transport nodes.
-- **Plain and group destinations** - `PLAIN` is local-only and unencrypted; `GROUP` currently requires establishing through a `SINGLE` destination. Do not rely on group or plain for multi-hop private traffic.
+- **Plain and group destinations** - `PLAIN` is local-only and unencrypted.`GROUP` currently requires establishing through a `SINGLE` destination. Do not rely on group or plain for multi-hop private traffic.
 - **No auth on remote utilities** - `rnsh -n` and `rnx -n` accept commands from any identity. Only use them on fully trusted, closed links, never on public interfaces.
 - **IFAC on public carriers** - any interface over the Internet, public WiFi, or shared radio should use IFAC with a strong passphrase or authentication. Without it, anyone can inject packets.
 - **Monitor and blackhole** - use `rnstatus -b` to watch blocked IPs and `rnpath -B` to blackhole abusive identities. Combine with `null_ident` blocking for unknown peers.
-- **Keep software updated** - 1.5.2 fixed a resource transfer regression and an I2P keepalive bug, 1.5.3 hardened `rngit` workdoc permissions and added media serving, 1.5.4 fixed RNode BLE reconnection deadlocks; earlier releases fixed `rnsh`, decompression bombs, and discovery issues. Use `rngit` or `pip` to stay current.
+- **Keep software updated** - 1.5.2 fixed a resource transfer regression and an I2P keepalive bug, 1.5.3 hardened `rngit` workdoc permissions and added media serving, 1.5.4 fixed RNode BLE reconnection deadlocks. Earlier releases fixed `rnsh`, decompression bombs, and discovery issues. Use `rngit` or `pip` to stay current.
 - **Redact and bound output** - tools should sanitize local state, never return key material, and keep responses short for low-bandwidth links.
 - **Do not fake source addresses** - Reticulum uses cryptographic addresses. Do not invent destination hashes, fabricate announces, or replay signed messages.
 - **Test on real links** - behaviour on fast TCP differs from LoRa. Test latency, packet loss, and retransmission before assuming a design works.
@@ -406,7 +406,7 @@ This section is a condensed reference derived from the Reticulum manual. It is i
 
 - Reticulum is a message-oriented networking stack for high-latency, low-bandwidth links.
 - It can run over any half-duplex medium with more than 5 bits per second and a physical-layer MTU of 500 bytes.
-- It does not need IP; it can be tunnelled over TCP or UDP, but it is a complete networking stack by itself.
+- It does not need IP. It can be tunnelled over TCP or UDP, but it is a complete networking stack by itself.
 - Coordination-less addressing, initiator anonymity, encryption by default and permissionless operation are core design goals.
 - Reticulum is not one network. It is a toolkit for building thousands of autonomous, interoperable networks.
 
@@ -452,7 +452,7 @@ This section is a condensed reference derived from the Reticulum manual. It is i
 - No node knows the full path. Each transport node only knows the best next hop.
 - Path requests are flooded until a node with a known path to the destination answers, and the answer propagates back.
 - Transport nodes act as a distributed cryptographic keystore: they remember public keys from announces and can satisfy key recalls.
-- Transport can be disabled on mobile or battery-powered nodes; they will still reach the network through nearby transport nodes.
+- Transport can be disabled on mobile or battery-powered nodes. They will still reach the network through nearby transport nodes.
 - Good transport nodes are stationary, well-connected and always-on.
 
 ### Cryptographic primitives
@@ -460,13 +460,13 @@ This section is a condensed reference derived from the Reticulum manual. It is i
 - Ed25519 for signatures.
 - X25519 for ECDH key exchange.
 - HKDF for key derivation.
-- SHA-256 for hashing and addresses; SHA-512 is also used internally.
+- SHA-256 for hashing and addresses. SHA-512 is also used internally.
 - Encrypted tokens follow the Fernet spec, but without version and timestamp metadata:
   - Ephemeral key from X25519 ECDH on Curve25519.
   - AES-256 in CBC mode with PKCS7 padding.
   - HMAC-SHA256 for authentication.
   - IVs generated with `os.urandom()` or a stronger CSPRNG.
-- By default X25519, Ed25519 and AES-256 are provided by OpenSSL via PyCA/cryptography; SHA by hashlib. HKDF, HMAC, Token and PKCS7 padding are provided by the internal `RNS/Cryptography/` modules.
+- By default X25519, Ed25519 and AES-256 are provided by OpenSSL via PyCA/cryptography. SHA by hashlib. HKDF, HMAC, Token and PKCS7 padding are provided by the internal `RNS/Cryptography/` modules.
 - A complete pure-Python fallback implementation is included if the accelerated backend is not available.
 
 ### Packets

@@ -232,5 +232,5 @@ The `thongtech/go-legacy-win7` fork keeps Go running on legacy Windows systems:
   `ProcessPrng`, `LoadLibraryA`, socket syscalls, and the race detector
 
 See https://github.com/thongtech/go-legacy-win7 for releases and install
-instructions. This fork is not official; use it only when you must support
+instructions. This fork is not official. Use it only when you must support
 legacy Windows systems.

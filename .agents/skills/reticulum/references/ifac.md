@@ -14,7 +14,7 @@ untrusted peers can reach.
 
 The `ifac_*` options vary by interface type. Typical options are:
 
-- `ifac_size`: size of the IFAC field in bits; use a strong size for your threat
+- `ifac_size`: size of the IFAC field in bits. Use a strong size for your threat
   model
 - `ifac_key`: key or passphrase used to derive the IFAC
 - `ifac_netname`: a network name for an authenticated IFAC
@@ -34,7 +34,7 @@ The IFAC flag in the first header byte is set to 1 when an IFAC is present.
 - Always enable IFAC on public or untrusted carriers
 - Use a strong passphrase or authentication
 - Never leak the IFAC key or passphrase in tool output or commit logs
-- IFAC does not replace end-to-end encryption; it adds a network-access control
+- IFAC does not replace end-to-end encryption. It adds a network-access control
   layer
 
 ## Tool reference

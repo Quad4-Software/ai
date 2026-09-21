@@ -13,7 +13,7 @@ Leading `#` lines that start with `#!` are directives (not comments):
 | `#!c=SECONDS` | Peer cache TTL. Use `0` to disable cache. Must be first when present. Default peer cache is 12 hours. |
 | `#!fg=XXX` | Default foreground, 3 or 6 hex digits |
 | `#!bg=XXX` | Default background, 3 or 6 hex digits. Place after `#!c=` when both are used. |
-| `#!fold OPEN [CLOSED]` | Fold glyphs. One token uses the same glyph for open and closed. Defaults: open ▾, closed ▸ |
+| `#!fold OPEN [CLOSED]` | Fold glyphs. One token uses the same glyph for open and closed. Defaults: open is the down-triangle glyph, closed is the right-triangle glyph |
 
 ## Sections
 
@@ -45,7 +45,7 @@ HTML uses `<details class="Mu-fold">` with `data-mu-fold` and
 
 | Markup | Meaning |
 | --- | --- |
-| `-` | Horizontal rule (─) |
+| `-` | Horizontal rule (rendered line) |
 | `-X` | Divider using character X (control characters rejected) |
 
 ## Alignment (line-start)
@@ -122,7 +122,7 @@ Urwid palettes via `low_color` and `high_color` in MicronParser.py. Go
 | heading text | Auto-slug anchor shared with explicit names |
 
 The vendored micron-parser-go 1.1.4 keeps `` `:name `` as visible text in
-HTML; upstream 1.3.0 emits it as `<a id="name" class="micron-anchor">` and
+HTML. Upstream 1.3.0 emits it as `<a id="name" class="micron-anchor">` and
 generates slug anchors on headings. Prefer `#name` links for portable jump
 targets either way.
 
@@ -167,7 +167,7 @@ Block-level, own line, WebP only:
 
 Options: `w=` / `h=` as columns, rows, percent, or `n` (near native).
 `a=` is `l`, `r`, or `c`. The vendored micron-parser-go 1.1.4 renders
-these as plain links; upstream 1.2.0+ emits a deferred placeholder with
+these as plain links. Upstream 1.2.0+ emits a deferred placeholder with
 `data-mu-image-*` attributes so hosts can wire click-to-load.
 
 ## Partials
@@ -193,5 +193,5 @@ Useful entry points and helpers in the Python authority:
 - `parse_line`, `make_output`, `make_style`, `parse_partial`, `parse_image`
 - `CollapsibleHeading` widget with fold glyphs and toggle
 - `slugify_micron` for heading auto-anchors
-- `STYLES_DARK` / `STYLES_LIGHT`, `DEFAULT_FOLD_GLYPHS` (`▾`, `▸`)
+- `STYLES_DARK` / `STYLES_LIGHT`, `DEFAULT_FOLD_GLYPHS` (down-triangle, right-triangle)
 - `DEFAULT_FG_DARK` `ddd`, `DEFAULT_FG_LIGHT` `222`

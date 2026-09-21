@@ -30,7 +30,7 @@ calls need no ids. `auth_status` reports what is configured.
 `config.json` can hold a `projects` list (name, slug, workspaceId,
 projectId). Anywhere a tool takes `projectId` it also accepts a
 configured project name or slug. `use_project` switches the session
-default; `list_workspaces` + `list_projects` discover ids the config
+default.`list_workspaces` + `list_projects` discover ids the config
 does not know yet.
 
 ## Tool map
@@ -62,7 +62,7 @@ does not know yet.
 | `set_label` | yes | attach/detach by label id or exact name |
 | `create_label`, `update_label`, `delete_label` | yes | label CRUD (hex color) |
 | `link_tasks`, `unlink_tasks` | yes | relations: subtask, blocks, related |
-| `log_time`, `update_time_entry` | yes | ISO 8601; omit endTime for a running timer |
+| `log_time`, `update_time_entry` | yes | ISO 8601. Omit endTime for a running timer |
 | `create_project` | yes | name + slug (auto-derived), icon, description |
 | `update_project` | yes | name, slug, icon, description, isPublic |
 | `archive_project` | yes | hide or restore (archive=false), keeps data |
@@ -94,5 +94,5 @@ Write tools fail cleanly without a key. `MCP_READ_ONLY=1` or
 - When the user says "move X to in progress", use `update_task` with
   `status`, or `move_task`.
 - Always `find_tasks` before `create_task` to avoid duplicates.
-- Task numbers shown in the UI (`MEL-12`) are display-only; tools use
+- Task numbers shown in the UI (`MEL-12`) are display-only. Tools use
   the long `id`.

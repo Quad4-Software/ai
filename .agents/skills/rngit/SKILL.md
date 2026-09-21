@@ -603,7 +603,7 @@ LXMF addresses for author display.
 ### Operational details
 
 - `rngcs` ships inside the `rns` Python package (`RNS.Utilities.rngit.commitsigs`).
-  `pip install rns` is enough to get it; there is no separate rngcs package.
+  `pip install rns` is enough to get it. There is no separate rngcs package.
 - `git log --format=%G?` reports `G` for a verified rngcs signature, `E` when the
   verifier is not installed or the signature cannot be checked, and `N` for
   unsigned commits. CI signature audits can rely on these codes.
@@ -639,7 +639,7 @@ which is still distinct from `N` (unsigned) for advisory jobs.
 GitHub and other forges cannot parse the RSG payload inside the SSH armor, so
 rngcs-signed commits show no verified badge there. Verification is meaningful
 on the rns side and anywhere `rngcs` is installed. Teams that need forge-side
-badges keep GPG; teams that want identity-bound, offline-verifiable signing
+badges keep GPG. Teams that want identity-bound, offline-verifiable signing
 inside Reticulum use rngcs.
 
 ## Notes

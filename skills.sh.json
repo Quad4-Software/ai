@@ -40,10 +40,14 @@
       "skills": [
         "media-stack",
         "docker",
+        "podman",
+        "k3s",
+        "firecracker",
         "mesh-vpn",
         "xmpp",
         "coolify",
-        "opensubsonic"
+        "opensubsonic",
+        "cdn"
       ]
     },
     {
@@ -51,7 +55,67 @@
       "description": "Reference skills for application frameworks and platform APIs. Documentation only, no MCP servers.",
       "skills": [
         "wails",
-        "android-connectivity"
+        "electron",
+        "android-connectivity",
+        "android-dev",
+        "android-media",
+        "android-performance"
+      ]
+    },
+    {
+      "title": "Package managers",
+      "description": "Skills for JS and Python package management and supply chain hardening: pnpm workspaces and lockfiles, uv, and Poetry.",
+      "skills": [
+        "pnpm",
+        "python-packaging"
+      ]
+    },
+    {
+      "title": "Security",
+      "description": "Security reference skills: OWASP standards and category lists, the local free/OSS scanning and linting tool catalog, threat hunting, blue teaming and SOC operations, OSINT, the Wazuh SIEM/XDR platform, and DevSecOps pipeline controls.",
+      "skills": [
+        "owasp",
+        "sast",
+        "threat-hunting",
+        "blue-teaming",
+        "osint",
+        "wazuh",
+        "devsecops"
+      ]
+    },
+    {
+      "title": "Engineering practice",
+      "description": "Cross-cutting practice skills: software QA strategy and tooling, DevOps/platform engineering, disciplined technical research methods, microservices and HA design, and minimal project scaffolding.",
+      "skills": [
+        "qa",
+        "devops",
+        "research-methods",
+        "microservices-ha",
+        "project-scaffold"
+      ]
+    },
+    {
+      "title": "Developer CLIs",
+      "description": "Reference skills for source-control CLIs: GitHub CLI (gh) and the Gitea/Forgejo CLI (tea).",
+      "skills": [
+        "gh",
+        "tea"
+      ]
+    },
+    {
+      "title": "SurrealDB",
+      "description": "Skills for SurrealDB: SurrealQL, vector search, SDKs, the CLI, SurrealKit migrations, and MCP integration.",
+      "skills": [
+        "surrealdb",
+        "surrealdb-cli",
+        "surrealdb-docs",
+        "surrealdb-js",
+        "surrealdb-python",
+        "surrealdb-vector",
+        "surrealkit",
+        "surrealql",
+        "surrealql-functions",
+        "surrealql-performance"
       ]
     },
     {

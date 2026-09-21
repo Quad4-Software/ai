@@ -428,6 +428,15 @@ Banned mid-text tics:
 
 Docs and commit messages need none of this. Answer directly.
 
+## Jargon names
+
+Name things by what they do, not by ceremony. In tests, use the plain
+method names: invariant, property, metamorphic, differential. Avoid
+mystical shorthand like "oracle" as the primary name - the formal term
+is fine inside parentheses, but the label should say what the check
+does. Same rule applies to any "clever" coined name in docs and
+identifiers.
+
 ## Hedging
 
 AI models hedge 4 to 7 times more than humans. Established facts do not need

@@ -79,7 +79,7 @@ if __name__ == "__main__":
 - `ctx.reply` accepts `title=` and `lxmf_fields=`.
 - Type-hinted command args auto-convert: `def add(ctx, a: int, b: int)`.
 - `threaded=True` runs the callback in a thread. Threaded commands must
-  not touch RNS or `lxmfy.transport` directly; use `ctx.reply()`.
+  not touch RNS or `lxmfy.transport` directly. Use `ctx.reply()`.
 
 ## Short bot example
 
@@ -172,7 +172,7 @@ Handlers return True to stop processing, False to continue.
 
 - `FIELD_COMMANDS` (0x09) in an incoming message routes
   `{"command": ..., "args": [...], "request_id": ...}` through the same
-  command registry as text commands; replies automatically carry
+  command registry as text commands. Replies automatically carry
   `FIELD_RESULTS` (0x0A) with the response and request_id.
 - `ctx.fields` holds raw LXMF fields, `ctx.request_id` is set from the
   incoming field command.
@@ -188,9 +188,9 @@ Enable with `nlp_enabled=True`, register with
 
 ## Security model
 
-- LXMF signs all messages itself; LXMFy only enforces policy via
+- LXMF signs all messages itself. LXMFy only enforces policy via
   `message.signature_validated` and `message.unverified_reason`.
-  `signature_verification_enabled=True` logs failures;
+  `signature_verification_enabled=True` logs failures.
   `require_message_signatures=True` rejects unsigned or invalid.
   `BYPASS_SPAM` permission bypasses verification.
 - `identity_pinning_enabled=True` pins an LXMF address to its
@@ -227,7 +227,7 @@ Package `lxmfy.rrc`: `RRCClient`, `RRCManager` (`bot.rrc`),
   `664fc0e8d2e448658e37bb3f34e6c88f`, room `#general`.
 - Events to `@bot.on_rrc` handlers: `status`, `welcome`, `joined`,
   `parted`, `msg`, `notice`, `action`, `motd`, `error`, `rtt`.
-  Handler signature `(event, client, payload)`; `payload` is an
+  Handler signature `(event, client, payload)`.`payload` is an
   `RRCMessage` for `msg` events with `room`, `text`, `nick`, `src`,
   `mention`.
 - Runtime API: `bot.connect_rrc(hash, rooms=[...])`,
@@ -253,14 +253,14 @@ packets.
 - `lxmfy run <template>` runs a template directly.
 - Template classes in `lxmfy.templates`: `EchoBot`, `NoteBot` (JSON
   storage), `ReminderBot` (SQLite), `RRCBot` (hubs, rooms, nick,
-  reticulum_config_dir kwargs; defaults to the public hub and
+  reticulum_config_dir kwargs. Defaults to the public hub and
   `~/.reticulum`), `CogTestBot`.
 
 ## Icon and attachments
 
 - `IconAppearance(icon_name=..., fg_color=3bytes, bg_color=3bytes)` +
   `pack_icon_appearance_field(icon)` produce an `lxmf_fields` dict
-  using `LXMF.FIELD_ICON_APPEARANCE`; icon names come from Material
+  using `LXMF.FIELD_ICON_APPEARANCE`. Icon names come from Material
   Symbols. Combine fields with `{**icon_field, **other}`.
 - `Attachment(type=AttachmentType.IMAGE, name=, data=, format=)` sent
   via `bot.send_with_attachment`.
@@ -268,12 +268,12 @@ packets.
 ## Scheduler, events, middleware, permissions
 
 - `@bot.scheduler.schedule(name=..., cron_expr="0 0 * * *")`.
-- `@bot.events.on("message_received", priority=EventPriority.X)`;
-  `event.data`, `event.cancel()`; dispatch custom events with
+- `@bot.events.on("message_received", priority=EventPriority.X)`.
+  `event.data`, `event.cancel()`. Dispatch custom events with
   `bot.events.dispatch(Event(name, data={...}))`.
 - `@bot.middleware.register(MiddlewareType.PRE_COMMAND)`.
 - `permissions_enabled=True` plus `DefaultPerms` roles and flags such
-  as `USE_COMMANDS`, `MANAGE_USERS`, `BYPASS_SPAM`; `admin_only=True`
+  as `USE_COMMANDS`, `MANAGE_USERS`, `BYPASS_SPAM`.`admin_only=True`
   on commands and `ctx.is_admin`.
 
 ## Storage
@@ -295,10 +295,10 @@ Tool details are in [references/tools.md](references/tools.md). This section is 
 
 ## Conventions for lxmfy-related work
 
-- This is a Python framework; the Go server only documents and
+- This is a Python framework. The Go server only documents and
   scaffolds it. Keep generated Python consistent with upstream docs.
 - Follow the Zen of Reticulum (see reticulum skill): bots are
   peers, keep outputs small, never fabricate mesh state.
 - LXMFy is the rare write-capable piece of the stack (bots send
   messages, manage storage, run script cogs). Keep lxmfy itself
-  read-only; scaffolding returns file contents, it does not write.
+  read-only. Scaffolding returns file contents, it does not write.

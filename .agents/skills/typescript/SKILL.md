@@ -35,16 +35,22 @@ compatibility: typescript-7
 # TypeScript 7 (tsgo)
 
 TypeScript 7.0 shipped 2026-07-08 as the first stable release of the Go
-port of the compiler (project Corsa / typescript-go). It is a faithful
-port, not a rewrite: same checking semantics, same diagnostics, just
-native code plus shared-memory parallelism.
+port of the compiler (project Corsa, microsoft/typescript-go). It is a
+faithful port, not a rewrite: same checking semantics, same diagnostics,
+just native code plus shared-memory parallelism.
+
+Naming: `tsgo` was the preview-era binary name, published as
+`@typescript/native-preview`. From 7.0 RC onward the stable `typescript`
+package on npm IS the native compiler and its binary is `tsc`. If a doc
+tells you to `npm install @typescript/native-preview` or run `tsgo`, it
+is talking about previews, not stable.
 
 ## What 7.0 actually gives you
 
 - 8x to 12x faster full builds (VS Code codebase: 125.7s -> 10.6s).
 - About 6-26% lower aggregate memory on Microsoft's benchmark projects.
 - Editor speed: new LSP-based language server, multithreaded. VS Code has
-  a dedicated TypeScript Native Preview extension; other editors consume
+  a dedicated TypeScript Native Preview extension. Other editors consume
   it via LSP.
 - Parallelism knobs: `--checkers` (checker workers, default 4),
   `--builders` (project-reference build workers), `--singleThreaded`.
@@ -58,7 +64,7 @@ native code plus shared-memory parallelism.
 
 The Go compiler exposes no stable embeddable API until 7.1. Consequences:
 
-- typescript-eslint peers `typescript <6.1.0`; installing `typescript@7`
+- typescript-eslint peers `typescript <6.1.0`. Installing `typescript@7`
   alongside it is a peer conflict and crashes type-aware linting.
 - Volar-based template checkers cannot run on it: svelte-check (default
   mode), vue-tsc, astro check, Angular template checking.
@@ -70,12 +76,15 @@ This is why "just bump typescript to 7" breaks real repos.
 ## Supported sidecar setup
 
 Keep `typescript` on 6.x for lint and template checks. Add the native
-compiler under an alias that tooling discovers:
+compiler under an alias that tooling discovers. This is Microsoft's own
+documented pattern for the 6/7 transition - the alias resolves to the
+official `typescript` package, which at 7.x is the native compiler:
 
 ```sh
 pnpm add -Dw "@typescript/native@npm:typescript@7.0.2"
 ```
 
+Pin an exact version and let `minimumReleaseAge` cover fresh releases.
 svelte-check resolves `@typescript/native` (preferred) or
 `@typescript/native-preview` and requires the resolved package to be
 typescript >= 7. Then:
@@ -93,10 +102,10 @@ Notes from doing this on weberr-xmpp (Svelte 5, ~200 files):
 - tsgo surfaces implicit-any diagnostics the JS engine suppresses for
   Svelte snippet/callback params (for example
   `{#snippet failed(error, reset)}` and `<svelte:boundary onerror>`).
-  Fix by annotating params explicitly; both engines then pass.
+  Fix by annotating params explicitly. Both engines then pass.
 - knip cannot see the alias being consumed by svelte-check's package
   discovery, so add `@typescript/native` to knip ignoreDependencies.
-- Diagnostics can drift slightly vs the JS engine; keep the JS `check`
+- Diagnostics can drift slightly vs the JS engine. Keep the JS `check`
   script as the authoritative gate and treat check:tsgo as a fast
   second opinion until 7.1 stabilizes the API.
 - `typescript@6.0.3` is currently the latest 6.x and satisfies
@@ -107,7 +116,7 @@ Notes from doing this on weberr-xmpp (Svelte 5, ~200 files):
 Microsoft ships `@typescript/typescript6`, which provides a `tsc6` binary
 and re-exports the 6.0 JS API. That is the reverse alias (native as the
 primary dep, JS API for tooling). Prefer the `@typescript/native` sidecar
-when the repo's gate is still the JS toolchain; prefer typescript6 when a
+when the repo's gate is still the JS toolchain. Prefer typescript6 when a
 repo has fully moved to native builds and only needs the API for a few
 tools.
 
@@ -130,5 +139,5 @@ tools.
 - svelte-check --tsgo / --incremental PR: https://github.com/sveltejs/language-tools/pull/2932
 - svelte-check tsgo tracking issue: https://github.com/sveltejs/language-tools/issues/2733
 - 7-day release-age note: minimumReleaseAge gates in pnpm-workspace.yaml
-  apply to these packages too; 7.0.2 is well past the window but brand new
+  apply to these packages too. 7.0.2 is well past the window but brand new
   7.1.x releases will not be.

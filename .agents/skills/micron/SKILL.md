@@ -50,7 +50,7 @@ Full tag and color tables live in
 
 - Sections: `>`, `>>`, `>>>`, ... and depth reset with `<`
 - Collapsible sections (1.4.0): `` `+> `` open, `` `-> `` collapsed,
-  `#!fold OPEN [CLOSED]` glyphs (defaults ▾ / ▸)
+  `#!fold OPEN [CLOSED]` glyphs (defaults are the down/right triangles)
 - Dividers: `-` and `-X`
 - Inline style: bold `` `! ``, italic `` `* ``, underline `` `_ ``, reset ``
 - Colors: `` `Fxxx `` / `` `FTxxxxxx `` / `` `f ``, `` `Bxxx `` /
@@ -105,8 +105,8 @@ The vendored tree is v1.1.4. Later upstream releases (not vendored yet):
   normalization, wasm/libmicron option plumbing. `FormatNomadnetworkURL`
   now passes `#` URLs through unchanged.
 - v1.2.0: image links render as deferred placeholders with
-  `data-mu-image-*` attributes matching MeshChatX markup; `img=` fields or
-  `/media/` URLs (NomadNet 1.4.2 layout) qualify; `:/file/` stays
+  `data-mu-image-*` attributes matching MeshChatX markup.`img=` fields or
+  `/media/` URLs (NomadNet 1.4.2 layout) qualify.`:/file/` stays
   WebP-only.
 - v1.1.5: ForceMonospace keeps consecutive ASCII spaces via
   `Mu-mnt-group` spans (ASCII art fix).

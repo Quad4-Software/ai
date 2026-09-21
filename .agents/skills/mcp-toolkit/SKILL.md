@@ -69,7 +69,7 @@ Current servers and purposes:
   issue_update for edit/close/reopen, issue_comment, issue_search,
   issue_references). Bodies auto-link known terms (BCP 47, LXMF, ...)
   to canonical URLs. Writes
-  need MESHCHATX_GITHUB_TOKEN, GITHUB_TOKEN, or GH_TOKEN; repo defaults to
+  need MESHCHATX_GITHUB_TOKEN, GITHUB_TOKEN, or GH_TOKEN. Repo defaults to
   Quad4-Software/MeshChatX, override with MESHCHATX_ISSUES_REPO.
 - micron - Micron markup (NomadNet 1.4.0 dialect): parse, lint, render
   HTML/ANSI, extract links/headings (including fold state), search,
@@ -91,7 +91,7 @@ internal/cisec, internal/lint, internal/community, internal/templates).
 The scaffolding speaks the legacy session-based MCP revisions
 (2024-11-05, 2025-03-26, 2025-06-18, 2025-11-25) and negotiates per
 initialize. The latest spec revision is 2026-07-28, which removes the
-initialize handshake in favour of per-request version metadata; the repo
+initialize handshake in favour of per-request version metadata. The repo
 has not adopted it, so client-side dual-era handling may be needed when
 talking to newer servers.
 
