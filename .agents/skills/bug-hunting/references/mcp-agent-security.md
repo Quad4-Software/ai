@@ -18,7 +18,7 @@ the model rather than documentation for the user. Patterns to flag
 - Long descriptions embedding a second system prompt or fake user
   confirmation ("the user already approved this")
 
-A poisoned description needs no code execution; the client model does the
+A poisoned description needs no code execution. The client model does the
 work. Report the exact description text as the evidence.
 
 ## Rug pulls
@@ -37,7 +37,7 @@ stdio servers over remote ones for sensitive environments.
 - Path arguments reaching `os.ReadFile`/`open` without a jailed root:
   arbitrary read. Confirm by asking the tool for `../../etc/passwd`.
 - Unbounded output: a tool that can return megabytes starves the
-  context window; output caps are a security property.
+  context window. Output caps are a security property.
 - Write-capable tools (even opt-in ones) need token scoping, allowlisted
   targets, and no secret material in output.
 

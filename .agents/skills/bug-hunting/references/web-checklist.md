@@ -11,13 +11,13 @@
   plus key substitution.
 - Sensitive data in payload treated as confidential: JWTs are signed,
   not encrypted.
-- Expiry and `nbf` unchecked; `iss`/`aud` unvalidated.
+- Expiry and `nbf` unchecked.`iss`/`aud` unvalidated.
 
 ## HTTP and request handling
 
 - Request smuggling: hand-rolled HTTP parsing, proxies disagreeing on
   Content-Length vs Transfer-Encoding (Go net/http CVE-2025-22871,
-  ASP.NET CVE-2025-55315). Do not write HTTP parsers; keep runtimes
+  ASP.NET CVE-2025-55315). Do not write HTTP parsers. Keep runtimes
   patched.
 - Open redirects: Location headers built from request fields.
 - Host header trust: `X-Forwarded-Host`, `Host` used in password-reset
@@ -38,11 +38,11 @@
 
 ## Secrets in git
 
-- `git_secrets` scans recent history; rotate anything it finds, deletion
+- `git_secrets` scans recent history. Rotate anything it finds, deletion
   commits do not revoke.
 - High-yield spots: `.env`, `config/*.yml`, `*.pem`, `id_rsa`,
   CI variables echoed in workflow logs, test fixtures.
-- Redact values in reports; show enough to identify the credential.
+- Redact values in reports. Show enough to identify the credential.
 
 ## Rate and resource limits
 
@@ -50,7 +50,7 @@
   memory DoS.
 - No timeout on outbound calls: a slow upstream stalls your handler
   pool.
-- Pagination without a max page size; `limit` parameters trusted
+- Pagination without a max page size.`limit` parameters trusted
   uncapped.
 - Regex over user input without length caps: ReDoS. Check nested
   quantifiers and alternation overlap.

@@ -27,10 +27,10 @@
 - `complexity_scan {path, max_lines}`: functions over N lines
 - `dead_code {path, limit}`: unreferenced functions, candidates only
 - `markers_scan {path, limit}`: TODO/FIXME/HACK/SECURITY comment density
-- `mutation_hints {file, name}`: mutants that expose weak oracles
+- `mutation_hints {file, name}`: mutants that expose weak checks
 - `charter {area}`: exploratory session template with suggested scans
 
 Prompts: `hunt {area}` for a full methodology-plus-scanners briefing.
 
-All scanner output is candidate findings. Confirm each with an oracle
+All scanner output is candidate findings. Confirm each with an invariant
 test before reporting or changing code.

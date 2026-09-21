@@ -1,6 +1,6 @@
 # Supply chain and dependency audit (2025-2026)
 
-The repo is only half the attack surface; the build is the other half.
+The repo is only half the attack surface. The build is the other half.
 Run `supply_chain_scan` first, then verify the flagged items against this
 list.
 
@@ -9,7 +9,7 @@ list.
 - npm `preinstall`/`postinstall`/`install`/`prepare` lifecycle scripts and
   `setup.py` `cmdclass` or embedded `exec`/`base64` payloads
 - Loose dependency specs: `*`, `latest`, `git+`, `http:`, `file:` in
-  package.json; requirements.txt lines without `==`; go.mod `replace`
+  package.json. Requirements.txt lines without `==`. Go.mod `replace`
   directives
 - GitHub Actions referenced by mutable tag or branch (`uses: x@v5`,
   `uses: x@main`) instead of a full 40-char SHA
@@ -42,7 +42,7 @@ list.
   scoped, expiring tokens limit the blast radius.
 - Proxy caching: the Go module proxy keeps immutable copies of a
   typosquat even after the source repo is cleaned (boltdb-go/bolt).
-  `go.sum` presence is necessary but not sufficient; check provenance.
+  `go.sum` presence is necessary but not sufficient. Check provenance.
 - Dependency confusion: internal package names published publicly with a
   higher version. Check for `.npmrc`/`pip.conf` private-index overrides
   and reserved public names for internal scopes.
@@ -59,7 +59,7 @@ list.
 - `cosign verify` / `slsa-verifier` for signed artifacts and SLSA
   provenance where offered
 - `gitleaks` / `trufflehog git file://.` for secrets in history
-- `actionlint` for workflow correctness; review workflow diffs like
+- `actionlint` for workflow correctness. Review workflow diffs like
   dependency diffs
 
 ## CI/CD pipeline review (PPE)
@@ -71,7 +71,7 @@ modifies what the pipeline runs, not the app. Hunt:
   branch name, comment body) directly into shell: script injection.
 - `pull_request_target` or `workflow_run` jobs that check out untrusted
   code or run `make`/`npm install`/`go build` on it.
-- Broad `permissions:` on `GITHUB_TOKEN`; default should be read-only.
+- Broad `permissions:` on `GITHUB_TOKEN`. Default should be read-only.
 - Caches and artifacts shared between untrusted and trusted jobs.
 - Third-party actions from unknown publishers, especially those
   requesting `id-token: write` or deployment permissions.
@@ -83,5 +83,5 @@ modifies what the pipeline runs, not the app. Hunt:
 - `minimumReleaseAge`-style cooldowns on new dependency versions where
   the ecosystem supports it.
 - Signed commits/tags for release-critical repos.
-- `.gitignore` covering `.env*`, `*.pem`, key material; `git_secrets`
+- `.gitignore` covering `.env*`, `*.pem`, key material.`git_secrets`
   clean on recent history.

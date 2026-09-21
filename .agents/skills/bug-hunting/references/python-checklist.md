@@ -1,12 +1,12 @@
 # Python bug and security checklist
 
-Each entry: pattern, severity, confirmation oracle. Run `bandit`,
+Each entry: pattern, severity, confirmation check. Run `bandit`,
 Semgrep `p/python`, and `pip-audit` alongside the scanners.
 
 ## Deserialization and eval
 
 - `pickle.loads` / `pickle.load` / `dill` / `shelve` on anything that
-  crossed a trust boundary (bandit B301, crit). Oracle: `__reduce__`
+  crossed a trust boundary (bandit B301, crit). Confirm: `__reduce__`
   gadget runs `os.system`.
 - `yaml.load` without `Loader=yaml.SafeLoader` (B506, high).
 - `eval`, `exec`, `compile` on input-derived strings (B307). Fix:
@@ -19,7 +19,7 @@ Semgrep `p/python`, and `pip-audit` alongside the scanners.
 ## Command and code execution
 
 - `subprocess.*` with `shell=True` (B602/B605, high), `os.system`,
-  `os.popen`, `commands.getoutput`. Oracle: `;id` executes.
+  `os.popen`, `commands.getoutput`. Confirm: `;id` executes.
 - `os.execl`/`os.spawnl` with formatted strings.
 - `pty.spawn`, `code.InteractiveConsole` reachable from a handler.
 
@@ -27,16 +27,16 @@ Semgrep `p/python`, and `pip-audit` alongside the scanners.
 
 - SQL via f-strings, `%` formatting or `.format()` into
   `execute`/`executemany`/`raw()` (B608, high). Fix: parameterized
-  queries; verify the driver uses real parameters, not client-side
+  queries. Verify the driver uses real parameters, not client-side
   quoting.
 - SSTI: `jinja2.Template(user_input)`, `render_template_string` with
-  concatenation, `|safe` or `Markup()` on user data (B701). Oracle:
+  concatenation, `|safe` or `Markup()` on user data (B701). Confirm:
   `{{7*7}}` renders 49.
 - LDAP, XPath, OS command strings built by concatenation.
 - `open(os.path.join(base, user))` or `open(base + user)`: traversal.
-  Oracle: `../../etc/passwd` resolves outside base.
+  Confirm: `../../etc/passwd` resolves outside base.
 - `tarfile`/`zipfile` `extractall` on untrusted archives: member names
-  with `..` or absolute paths escape (CVE-2007-4559; 3.12+ `filter=`
+  with `..` or absolute paths escape (CVE-2007-4559. In 3.12+, `filter=`
   bypasses CVE-2025-4517, CVE-2025-4330). Check `filter="data"` AND a
   patched interpreter.
 - `shutil.unpack_archive`/`unpack` on untrusted input.
@@ -56,7 +56,7 @@ Semgrep `p/python`, and `pip-audit` alongside the scanners.
 
 ## Logic and correctness
 
-- Mutable default arguments: `def f(x=[])` / `x={}`. Oracle: call twice,
+- Mutable default arguments: `def f(x=[])` / `x={}`. Confirm: call twice,
   state persists.
 - Late-binding closures: `lambdas`/`defs` in loops capturing the loop
   variable. Fix: default-arg binding `lambda x=x: ...`.
@@ -64,7 +64,7 @@ Semgrep `p/python`, and `pip-audit` alongside the scanners.
   under `-O`.
 - Bare `except:` or `except Exception: pass`: swallows the failure the
   test or guard was for.
-- `==` vs `is` confusion for `None`/sentinels; `is` with ints/strings.
+- `==` vs `is` confusion for `None`/sentinels.`is` with ints/strings.
 - `time.time()` or naive `datetime.now()` for expiry: clock skew, no
   monotonicity. Fix: `time.monotonic` for durations, timezone-aware
   `datetime.now(tz=timezone.utc)` for timestamps.
@@ -78,6 +78,6 @@ Semgrep `p/python`, and `pip-audit` alongside the scanners.
 ## SSRF and HTTP
 
 - `requests`/`urllib`/`httpx` on user-supplied URLs without scheme/host
-  allowlists, redirect limits, and IP pinning (B310). Oracle: hit
+  allowlists, redirect limits, and IP pinning (B310). Confirm: hit
   `169.254.169.254` or an internal host.
 - `urllib.request.urlopen` on `file://` URLs.

@@ -14,14 +14,14 @@ metadata:
 - You are planning a bug hunt or chartering an area.
 - You need to run a scanner such as `hotspots`, `toctou_scan`, or `injection_scan`.
 - You want to audit an MCP tool surface for poisoning.
-- You are confirming a hypothesis with an oracle before reporting.
+- You are confirming a hypothesis with an invariant or metamorphic test before reporting.
 
 ## How to use
 
 1. Build and test bug-hunter: `cd mcp/bug-hunter && go test ./... && go build`.
 2. Add the binary to your MCP client config as `bug-hunter`.
 3. Call `list_methods` to see the 22 methodologies, or run a scanner like `hotspots {since, limit}`.
-4. Treat every scanner hit as a candidate. Confirm with an oracle before calling it a bug.
+4. Treat every scanner hit as a candidate. Confirm with an invariant check before calling it a bug.
 
 ## Examples
 
@@ -50,7 +50,7 @@ Coverage and git mining:
 - `complexity_scan {path, max_lines}`: oversized functions hide untested paths
 - `dead_code {path, limit}`: unreferenced functions, candidates only
 - `markers_scan {path, limit}`: TODO/FIXME/HACK/SECURITY comments
-- `mutation_hints {file, name}`: mutants that expose weak test oracles
+- `mutation_hints {file, name}`: mutants that escape weak tests
 - `soft_fuzz_scan {path, limit}`: try/except pass, tests without assertions
 
 Code-level security:
@@ -78,9 +78,10 @@ All findings are heuristic candidates, not verdicts. Confirm before reporting.
 
 ## Discipline
 
-State a hypothesis before touching code. Confirm with an oracle that accepts or
-rejects independently of the buggy path. Record intentional behaviour so it is
-not "fixed" by accident. Every scanner hit is a hypothesis, not a bug.
+State a hypothesis before touching code. Confirm with an invariant or
+metamorphic check that accepts or rejects independently of the buggy path.
+Record intentional behaviour so it is not "fixed" by accident. Every scanner
+hit is a hypothesis, not a bug.
 
 ## Reference checklists
 
