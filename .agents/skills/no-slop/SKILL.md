@@ -403,8 +403,9 @@ not ask for.
 ## Sycophancy and chat leftovers
 
 Current alignment training produces flattery and filler that has no place in
-docs, comments or commit messages. Studies across frontier models in 2026 show
-sycophantic openers correlate strongly with low perceived naturalness.
+docs, comments or commit messages. Sycophancy is documented in models
+(Sharma et al., ICLR 2024) and was the cause of the GPT-4o rollback in
+April 2025.
 
 Banned openers:
 
@@ -439,8 +440,9 @@ identifiers.
 
 ## Hedging
 
-AI models hedge 4 to 7 times more than humans. Established facts do not need
-caveats.
+AI models hedge roughly twice as much as humans in measured corpora, and the
+bigger tell is miscalibration: hedging settled facts while asserting
+significance confidently. Established facts do not need caveats.
 
 - WRONG: "Serialization may potentially prevent independent repair in some
   cases."

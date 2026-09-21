@@ -74,8 +74,15 @@ verified wire-compatible implementation.
   localhost JSON+WebSocket control API, librns C ABI bindings
   (Rust/Python/Lua/Swift/Java/Kotlin/Dart), WASM client, Firecracker
   microVM support, TinyGo branch.
-- No LXMF in this repo. There is no trusted Go LXMF implementation
-  yet. See the warning below before adopting one.
+- LXMF and the application protocols live in the companion repo
+  `github.com/Quad4-Software/reticulum-go-protocols` (trusted, same
+  authors). It is a monorepo: pkg/lxmf (LXMF 1.1.0 pack/stamp/paper
+  URI/delivery), pkg/rrc (RRC v1 hub and client), pkg/lxst (LXST
+  0.5.1 encrypted voice over links), pkg/mf (compact 16-byte hash +
+  UTF-8 format), pkg/rnv (native video, concept stage), cmd/gorrcd
+  (RRC hub daemon) and cmd/golxmd. All share one transport instance.
+  Module is off the public proxy: pin a commit and copy the replace
+  lines for quad4/* modules, or set GOPRIVATE=quad4/*.
 
 ## Alternative ports: warning
 
@@ -90,6 +97,8 @@ Trusted implementations only:
 - `markqvist/Reticulum` - the reference Python implementation.
 - `attermann/microReticulum` - the recognized microcontroller port.
 - `git.quad4.io/Networks/Reticulum-Go` - this project.
+- `Quad4-Software/reticulum-go-protocols` - Go LXMF, RRC, LXST, MF
+  and RNV on top of Reticulum-Go.
 
 ## MCP server notes
 
