@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: 0BSD
 // Package scaffold emits MeshChatX-convention file templates for
 // agents working on the codebase: Svelte 5 features and components,
-// backend managers, WS handlers, plugins, and oracle tests.
+// backend managers, WS handlers, plugins, and metamorphic tests.
 package scaffold
 
 import (
@@ -22,7 +22,7 @@ type File struct {
 // Kinds lists valid scaffold kinds.
 var Kinds = []string{
 	"svelte-feature", "svelte-component", "backend-manager",
-	"ws-handler", "plugin", "oracle-test",
+	"ws-handler", "plugin", "metamorphic-test",
 }
 
 // Generate returns the file set for a scaffold kind.
@@ -41,8 +41,8 @@ func Generate(kind, name string) ([]File, error) {
 		return wsHandler(name), nil
 	case "plugin":
 		return plugin(name), nil
-	case "oracle-test":
-		return oracleTest(name), nil
+	case "metamorphic-test":
+		return metamorphicTest(name), nil
 	}
 	return nil, fmt.Errorf("unknown kind %q; valid: %s", kind, strings.Join(Kinds, ", "))
 }
@@ -198,13 +198,14 @@ def on_load(ctx):
 	}
 }
 
-func oracleTest(name string) []File {
+func metamorphicTest(name string) []File {
 	return []File{
-		{Path: fmt.Sprintf("tests/backend/test_%s_oracle.py", name), Content: fmt.Sprintf(`# SPDX-License-Identifier: 0BSD
-"""Oracle tests for %s.
+		{Path: fmt.Sprintf("tests/backend/test_%s_metamorphic.py", name), Content: fmt.Sprintf(`# SPDX-License-Identifier: 0BSD
+"""Metamorphic and invariant tests for %s.
 
-An oracle predicts the outcome independently of the code under test.
-Do not ship tests that only assert no crash.
+Each test states an invariant or metamorphic relation that decides
+pass or fail independently of the buggy path. Do not ship tests that
+only assert no crash.
 """
 
 
@@ -212,6 +213,6 @@ def test_%s_rejects_invalid():
     # invariant in one sentence:
     # expected: invalid input raises ValueError
     pass
-`, name, name), Note: "See .agents/skills/test-oracles/SKILL.md for oracle types."},
+`, name, name), Note: "See .agents/skills/bug-hunting/SKILL.md for metamorphic, property, and differential methods."},
 	}
 }

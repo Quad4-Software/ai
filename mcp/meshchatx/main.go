@@ -168,7 +168,7 @@ func tools(src *docs.Source) []mcp.Tool {
 		},
 		{
 			Name:          "scaffold",
-			Description:   "Generate MeshChatX-convention file templates: svelte-feature, svelte-component, backend-manager, ws-handler, plugin, oracle-test.",
+			Description:   "Generate MeshChatX-convention file templates: svelte-feature, svelte-component, backend-manager, ws-handler, plugin, metamorphic-test.",
 			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"kind": "svelte-feature", "name": "my-feature"}`)}},
 			InputSchema: obj(map[string]any{
 				"kind": map[string]any{"type": "string", "enum": scaffold.Kinds, "description": "what to scaffold"},

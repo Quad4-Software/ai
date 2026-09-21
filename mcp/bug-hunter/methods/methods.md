@@ -1,25 +1,27 @@
 # Bug hunting methods
 
 Each method lists when to use it, how to run it, and what a real result looks like.
-The shared discipline: state a hypothesis before touching code, and confirm with an
-oracle that accepts or rejects independently of the buggy path.
+The shared discipline: state a hypothesis before touching code, and confirm with a
+check that accepts or rejects independently of the buggy path.
 
 ## Exploratory testing (chartered sessions)
 
-Time-boxed hunt with an explicit charter: target area, oracles, and what "done" means.
+Time-boxed hunt with an explicit charter: target area, pass/fail checks, and what "done" means.
 Write 5 to 15 concrete hypotheses (Hn) with file references and predicted wrong
 behaviour before running anything. Bad hypothesis: "maybe chat is broken". Good:
 "PART from a non-member fans PARTED to real members (server.py _handle_part)".
 Confirm each hypothesis with a focused test before fixing. Record intentional
 behaviours separately so they are not "fixed" by accident.
 
-## Oracle testing
+## Invariant testing
 
-An oracle predicts the correct outcome from the input alone or from a trusted model.
-Oracle types: accept/reject on invalid input, parse round-trips, jail invariants
-(result stays under root), closed error-reason sets, membership invariants
-(no fanout to non-members). Refuse soft fuzz: tests that only assert no crash, wrap
-the unit in try/except pass, or mock the security check away.
+An invariant predicts the correct outcome from the input alone or from a trusted
+model (the formal name for this pass/fail decider is a test oracle, but "invariant"
+or "check" says the same thing without the jargon). Kinds: accept/reject on
+invalid input, parse round-trips, jail invariants (result stays under root),
+closed error-reason sets, membership invariants (no fanout to non-members).
+Refuse soft fuzz: tests that only assert no crash, wrap the unit in try/except
+pass, or mock the security check away.
 
 ## Property-based testing
 
@@ -31,7 +33,7 @@ Set a deadline cap and an example budget, shrink to the minimal failing case.
 
 ## Metamorphic testing
 
-For code with no obvious oracle, define metamorphic relations: how output should
+For code with no obvious invariant, define metamorphic relations: how output should
 change when input changes in a known way. Examples: sorting the input must not
 change the result set, doubling a value must double the measured cost, removing
 a permission must never widen access. Pairs of related runs expose bugs single
@@ -124,7 +126,7 @@ cross-function flow still needs manual tracing.
 Search for token-shaped literals (AKIA, ghp_, sk-, xoxb, private key blocks, JWTs)
 and key-shaped assignments (password=, api_key=, secret=). Check .env files, config
 snapshots, test fixtures, and git history: a secret committed once and later removed
-is still leaked. Every finding is already compromised; report, rotate, then purge.
+is still leaked. Every finding is already compromised. Report, rotate, then purge.
 Never print the full value in a report, show enough to identify it.
 
 ## Crypto misuse
@@ -150,7 +152,7 @@ counting goroutines/fds before and after a load burst.
 Audit what the build pulls in, not just the code in the tree. Check for: lifecycle
 scripts in package.json and setup.py (preinstall/postinstall/cmdclass), deps pinned
 by name only with no lockfile or hash, git+ and http: dependency specs, go.mod
-replace directives, unpinned GitHub Actions (a tag like @v5 is mutable; only a full
+replace directives, unpinned GitHub Actions (a tag like @v5 is mutable, only a full
 40-char SHA pins), curl|sh installers, base64 blobs or eval in packaging code.
 Known-shape incidents to pattern-match: typosquats (one-char edits of popular
 names), slopsquats (AI-hallucinated package names an attacker then registers),
@@ -164,9 +166,9 @@ reproducible builds.
 
 Treat workflows as code that runs attacker-influenced input. Flag: triggers that run
 on untrusted input (pull_request_target, workflow_run, issue_comment) combined with
-secrets access or checkout of the PR head; script injection through
-${{ github.event.* }} interpolation into run: blocks; unpinned or third-party
-actions; overly broad GITHUB_TOKEN permissions; artifacts and caches shared between
+secrets access or checkout of the PR head. Script injection through
+${{ github.event.* }} interpolation into run: blocks, unpinned or third-party
+actions, overly broad GITHUB_TOKEN permissions, artifacts and caches shared between
 untrusted and trusted jobs. The tj-actions incident showed tags are mutable, pin by
 SHA and review workflow diffs like dependency diffs.
 

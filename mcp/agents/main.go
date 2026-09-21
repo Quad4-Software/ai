@@ -138,8 +138,8 @@ func tools() []mcp.Tool {
 		},
 		{
 			Name:          "get_skill",
-			Description:   "Return a skill's SKILL.md text by directory name (e.g. test-oracles).",
-			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"name": "test-oracles"}`)}},
+			Description:   "Return a skill's SKILL.md text by directory name (e.g. bug-hunting).",
+			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"name": "bug-hunting"}`)}},
 			InputSchema:   obj(map[string]any{"name": strArg("skill directory name")}, "name"),
 			Handle: func(_ context.Context, args json.RawMessage) (string, error) {
 				var a struct {

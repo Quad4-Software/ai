@@ -294,7 +294,7 @@ func SoftFuzzScan(root, sub string, limit int) ([]SoftFuzz, error) {
 		for _, m := range tryPass.FindAllStringIndex(joined, -1) {
 			out = append(out, SoftFuzz{File: filepath.ToSlash(rel),
 				Line: strings.Count(joined[:m[0]], "\n") + 1,
-				Why:  "try/except pass swallows failures; soft fuzz without oracle"})
+				Why:  "try/except pass swallows failures; soft fuzz without an invariant"})
 		}
 		// test function bodies with no assert
 		for i, line := range lines {
@@ -512,7 +512,7 @@ func DeadCode(root, sub string, limit int) ([]DeadSym, error) {
 	return out, nil
 }
 
-// Mutation is a suggested code mutant for testing a function's oracle.
+// Mutation is a suggested code mutant for testing a function's invariants.
 type Mutation struct {
 	Line     int    `json:"line"`
 	Original string `json:"original"`
@@ -546,7 +546,7 @@ var mutantRules = []struct {
 }
 
 // MutationHints extracts a function's body and produces the mutants
-// most likely to expose a weak oracle. Heuristic: one mutant per
+// most likely to escape weak tests. Heuristic: one mutant per
 // operator occurrence, capped.
 func MutationHints(root, file, name string, max int) ([]Mutation, error) {
 	p := filepath.Join(root, filepath.FromSlash(file))

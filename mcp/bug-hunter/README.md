@@ -9,17 +9,17 @@ Root: `MCP_REPO_ROOT` or nearest `.git` ancestor.
 
 `list_methods` / `get_method {name}` return guidance for:
 
-exploratory, oracle, property, metamorphic, differential, toctou,
+exploratory, invariant, property, metamorphic, differential, toctou,
 churn, error-injection, boundary, combinatorial, state-machine,
 attack-surface, regression, injection, secrets, crypto, concurrency,
 supply-chain, ci-pipeline, mcp-security, authz-matrix, ai-code.
 
 ## Scanners
 
-- `hotspots {since, limit}` - git churn weighted by recency; defects
+- `hotspots {since, limit}` - git churn weighted by recency. Defects
   cluster in high-churn files
 - `regression_mine {limit}` - recent fix/hotfix/revert commits and the
-  files they touched; past bugs predict future ones
+  files they touched. Past bugs predict future ones
 - `toctou_scan {path, limit}` - check-then-use pairs within 25 lines
 - `attack_surface {path, limit}` - exec, file writes, HTTP mutators, WS
   handlers, eval, deserializers, raw SQL
@@ -30,9 +30,9 @@ supply-chain, ci-pipeline, mcp-security, authz-matrix, ai-code.
   InsecureSkipVerify / verify=False, old TLS, JWT alg confusion, == on
   secrets
 - `secrets_scan {path, limit}` - token-shaped literals and key
-  assignments across code and config files; values redacted
-- `git_secrets {limit}` - secret-shaped lines added in recent history;
-  a deleted commit still leaks
+  assignments across code and config files, values redacted
+- `git_secrets {limit}` - secret-shaped lines added in recent history.
+  A deleted commit still leaks
 - `concurrency_scan {path, limit}` - Go loop-var capture, defer in
   loops, WaitGroup.Add inside goroutines, unclosed response bodies,
   send-after-close, shared state without sync
@@ -46,7 +46,7 @@ supply-chain, ci-pipeline, mcp-security, authz-matrix, ai-code.
 - `soft_fuzz_scan {path, limit}` - try/except pass and assert-free tests
 - `complexity_scan {path, max_lines, limit}` - functions over N lines
 - `dead_code {path, limit}` - functions declared under path that no repo
-  file references; refs counted repo-wide
+  file references, refs counted repo-wide
 - `markers_scan {path, limit}` - TODO/FIXME/HACK/XXX/BUG/SECURITY
   comments
 - `mutation_hints {file, name}` - operator/constant mutants for a
@@ -54,7 +54,7 @@ supply-chain, ci-pipeline, mcp-security, authz-matrix, ai-code.
 - `charter {area}` - exploratory session template with suggested scans
 
 All findings are heuristic candidates. State a hypothesis, confirm with
-an oracle test, then report.
+an invariant or metamorphic test, then report.
 
 ## Prompts
 
@@ -62,6 +62,6 @@ an oracle test, then report.
 
 ## Discipline
 
-State a hypothesis before touching code. Confirm with an oracle that
-accepts or rejects independently of the buggy path. Record intentional
-behaviour so it is not fixed by accident.
+State a hypothesis before touching code. Confirm with an invariant
+check that accepts or rejects independently of the buggy path. Record
+intentional behaviour so it is not fixed by accident.

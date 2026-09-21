@@ -21,7 +21,7 @@ import (
 var methodsText string
 
 var methodNames = []string{
-	"exploratory", "oracle", "property", "metamorphic", "differential",
+	"exploratory", "invariant", "property", "metamorphic", "differential",
 	"toctou", "churn", "error-injection", "boundary", "combinatorial",
 	"state-machine", "attack-surface", "regression", "injection",
 	"secrets", "crypto", "concurrency", "supply-chain", "ci-pipeline",
@@ -61,7 +61,7 @@ func obj(props map[string]any, req ...string) map[string]any {
 func methodSection(name string) (string, error) {
 	// map tool names to heading substrings
 	want := map[string]string{
-		"exploratory": "Exploratory testing", "oracle": "Oracle testing",
+		"exploratory": "Exploratory testing", "invariant": "Invariant testing",
 		"property": "Property-based", "metamorphic": "Metamorphic",
 		"differential": "Differential", "toctou": "TOCTOU",
 		"churn": "Churn and hotspot", "error-injection": "Error-path",
@@ -109,7 +109,7 @@ func tools() []mcp.Tool {
 	return []mcp.Tool{
 		{
 			Name:        "list_methods",
-			Description: "List bug-hunting methods (exploratory, oracle, property, metamorphic, differential, toctou, churn, and more).",
+			Description: "List bug-hunting methods (exploratory, invariant, property, metamorphic, differential, toctou, churn, and more).",
 			InputSchema: obj(map[string]any{}),
 			Handle: func(_ context.Context, _ json.RawMessage) (string, error) {
 				return strings.Join(methodNames, "\n"), nil
@@ -248,7 +248,7 @@ func tools() []mcp.Tool {
 		},
 		{
 			Name:          "mutation_hints",
-			Description:   "Suggest mutants for a function: the operator/constant changes most likely to expose a weak test oracle. Pair with run_tests to see if mutants are caught.",
+			Description:   "Suggest mutants for a function: the operator/constant changes most likely to escape weak tests. Pair with run_tests to see if mutants are caught.",
 			InputExamples: []map[string]any{{"arguments": json.RawMessage(`{"file": "meshchatx/src/backend/plugin_permissions.py", "name": "permission_id_for_hook"}`)}},
 			InputSchema: obj(map[string]any{
 				"file":  strArg("repo-relative file"),
@@ -536,7 +536,7 @@ Window: one focused session
    H1:
    H2:
    H3:
-3. For each high-priority hypothesis, write a failing oracle test first.
+3. For each high-priority hypothesis, write a failing invariant test first.
 4. Confirm with focused test runs. Report confirmed bugs only.
 5. Record intentional behaviours so they are not changed by accident.
 
@@ -555,7 +555,7 @@ func prompts() []mcp.Prompt {
 			Arguments:   []mcp.PromptArg{{Name: "area", Description: "subsystem to hunt in", Required: true}},
 			Handle: func(args map[string]string) (string, error) {
 				return methodsText + "\n\nRun the scans (hotspots, attack_surface, toctou_scan, soft_fuzz_scan) on " + args["area"] +
-					", then write explicit hypotheses and confirm each with an oracle test before changing code.", nil
+					", then write explicit hypotheses and confirm each with an invariant or metamorphic test before changing code.", nil
 			},
 		},
 	}
