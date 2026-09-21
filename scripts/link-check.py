@@ -114,7 +114,7 @@ def check_url(url):
             continue
         if 200 <= status < 300:
             return "ok", None
-        if gated and 400 <= status < 500:
+        if gated and status >= 400:
             return "warn", f"HTTP {status} (gated host)"
         if status in SOFT_STATUSES:
             return "warn", f"HTTP {status}"
