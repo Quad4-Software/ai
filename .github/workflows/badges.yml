@@ -19,6 +19,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout badges branch
+        # zizmor: ignore[artipacked] the push to the badges branch needs persisted credentials
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: badges

@@ -6,83 +6,117 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/bug-hunter"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/ci-security"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/context"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/gateway"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/i18n"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/lxmf"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/scaffold"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/memory"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/lxmfy"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/meshchatx"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/micron"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/no-slop"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/rns"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/reticulum-go"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: "/mcp/workspace"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
