@@ -136,6 +136,8 @@ func (c *child) ensure() error {
 		c.dead = fmt.Errorf("start %s: %w", c.def.Name, err)
 		return c.dead
 	}
+	// reap on exit so dead children never accumulate as zombies
+	go func() { _ = cmd.Wait() }() // #nosec G104 -- exit status irrelevant, zombie prevention is the point
 	c.cmd, c.stdin = cmd, stdin
 	c.stdout = bufio.NewReaderSize(stdout, 1<<20)
 	c.started = true
@@ -245,8 +247,10 @@ func main() {
 	ro := flag.Bool("read-only", false, "disable mutating tools")
 	httpMode := flag.Bool("http", false, "serve HTTP only on HTTP_PORT, no stdio; for containers without stdin")
 	hcMode := flag.Bool("health-check", false, "GET /healthz on HTTP_PORT and exit 0 on success")
+	logPath := flag.String("log", os.Getenv("GATEWAY_LOG"), "append operational log to this file (stderr always)")
 	flag.Parse()
 	_ = ro
+	initLog(*logPath)
 	if *hcMode {
 		port := os.Getenv("HTTP_PORT")
 		if port == "" {
@@ -261,11 +265,21 @@ func main() {
 			os.Exit(1)
 		}
 		srv, children := buildServer()
-		srv.ReadOnly = *ro || srv.ReadOnly
-		server := startHTTP(":"+port, srv, children)
+		if *ro {
+			srv.SetReadOnly()
+		}
+		server, httpErr := startHTTP(":"+port, srv, children)
+		logf("http mode listening on :%s (%d servers)", port, len(children))
 		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		defer stop()
-		<-ctx.Done()
+		select {
+		case <-ctx.Done():
+		case err := <-httpErr:
+			// the listener is dead; exit nonzero so the container
+			// restart policy brings back a working process
+			logf("http listener died: %v", err)
+			os.Exit(1)
+		}
 		sctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		_ = server.Shutdown(sctx) // #nosec G104 -- shutdown path, error irrelevant
@@ -280,9 +294,11 @@ func main() {
 	}
 	if *daemonMode {
 		srv, children := buildServer()
-		srv.ReadOnly = *ro || srv.ReadOnly
+		if *ro {
+			srv.SetReadOnly()
+		}
 		if port := os.Getenv("HTTP_PORT"); port != "" {
-			startHTTP(":"+port, srv, children)
+			startHTTP(":"+port, srv, children) //nolint:errcheck -- auxiliary listener; errors logged inside
 		}
 		if err := runDaemon(context.Background(), *sock, srv); err != nil {
 			fmt.Fprintln(os.Stderr, "gateway daemon:", err)
@@ -291,9 +307,11 @@ func main() {
 		return
 	}
 	srv, children := buildServer()
-	srv.ReadOnly = *ro || srv.ReadOnly
+	if *ro {
+		srv.SetReadOnly()
+	}
 	if port := os.Getenv("HTTP_PORT"); port != "" {
-		startHTTP(":"+port, srv, children)
+		startHTTP(":"+port, srv, children) //nolint:errcheck -- auxiliary listener; errors logged inside
 	}
 	if err := srv.Serve(context.Background(), os.Stdin, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, "gateway:", err)
@@ -528,19 +546,55 @@ func buildServer() (*mcp.Server, []*child) {
 	return mcp.NewServer("gateway", "0.1.0", tools, nil), children
 }
 
-// httpSession is one SSE MCP session. The stdio transport for a single
-// mcp.Server is split into an incoming pipe (inPr/inPw) and an outgoing
-// pipe (outPr/outPw).
+// httpSession is one SSE MCP session. The stdio transport for the
+// shared mcp.Server is split into an incoming pipe (inPr/inPw) and an
+// outgoing pipe (outPr/outPw); Serve calls are per-session but the
+// child pool is shared process-wide.
 type httpSession struct {
 	id string
 	mu sync.Mutex
 	in *io.PipeWriter
 }
 
-var (
-	sessionMu sync.Mutex
-	sessions  = map[string]*httpSession{}
-)
+// sessionStore bounds concurrent SSE sessions so a flood of open
+// connections cannot exhaust pids, memory, or file descriptors.
+type sessionStore struct {
+	mu   sync.Mutex
+	max  int
+	byID map[string]*httpSession
+}
+
+func newSessionStore(max int) *sessionStore {
+	return &sessionStore{max: max, byID: map[string]*httpSession{}}
+}
+
+func (st *sessionStore) add(s *httpSession) bool {
+	st.mu.Lock()
+	defer st.mu.Unlock()
+	if len(st.byID) >= st.max {
+		return false
+	}
+	st.byID[s.id] = s
+	return true
+}
+
+func (st *sessionStore) get(id string) *httpSession {
+	st.mu.Lock()
+	defer st.mu.Unlock()
+	return st.byID[id]
+}
+
+func (st *sessionStore) remove(id string) {
+	st.mu.Lock()
+	defer st.mu.Unlock()
+	delete(st.byID, id)
+}
+
+func (st *sessionStore) count() int {
+	st.mu.Lock()
+	defer st.mu.Unlock()
+	return len(st.byID)
+}
 
 func newSessionID() string {
 	b := make([]byte, 8)
@@ -569,13 +623,68 @@ func healthCheck(url string) int {
 	return 0
 }
 
-func startHTTP(addr string, srv *mcp.Server, children []*child) *http.Server {
+// maxSSESessions bounds concurrent SSE sessions; each holds one
+// connection plus a Serve goroutine on the shared server.
+const maxSSESessions = 256
+
+// maxMessageBytes caps one JSON-RPC POST body so a giant request
+// cannot exhaust container memory.
+const maxMessageBytes = 1 << 20
+
+// sseKeepAlive is the interval between ": ping" comment frames. It
+// keeps proxies from dropping idle streams and surfaces dead clients.
+const sseKeepAlive = 25 * time.Second
+
+// logf writes an operational log line to stderr and, when GATEWAY_LOG
+// or -log named a file, appends there too. Never writes to stdout,
+// which is the stdio MCP transport.
+var logFile io.Writer
+
+func initLog(path string) {
+	if path == "" {
+		return
+	}
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o600) // #nosec G304 G703 -- operator-provided log path
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "gateway: open log file:", err)
+		return
+	}
+	logFile = f
+}
+
+func logf(format string, args ...any) {
+	line := fmt.Sprintf("%s "+format+"\n", append([]any{time.Now().UTC().Format(time.RFC3339)}, args...)...)
+	fmt.Fprint(os.Stderr, line)
+	if logFile != nil {
+		fmt.Fprint(logFile, line)
+	}
+}
+
+// recoverWrap turns a handler panic into a 500 and a log line instead
+// of killing the process.
+func recoverWrap(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if rec := recover(); rec != nil {
+				logf("panic in %s %s: %v", r.Method, r.URL.Path, rec)
+				http.Error(w, "internal error", http.StatusInternalServerError)
+			}
+		}()
+		h(w, r)
+	}
+}
+
+// startHTTP serves the HTTP surface and returns the server plus a
+// channel that receives the listener error if it dies unexpectedly.
+// All SSE sessions share the one mcp.Server and its child pool.
+func startHTTP(addr string, srv *mcp.Server, children []*child) (*http.Server, <-chan error) {
+	store := newSessionStore(maxSSESessions)
 	mux := http.NewServeMux()
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok"))
 	})
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/", recoverWrap(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		var names []string
 		for _, c := range children {
@@ -589,20 +698,35 @@ func startHTTP(addr string, srv *mcp.Server, children []*child) *http.Server {
 			"config":    os.Getenv("GATEWAY_CONFIG"),
 		})
 		_, _ = w.Write(b)
-	})
-	mux.HandleFunc("/sse", func(w http.ResponseWriter, r *http.Request) {
+	}))
+	mux.HandleFunc("/sse", recoverWrap(func(w http.ResponseWriter, r *http.Request) {
+		flusher, ok := w.(http.Flusher)
+		if !ok {
+			http.Error(w, "streaming not supported", http.StatusInternalServerError)
+			return
+		}
 		sid := newSessionID()
 		inPr, inPw := io.Pipe()
 		outPr, outPw := io.Pipe()
 
 		s := &httpSession{id: sid, in: inPw}
-		sessionMu.Lock()
-		sessions[sid] = s
-		sessionMu.Unlock()
+		if !store.add(s) {
+			_ = inPw.Close()
+			_ = inPr.Close()
+			http.Error(w, "too many sessions", http.StatusServiceUnavailable)
+			return
+		}
+		logf("session %s open (%d active)", sid, store.count())
 
-		gw, _ := buildServer()
+		// Each session gets its own Serve invocation on the shared
+		// server; Serve scopes output to the given writer.
 		go func() {
-			_ = gw.Serve(r.Context(), inPr, outPw)
+			defer func() {
+				if rec := recover(); rec != nil {
+					logf("panic serving session %s: %v", sid, rec)
+				}
+			}()
+			_ = srv.Serve(r.Context(), inPr, outPw)
 			_ = outPw.Close()
 		}()
 
@@ -611,41 +735,59 @@ func startHTTP(addr string, srv *mcp.Server, children []*child) *http.Server {
 		w.Header().Set("Connection", "keep-alive")
 		w.WriteHeader(http.StatusOK)
 
-		flusher, ok := w.(http.Flusher)
-		if !ok {
-			http.Error(w, "streaming not supported", http.StatusInternalServerError)
-			return
-		}
-
 		fmt.Fprintf(w, "event: endpoint\ndata: /messages?session=%s\n\n", sid)
 		flusher.Flush()
 
-		scanner := bufio.NewScanner(outPr)
-		for scanner.Scan() {
-			fmt.Fprintf(w, "event: message\ndata: %s\n\n", scanner.Text())
-			flusher.Flush()
+		// Scan child output in a goroutine so the main loop can also
+		// watch for client disconnect and emit keepalive pings.
+		lines := make(chan string, 64)
+		go func() {
+			scanner := bufio.NewScanner(outPr)
+			for scanner.Scan() {
+				lines <- scanner.Text()
+			}
+			close(lines)
+		}()
+		tick := time.NewTicker(sseKeepAlive)
+		defer tick.Stop()
+		open := true
+		for open {
+			select {
+			case line, ok2 := <-lines:
+				if !ok2 {
+					open = false
+					break
+				}
+				fmt.Fprintf(w, "event: message\ndata: %s\n\n", line)
+				flusher.Flush()
+			case <-tick.C:
+				if _, err := fmt.Fprint(w, ": ping\n\n"); err != nil {
+					open = false
+					break
+				}
+				flusher.Flush()
+			case <-r.Context().Done():
+				open = false
+			}
 		}
 
 		_ = outPr.Close()
 		s.mu.Lock()
 		_ = s.in.Close()
 		s.mu.Unlock()
-		sessionMu.Lock()
-		delete(sessions, sid)
-		sessionMu.Unlock()
-	})
-	mux.HandleFunc("/messages", func(w http.ResponseWriter, r *http.Request) {
+		store.remove(sid)
+		logf("session %s closed (%d active)", sid, store.count())
+	}))
+	mux.HandleFunc("/messages", recoverWrap(func(w http.ResponseWriter, r *http.Request) {
 		sid := r.URL.Query().Get("session")
-		sessionMu.Lock()
-		s, ok := sessions[sid]
-		sessionMu.Unlock()
-		if !ok {
+		s := store.get(sid)
+		if s == nil {
 			http.Error(w, "unknown session", http.StatusNotFound)
 			return
 		}
-		body, err := io.ReadAll(r.Body)
+		body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, maxMessageBytes))
 		if err != nil {
-			http.Error(w, "read body", http.StatusBadRequest)
+			http.Error(w, "body too large or unreadable", http.StatusRequestEntityTooLarge)
 			return
 		}
 		if len(body) == 0 {
@@ -663,16 +805,21 @@ func startHTTP(addr string, srv *mcp.Server, children []*child) *http.Server {
 			return
 		}
 		w.WriteHeader(http.StatusAccepted)
-	})
+	}))
 	server := &http.Server{
-		Addr:        addr,
-		Handler:     mux,
-		ReadTimeout: 5 * time.Second,
+		Addr:              addr,
+		Handler:           mux,
+		ReadTimeout:       5 * time.Second,
+		ReadHeaderTimeout: 2 * time.Second,
+		IdleTimeout:       120 * time.Second,
+		// no WriteTimeout: SSE streams are long-lived by design
 	}
+	errCh := make(chan error, 1)
 	go func() {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			fmt.Fprintln(os.Stderr, "gateway http:", err)
+			logf("http listener error: %v", err)
+			errCh <- err
 		}
 	}()
-	return server
+	return server, errCh
 }

@@ -52,6 +52,29 @@ func TestHealthCheck(t *testing.T) {
 	}
 }
 
+func TestSessionStoreCap(t *testing.T) {
+	st := newSessionStore(2)
+	a := &httpSession{id: "a"}
+	b := &httpSession{id: "b"}
+	c := &httpSession{id: "c"}
+	if !st.add(a) || !st.add(b) {
+		t.Fatal("first two sessions should fit")
+	}
+	if st.add(c) {
+		t.Fatal("third session should be rejected at cap")
+	}
+	if st.get("a") != a || st.get("nope") != nil {
+		t.Fatal("get mismatch")
+	}
+	if st.count() != 2 {
+		t.Fatalf("count=%d", st.count())
+	}
+	st.remove("a")
+	if !st.add(c) {
+		t.Fatal("slot should free after remove")
+	}
+}
+
 func TestFindToolNamespacing(t *testing.T) {
 	children := []*child{{def: serverDef{Name: "s1"}}}
 	_, tool, err := findTool(children, "s1.do_thing")

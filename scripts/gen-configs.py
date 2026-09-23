@@ -28,10 +28,14 @@ def client_config(servers, repo):
     }
 
 
-def gateway_config(servers, repo):
+def gateway_config(servers, repo, container=False):
     mcp = {}
     for s in servers:
         if s["name"] == "gateway":
+            continue
+        # container images have no repo checkout, so repo-bound
+        # servers (find .git/.agents at startup) can never work there
+        if container and s.get("requires_repo"):
             continue
         env = {k: "" for k in s.get("env", [])}
         mcp[s["name"]] = {
@@ -94,6 +98,11 @@ def main():
         action="store_true",
         help="also generate registry server.json files"
     )
+    parser.add_argument(
+        "--container",
+        action="store_true",
+        help="exclude requires_repo servers (no checkout in the image)"
+    )
     args = parser.parse_args()
 
     repo = os.path.abspath(args.repo)
@@ -101,7 +110,7 @@ def main():
     servers = manifest["servers"]
 
     client = client_config(servers, repo)
-    gateway = gateway_config(servers, repo)
+    gateway = gateway_config(servers, repo, container=args.container)
 
     if args.print:
         print("=== Client mcp.json (one gateway entry) ===")

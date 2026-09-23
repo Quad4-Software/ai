@@ -43,7 +43,8 @@
       "version": "0.1.0",
       "env": [
         "MCP_REPO_ROOT"
-      ]
+      ],
+      "requires_repo": true
     },
     {
       "name": "agents",
@@ -51,7 +52,8 @@
       "command": "mcp/agents/agents",
       "description": "Repo skills, conventions, module ownership, file tree.",
       "version": "0.1.0",
-      "env": []
+      "env": [],
+      "requires_repo": true
     },
     {
       "name": "no-slop",
@@ -67,7 +69,8 @@
       "command": "mcp/bug-hunter/bug-hunter",
       "description": "Hotspots, TOCTOU, attack surface, complexity, regression mining.",
       "version": "0.1.0",
-      "env": []
+      "env": [],
+      "requires_repo": true
     },
     {
       "name": "ci-security",
@@ -85,7 +88,8 @@
       "command": "mcp/i18n/i18n",
       "description": "Locale keys, coverage, usage, hardcoded strings.",
       "version": "0.1.0",
-      "env": []
+      "env": [],
+      "requires_repo": true
     },
     {
       "name": "workspace",
@@ -93,7 +97,8 @@
       "command": "mcp/workspace/workspace",
       "description": "Taskfile list/run, git status/log/diff, test mapping and runs.",
       "version": "0.1.0",
-      "env": []
+      "env": [],
+      "requires_repo": true
     },
     {
       "name": "lxmf",

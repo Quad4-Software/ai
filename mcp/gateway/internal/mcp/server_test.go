@@ -408,3 +408,31 @@ func TestServeListenerShared(t *testing.T) {
 	}
 	cancel()
 }
+
+func TestSetReadOnlyPurgesWriteTools(t *testing.T) {
+	srv := NewServer("t", "0.1", []Tool{
+		{Name: "read", InputSchema: map[string]any{},
+			Handle: func(context.Context, json.RawMessage) (string, error) { return "r", nil }},
+		{Name: "write", Write: true, InputSchema: map[string]any{},
+			Handle: func(context.Context, json.RawMessage) (string, error) { return "w", nil }},
+	}, nil)
+	srv.SetReadOnly()
+	if _, ok := srv.tools["write"]; ok {
+		t.Fatal("write tool still registered")
+	}
+	if len(srv.torder) != 1 || srv.torder[0] != "read" {
+		t.Fatalf("torder not rebuilt: %v", srv.torder)
+	}
+	var out strings.Builder
+	in := `{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"write","arguments":{}}}` + "\n"
+	if err := srv.Serve(context.Background(), strings.NewReader(in), &out); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(out.String(), "unknown tool") {
+		t.Fatalf("write tool callable after SetReadOnly: %s", out.String())
+	}
+	srv.SetReadOnly() // idempotent
+	if len(srv.torder) != 1 {
+		t.Fatal("second SetReadOnly corrupted torder")
+	}
+}

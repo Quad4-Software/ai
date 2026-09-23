@@ -141,26 +141,43 @@ func NewServer(name, version string, tools []Tool, prompts []Prompt) *Server {
 		MaxToolOutputBytes: DefaultMaxToolOutputBytes,
 		ToolCallTimeout:    DefaultToolCallTimeout,
 	}
-	if os.Getenv("MCP_READ_ONLY") == "1" || os.Getenv("READ_ONLY") == "1" {
-		s.ReadOnly = true
-	}
-	for _, a := range os.Args[1:] {
-		if a == "--read-only" || a == "-read-only" {
-			s.ReadOnly = true
-		}
-	}
 	for _, t := range tools {
 		s.tools[t.Name] = t
 		s.torder = append(s.torder, t.Name)
 	}
 	// deterministic order: tools/list is cacheable per 2025-11-25
 	sort.Strings(s.torder)
+	if os.Getenv("MCP_READ_ONLY") == "1" || os.Getenv("READ_ONLY") == "1" {
+		s.SetReadOnly()
+	}
+	for _, a := range os.Args[1:] {
+		if a == "--read-only" || a == "-read-only" {
+			s.SetReadOnly()
+		}
+	}
 	for _, p := range prompts {
 		s.prompts[p.Name] = p
 		s.porder = append(s.porder, p.Name)
 	}
 	s.resources = make(map[string]Resource)
 	return s
+}
+
+// SetReadOnly enables read-only mode and removes every tool marked
+// Write from the registry entirely, so write tools are neither listed
+// nor callable. Idempotent.
+func (s *Server) SetReadOnly() {
+	s.ReadOnly = true
+	for name, t := range s.tools {
+		if t.Write {
+			delete(s.tools, name)
+		}
+	}
+	s.torder = s.torder[:0]
+	for name := range s.tools {
+		s.torder = append(s.torder, name)
+	}
+	sort.Strings(s.torder)
 }
 
 // RegisterResources adds resources to the server after construction so

@@ -33,10 +33,10 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    mem_limit: 512m
-    cpus: "1.0"
-    pids_limit: 64
+    mem_limit: 1g
+    cpus: "2.0"
+    pids_limit: 256
     ulimits:
       nofile:
-        soft: 1024
-        hard: 2048
+        soft: 4096
+        hard: 8192

@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - 'mcp/micron/**'
+      - 'mcp/gateway/**'
       - '.github/workflows/fuzz.yml'
   pull_request:
     paths:
       - 'mcp/micron/**'
+      - 'mcp/gateway/**'
       - '.github/workflows/fuzz.yml'
 
 permissions:
@@ -31,3 +33,6 @@ jobs:
           for target in FuzzParseMicron FuzzRenderHTML; do
             (cd mcp/micron && go test -fuzz=$target -fuzztime=15s -run='^$' .) || exit 1
           done
+      - name: fuzz-gateway
+        run: |
+          (cd mcp/gateway && go test -fuzz=FuzzDispatchLine -fuzztime=15s -run='^$' ./internal/mcp) || exit 1
