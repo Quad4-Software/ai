@@ -16,6 +16,7 @@ services:
       - ALL
     security_opt:
       - "no-new-privileges:true"
+    stdin_open: true
     environment:
       MCP_READ_ONLY: "1"
       GATEWAY_CONFIG: "/app/config/quad4-mcp.json"

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
@@ -26,6 +28,27 @@ func TestLoadConfig(t *testing.T) {
 	}
 	if defs[0].Name != "a" || defs[0].Env["X"] != "1" || defs[1].Name != "d" || defs[1].Args[0] != "--flag" {
 		t.Fatalf("defs: %+v", defs)
+	}
+}
+
+func TestHealthCheck(t *testing.T) {
+	ok := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ok.Close()
+	if healthCheck(ok.URL) != 0 {
+		t.Fatal("expected 0 for healthy endpoint")
+	}
+	bad := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}))
+	defer bad.Close()
+	if healthCheck(bad.URL) == 0 {
+		t.Fatal("expected nonzero for 503 endpoint")
+	}
+	ok.Close()
+	if healthCheck(ok.URL) == 0 {
+		t.Fatal("expected nonzero for unreachable endpoint")
 	}
 }
 

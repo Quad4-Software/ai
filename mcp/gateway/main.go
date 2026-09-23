@@ -27,10 +27,12 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"sort"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/Quad4-Software/ai/mcp/gateway/internal/mcp"
@@ -241,8 +243,34 @@ func main() {
 	attachMode := flag.Bool("attach", false, "bridge stdio to the shared daemon, auto-starting it")
 	daemonMode := flag.Bool("daemon", false, "run as shared daemon on the socket")
 	ro := flag.Bool("read-only", false, "disable mutating tools")
+	httpMode := flag.Bool("http", false, "serve HTTP only on HTTP_PORT, no stdio; for containers without stdin")
+	hcMode := flag.Bool("health-check", false, "GET /healthz on HTTP_PORT and exit 0 on success")
 	flag.Parse()
 	_ = ro
+	if *hcMode {
+		port := os.Getenv("HTTP_PORT")
+		if port == "" {
+			port = "8080"
+		}
+		os.Exit(healthCheck("http://127.0.0.1:" + port + "/healthz"))
+	}
+	if *httpMode {
+		port := os.Getenv("HTTP_PORT")
+		if port == "" {
+			fmt.Fprintln(os.Stderr, "gateway: -http requires HTTP_PORT")
+			os.Exit(1)
+		}
+		srv, children := buildServer()
+		srv.ReadOnly = *ro || srv.ReadOnly
+		server := startHTTP(":"+port, srv, children)
+		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		defer stop()
+		<-ctx.Done()
+		sctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_ = server.Shutdown(sctx) // #nosec G104 -- shutdown path, error irrelevant
+		return
+	}
 	if *attachMode {
 		if err := attach(*sock); err != nil {
 			fmt.Fprintln(os.Stderr, "gateway attach:", err)
@@ -522,7 +550,26 @@ func newSessionID() string {
 	return hex.EncodeToString(b)
 }
 
-func startHTTP(addr string, srv *mcp.Server, children []*child) {
+// healthCheck GETs url and returns a process exit code: 0 on HTTP 200,
+// 1 otherwise. Used by the container HEALTHCHECK in distroless images
+// that have no shell or curl.
+func healthCheck(url string) int {
+	client := &http.Client{Timeout: 5 * time.Second}
+	res, err := client.Get(url) // #nosec G107 -- fixed loopback URL from env-configured port
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "gateway health-check:", err)
+		return 1
+	}
+	defer res.Body.Close() // #nosec G104 -- response body close is best effort
+	_, _ = io.Copy(io.Discard, res.Body)
+	if res.StatusCode != http.StatusOK {
+		fmt.Fprintln(os.Stderr, "gateway health-check: status", res.StatusCode)
+		return 1
+	}
+	return 0
+}
+
+func startHTTP(addr string, srv *mcp.Server, children []*child) *http.Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -623,8 +670,9 @@ func startHTTP(addr string, srv *mcp.Server, children []*child) {
 		ReadTimeout: 5 * time.Second,
 	}
 	go func() {
-		if err := server.ListenAndServe(); err != nil {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			fmt.Fprintln(os.Stderr, "gateway http:", err)
 		}
 	}()
+	return server
 }

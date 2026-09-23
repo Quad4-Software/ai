@@ -27,10 +27,16 @@ no writable filesystem, and uses `read_only: true` plus `no-new-privileges`.
 
 ## Coolify
 
-Use `docker-compose.public.yml` for Coolify. The gateway starts a read-only HTTP
-status/health endpoint on port 8080 when `HTTP_PORT` is set. In Coolify assign
-a domain to the `mcp` service and use `http(s)://example.com:8080`. The
-`expose` list tells the proxy where to route traffic.
+Use `docker-compose.public.yml` for Coolify. The gateway runs with `-http`,
+which serves the HTTP surface on `HTTP_PORT` and blocks on SIGTERM instead of
+stdio, so the container stays up without an attached stdin. The compose file
+has a Docker `healthcheck` that runs the same binary with `-health-check`,
+which is required because the distroless image has no shell or curl.
+
+In Coolify assign a domain to the `mcp` service, for example
+`https://mcp.example.com` (no port in the URL). The `SERVICE_FQDN_MCP_8080`
+variable in the environment block is what Coolify fills in and what routes the
+domain to container port 8080.
 
 ## Public HTTP/SSE API
 
