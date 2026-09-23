@@ -34,8 +34,11 @@ def gateway_config(servers, repo, container=False):
         if s["name"] == "gateway":
             continue
         # container images have no repo checkout, so repo-bound
-        # servers (find .git/.agents at startup) can never work there
-        if container and s.get("requires_repo"):
+        # servers (find .git/.agents at startup) can never work there.
+        # public: false servers read or hold internal state (task
+        # boards, memory store, local reticulum, media instance) and
+        # must not be exposed on the anonymous public gateway.
+        if container and (s.get("requires_repo") or s.get("public") is False):
             continue
         env = {k: "" for k in s.get("env", [])}
         mcp[s["name"]] = {
@@ -101,7 +104,7 @@ def main():
     parser.add_argument(
         "--container",
         action="store_true",
-        help="exclude requires_repo servers (no checkout in the image)"
+        help="exclude requires_repo and public:false servers (image has no checkout and serves anonymous traffic)"
     )
     args = parser.parse_args()
 

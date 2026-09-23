@@ -23,7 +23,8 @@
       "command": "mcp/memory/memory",
       "description": "Persistent agent memory: notes, people, RNS destinations, tasks, fuzzy recall.",
       "version": "0.1.0",
-      "env": []
+      "env": [],
+      "public": false
     },
     {
       "name": "meshchatx",
@@ -106,7 +107,8 @@
       "command": "mcp/lxmf/lxmf",
       "description": "Local Reticulum state: config, storage, known destinations.",
       "version": "0.1.0",
-      "env": []
+      "env": [],
+      "public": false
     },
     {
       "name": "lxmfy",
@@ -145,7 +147,8 @@
         "KANEO_API_URL",
         "KANEO_WORKSPACE_ID",
         "KANEO_PROJECT_ID"
-      ]
+      ],
+      "public": false
     },
     {
       "name": "melovian",
@@ -158,7 +161,8 @@
         "MELOVIAN_USERNAME",
         "MELOVIAN_PASSWORD",
         "MELOVIAN_SEARXNG_URL"
-      ]
+      ],
+      "public": false
     }
   ]
 }
