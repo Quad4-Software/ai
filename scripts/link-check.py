@@ -42,6 +42,16 @@ GATED_HOSTS = {"git.quad4.io"}
 # Reachable-but-bot-blocked statuses warn instead of failing CI.
 SOFT_STATUSES = {401, 403, 405, 406, 429, 451}
 
+
+def is_server_error(status):
+    """5xx means the host is up but erroring, usually a transient outage.
+
+    Dead links still fail via 404 or DNS/connection errors, so warning
+    here keeps CI stable through upstream incidents without masking
+    real breakage.
+    """
+    return status >= 500
+
 MD_LINK_RE = re.compile(r"!?\[[^\]]*\]\(\s*<?([^<>\s)]+)>?(?:\s[^)]*)?\)")
 BARE_URL_RE = re.compile(r"https?://[^\s<>\"')\\]+")
 INLINE_CODE_RE = re.compile(r"`[^`]*`")
@@ -116,7 +126,7 @@ def check_url(url):
             return "ok", None
         if gated and status >= 400:
             return "warn", f"HTTP {status} (gated host)"
-        if status in SOFT_STATUSES:
+        if status in SOFT_STATUSES or is_server_error(status):
             return "warn", f"HTTP {status}"
         return "fail", f"HTTP {status}"
     return "fail", "too many redirects"

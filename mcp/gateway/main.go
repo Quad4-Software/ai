@@ -555,7 +555,7 @@ func newSessionID() string {
 // that have no shell or curl.
 func healthCheck(url string) int {
 	client := &http.Client{Timeout: 5 * time.Second}
-	res, err := client.Get(url) // #nosec G107 -- fixed loopback URL from env-configured port
+	res, err := client.Get(url) // #nosec G704 -- loopback health endpoint; only the port comes from env
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "gateway health-check:", err)
 		return 1

@@ -14,7 +14,7 @@ metadata:
   sources:
     - https://attack.mitre.org/
     - https://github.com/SigmaHQ/sigma
-    - https://www.nist.gov/pubs/sp/800/61/r3/final
+    - https://csrc.nist.gov/pubs/sp/800/61/r3/final
 ---
 
 ## When to use this skill
