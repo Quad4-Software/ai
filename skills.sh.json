@@ -143,8 +143,7 @@
         "no-slop",
         "reticulum-go",
         "rns",
-        "workspace",
-        "kaneo"
+        "workspace"
       ]
     }
   ]

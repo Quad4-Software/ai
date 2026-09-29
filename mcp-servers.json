@@ -135,34 +135,6 @@
       "env": [
         "GATEWAY_CONFIG"
       ]
-    },
-    {
-      "name": "kaneo",
-      "module": "kaneo",
-      "command": "mcp/kaneo/kaneo",
-      "description": "Kaneo project boards (cloud or self-hosted): read boards/tasks/comments, env-gated write tools for tasks, labels, comments. Key via KANEO_API_KEY or ~/.config/kaneo/config.json (0600), never exposed.",
-      "version": "0.1.0",
-      "env": [
-        "KANEO_API_KEY",
-        "KANEO_API_URL",
-        "KANEO_WORKSPACE_ID",
-        "KANEO_PROJECT_ID"
-      ],
-      "public": false
-    },
-    {
-      "name": "melovian",
-      "module": "melovian",
-      "command": "mcp/melovian/melovian",
-      "description": "Melovian instance control: library search/stats, playlists and smart playlists, metadata lookup and autofix, extension settings and scaffolding, optional SearXNG web search. Session-cookie auth in memory only.",
-      "version": "0.1.0",
-      "env": [
-        "MELOVIAN_URL",
-        "MELOVIAN_USERNAME",
-        "MELOVIAN_PASSWORD",
-        "MELOVIAN_SEARXNG_URL"
-      ],
-      "public": false
     }
   ]
 }

@@ -52,16 +52,10 @@ Current servers and purposes:
   (servers, tools, tool_schema, invoke, gateway_stats): lazy child spawn and respawn.
 - i18n - locale coverage checks: missing keys, per-key lookups,
   hardcoded UI string candidates.
-- kaneo - Kaneo task board access (todo.quad4.io): find, get, create,
-  update, move and comment on tasks, list projects and labels, sync task
-  lists to a board.
 - lxmf - reads local Reticulum state (~/.reticulum): sanitized config,
   storage inventory, identity names, decoded destinations. Never returns key
   material, secrets are redacted.
 - lxmfy - LXMFy docs, bot scaffolding, static diagnostics, test guidance.
-- melovian - exposes a running Melovian instance: library search and
-  stats, playlist and smart-playlist management, metadata lookups and
-  autofix, extension inspection and settings, optional SearXNG web search.
 - memory - short-term agent memory: remember, recall, update and forget
   notes, people, destinations, tasks and snippets.
 - meshchatx - MeshChatX documentation as searchable, section-aware tools,
