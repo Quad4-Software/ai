@@ -85,7 +85,8 @@ lxmfy, micron, ci-security, release, nebula. Documentation-only
 reference skills (no MCP servers) cover self-hosted infrastructure:
 media-stack, docker, mesh-vpn, xmpp, coolify, opensubsonic. App
 platform skills: wails, android-connectivity, android-dev,
-android-media, android-performance.
+android-media, android-performance. Language/toolchain skills: go,
+typescript, rust (edition 2024 reference).
 
 ## Agent Skills distribution
 

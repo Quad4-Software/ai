@@ -15,7 +15,8 @@
         "micron",
         "go",
         "typescript",
-        "vendor-all"
+        "vendor-all",
+        "rust"
       ]
     },
     {
