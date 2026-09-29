@@ -129,6 +129,22 @@ builds:
       - amd64
       - arm64
 
+  - id: mediawiki
+    dir: mcp/mediawiki
+    main: .
+    binary: mediawiki
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
   - id: meshchatx
     dir: mcp/meshchatx
     main: .

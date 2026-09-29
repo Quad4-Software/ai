@@ -135,6 +135,22 @@
       "env": [
         "GATEWAY_CONFIG"
       ]
+    },
+    {
+      "name": "mediawiki",
+      "module": "mediawiki",
+      "command": "mcp/mediawiki/mediawiki",
+      "description": "MediaWiki Action API on one configured wiki: search, pages, info, backlinks, categories. Solves Anubis PoW natively; Cloudflare and other WAF challenges via optional FlareSolverr.",
+      "version": "0.1.0",
+      "env": [
+        "MEDIAWIKI_BASE_URL",
+        "MEDIAWIKI_API_URL",
+        "MEDIAWIKI_FLARESOLVERR_URL",
+        "MEDIAWIKI_COOKIES",
+        "MEDIAWIKI_USER_AGENT",
+        "MEDIAWIKI_TIMEOUT"
+      ],
+      "public": false
     }
   ]
 }
