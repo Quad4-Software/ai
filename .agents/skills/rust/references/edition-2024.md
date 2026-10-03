@@ -159,7 +159,7 @@ unsafe fn f(p: *mut i32) {
 `gen` is a reserved keyword in 2024. Existing `gen` bindings, fields,
 or fn names need raw identifiers: `r#gen`. The point is to free the
 name for gen blocks / generators, which are NOT stable as of Rust
-1.98; do not write `gen { .. }` expecting iterators on stable.
+1.99. Do not write `gen { .. }` expecting iterators on stable.
 
 ## Reserved syntax
 
@@ -214,7 +214,7 @@ child processes.
 ## Never type fallback
 
 Never-to-any coercion fallback changed from `()` to `!`. As of Rust
-1.100 this applies on every edition and the
+1.100 (beta as of October 2026) this applies on every edition and the
 `dependency_on_unit_never_type_fallback` migration lint was removed.
 In practice: code like `let x = return;` at tail position that relied
 on inferring `()` now infers `!`; annotate the binding if a type

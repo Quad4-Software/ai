@@ -28,7 +28,7 @@ chars. Servers should return `helpUrl` in auth errors.
 ```json
 { "subsonic-response": {
     "status": "ok", "version": "1.16.1",
-    "type": "Navidrome", "serverVersion": "0.64.0",
+    "type": "Navidrome", "serverVersion": "0.64.2",
     "openSubsonic": true,
     "openSubsonicExtensions": [{"name": "transcodeOffset", "versions": [1]}]
 }}

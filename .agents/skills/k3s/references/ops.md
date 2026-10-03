@@ -9,7 +9,7 @@ curl -sfL https://get.k3s.io | sh -s - server \
   --write-kubeconfig-mode 644 --disable=traefik
 ```
 
-- Install via env vars, not args: `INSTALL_K3S_VERSION=v1.36.4+k3s1`
+- Install via env vars, not args: `INSTALL_K3S_VERSION=v1.36.5+k3s1`
  (pin!), `INSTALL_K3S_EXEC="server --disable=traefik"`,
  `INSTALL_K3S_CHANNEL=stable|latest|v1.36`, `K3S_URL`, `K3S_TOKEN`.
 - The script is fetched over HTTPS and executes as root. For pinned

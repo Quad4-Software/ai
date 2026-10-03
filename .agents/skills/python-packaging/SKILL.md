@@ -35,12 +35,12 @@ description: >
 
 ## Version map
 
-- **uv 0.12.x** (latest 0.12.17, Sept 2026). Still pre-1.0: minor
+- **uv 0.12.x** (latest 0.12.22, Oct 2026). Still pre-1.0: minor
   releases can carry marked breaking changes. Pin the tool itself in CI
-  (`uvx uv@0.12.17`, installer checksum, or distro pin). uv 0.12.14
+  (`uvx uv@0.12.22`, installer checksum, or distro pin). uv 0.12.14
   shipped a regression that broke `uv pip install --system` in the
   official python images and was fixed same day in 0.12.15.
-- **Poetry 2.5.x** (latest 2.5.1, Sept 2026). 2.0 (Jan 2025) made
+- **Poetry 2.5.x** (latest 2.5.1, Oct 2026). 2.0 (Jan 2025) made
   `[project]` PEP 621 metadata the primary table. `[tool.poetry]` is
   optional legacy. poetry-core 2.x is the build backend.
 

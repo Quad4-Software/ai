@@ -28,6 +28,7 @@ MeshChatX. Go, stdlib-first, stdio transport, safe read-only defaults.
 | lxmfy | LXMFy docs, bot scaffolding, diagnostics, and test guidance |
 | micron | Micron parsing, linting, rendering, extraction, search, templates, and syntax reference |
 | gateway | Multiplexes all servers behind tools/tool_schema/invoke. One config entry, tiny tool surface. |
+| mediawiki | MediaWiki Action API on one configured wiki: search, pages, backlinks, categories; solves Anubis PoW natively, Cloudflare via optional FlareSolverr |
 
 ## Install
 
@@ -64,9 +65,10 @@ Useful flags:
     npx skills add Quad4-Software/ai --skill micron    # install only one skill
     npx skills add Quad4-Software/ai -g                # global install
 
-Skill groups are defined in skills.sh.json: MCP toolkit (build, test,
-security, release, style) and Reticulum (mesh networking, LXMF,
-tooling, interface operation).
+Skill groups are defined in skills.sh.json, for example MCP toolkit
+(build, test, security, release, style), Reticulum (mesh networking,
+LXMF, tooling, interface operation), self-hosted stack, security, and
+SurrealDB.
 
 ## Gateway
 

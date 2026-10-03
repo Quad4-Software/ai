@@ -25,7 +25,7 @@ description: >
    and [references/rootless.md](references/rootless.md) for
    networking, storage, and permissions under rootless.
 3. Fall back to https://docs.podman.io/ and
-   https://github.com/containers/podman/blob/main/RELEASE_NOTES.md.
+   https://github.com/podman-container-tools/podman/blob/main/RELEASE_NOTES.md.
 
 ## Examples
 
@@ -38,21 +38,31 @@ description: >
 
 ## Version map
 
-- **Podman 6.1.0** (Aug 2026) is current stable. v6.0 shipped June 24,
-  2026. The **5.8.x** line still gets fixes (5.8.4, June 2026) for
-  conservative upgrades.
+- **Podman 6.1.3** (Sept 29, 2026) is current stable. v6.0 shipped
+  June 24, 2026. The **5.8.x** line still gets fixes (5.8.8, Sept 2026)
+  for conservative upgrades.
+- v6.1.3 and v5.8.8 removed `podman run` support for checkpoint images
+  (CVE-2026-94603: a checkpoint image could disable sandboxing).
+- The repo moved to a CNCF-owned org: `github.com/containers/podman`
+  redirects to `github.com/podman-container-tools/podman`. Buildah and
+  the container-libs monorepo (common, image, storage) moved too. The
+  Go import path is now `go.podman.io/podman/v6`.
 - Bundled components move together: netavark + aardvark-dns v2, conmon,
-  containers/common, Buildah for builds.
+  container-libs (common), Buildah for builds.
 
 ## v6.0 breaking changes
 
 - **slirp4netns removed.** Pasta is the only rootless network
   backend (default since 5.0). `--network-cmd-path` is gone.
 - **cgroups v1 removed.** Needs cgroup v2 + systemd on the host.
-- **BoltDB backend removed.** SQLite only. Migrate on 5.8 first
+- **BoltDB backend removed.** SQLite only. v6 attempts an automatic
+  migration at startup, but the safe path is to migrate on 5.8 first
   (`podman system migrate`) and reboot, before jumping to 6.
-- **Netavark drops iptables.** nftables only (default since Fedora 41).
-  Hand-written iptables rules for podman networks must be re-expressed.
+- **Netavark drops iptables and CNI.** nftables only (default since
+  Fedora 41), netavark is the only network backend. Hand-written
+  iptables rules for podman networks must be re-expressed.
+- **Dropped platforms:** Intel Macs and Windows 10.
+- **Network isolation defaults on**, matching Docker behavior.
 - **Config rework.** containers.conf parsing unified. Remote clients
   (Windows/Mac podman-remote) get a client/server split, so settings
   must live on the side that acts.
@@ -112,6 +122,8 @@ client talks to the VM over the API socket.
 ## Sources
 
 - Docs: https://docs.podman.io/
-- Releases: https://github.com/containers/podman/releases
+- Releases: https://github.com/podman-container-tools/podman/releases
 - v6 change list: Fedora Wiki Changes/Podman6, LWN.net June 2026
-- containers/* config references: https://github.com/containers/common
+- Config/library references: https://github.com/podman-container-tools/container-libs
+  (the monorepo that replaced containers/common, containers/image,
+  containers/storage)

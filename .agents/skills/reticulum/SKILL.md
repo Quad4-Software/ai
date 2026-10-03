@@ -77,7 +77,10 @@ tools should be designed in its spirit:
   downloaded wheel.
 - Main daemon is `rnsd`, which reads `~/.reticulum/config`.
 - Generate a commented example config with `rnsd --exampleconfig`.
-- Common utilities: `rnsd`, `rnstatus`, `rnpath`, `rnprobe`, `rncp`, `rnid`.
+- Common utilities: `rnsd`, `rnstatus`, `rnpath`, `rnprobe`, `rncp`, `rnid`,
+  `rnx`, `rnsh`, `rnodeconf`. The `rns` package also ships `rnir`
+  (distributed identity resolver) and `rnpkg` (meta package manager),
+  which are early scaffolding in 1.5.x, plus the `rngit` Git tooling.
 
 ## Destinations and addressing
 
@@ -158,7 +161,7 @@ tools should be designed in its spirit:
 
 ## NomadNet
 
-- NomadNet 1.4.x is available from https://pypi.org/project/nomadnet/ (latest 1.4.3).
+- NomadNet 1.4.x is available from https://pypi.org/project/nomadnet/ (latest 1.4.4, September 2026). 1.4.4 updates to RNS 1.5.5 and LXMF 1.2.0 and fixes a Windows startup failure (missing `termios`) and a micron divider crash.
 - Collapsible ("folding") headings landed in 1.4.0: `+>` expanded, `->` collapsed, `#!fold` custom glyphs. See the micron skill.
 - Inline image rendering shipped in 1.4.x: pages serve images from a `/media/` folder (1.4.2 layout) and the client renders them in the terminal.
 - It uses the Kitty Terminal Graphics Protocol with zero new dependencies and pure Python.
@@ -175,12 +178,12 @@ tools should be designed in its spirit:
 - The original MeshChat is a web-based LXMF client by Liam Cottle. It is written in Python with a Vue frontend and communicates over a WebSocket to a local Reticulum instance.
 - It interops with Sideband and NomadNet, supports text, images, voice, file attachments, announces, peer discovery and propagation-node sync.
 - Prebuilt releases are available for Windows, macOS and Linux. The source can also run on a Raspberry Pi, in Docker or on Android via Termux.
-- The rns.recipes forum notes that the original MeshChat is now maintenance-only. Users are encouraged to move to MeshChatX for active development and new features such as LXST voice and RRC.
+- The rns.recipes forum notes that the original MeshChat is now maintenance-only. The latest release is v2.4.0 (July 2026). Users are encouraged to move to MeshChatX for active development and new features such as LXST voice and RRC.
 - Source: https://github.com/liamcottle/reticulum-meshchat
 
 ## MeshChatX
 
-- MeshChatX is an active fork of MeshChat maintained by Ivan. It adds LXST voice calls, RRC relay chat, map support with remote overlays, sandboxed browser panes, Micron rendering and extended platform support.
+- MeshChatX is an active fork of MeshChat maintained by Ivan. It adds LXST voice calls, RRC relay chat, map support with remote overlays, sandboxed browser panes, Micron rendering and extended platform support. Latest release is 4.9.3 (September 2026) with continuous nightlies.
 - It is published on PyPI as `reticulum-meshchatx` and its docs live at https://meshchatx.com/.
 - Source: https://github.com/Quad4-Software/MeshChatX
 
@@ -242,7 +245,9 @@ Server and tool conventions are in [references/tools.md](references/tools.md). T
 
 - The rnsd daemon reads interface and destination config from
   `~/.reticulum/config`. Changing those values requires either a full daemon
-  restart or a SIGHUP reload on running platforms that support it.
+  restart or a SIGHUP reload on running platforms that support it. Since
+  1.5.5, `rnstatus --attach`, `--detach` and `--reload` can manage
+  individual interfaces on a running instance without a restart.
 - Never restart rnsd from these read-only tools.
 - `lxmf` only reads state.
 
@@ -272,7 +277,7 @@ The Zen of Reticulum is not only for the core stack. Apply it to every Reticulum
 
 ### Security-relevant fixes from upstream history
 
-Recent RNS releases (especially 1.4.x through 1.5.4) include fixes worth knowing about:
+Recent RNS releases (especially 1.4.x through 1.5.6) include fixes worth knowing about:
 
 - **Resource decompression bomb** - fixed a `bz2` decompression bomb vulnerability in Resource transfer assembly and Buffer `StreamDataMessage` unpacking. Do not accept arbitrary resources from untrusted sources on unpatched versions.
 - **rnsh security** - fixed a critical security issue in `rnsh`. Keep `rnsh` updated and never run `rnsh -n` (no auth) on untrusted or public networks.
@@ -293,7 +298,7 @@ Recent RNS releases (especially 1.4.x through 1.5.4) include fixes worth knowing
 - **No auth on remote utilities** - `rnsh -n` and `rnx -n` accept commands from any identity. Only use them on fully trusted, closed links, never on public interfaces.
 - **IFAC on public carriers** - any interface over the Internet, public WiFi, or shared radio should use IFAC with a strong passphrase or authentication. Without it, anyone can inject packets.
 - **Monitor and blackhole** - use `rnstatus -b` to watch blocked IPs and `rnpath -B` to blackhole abusive identities. Combine with `null_ident` blocking for unknown peers.
-- **Keep software updated** - 1.5.2 fixed a resource transfer regression and an I2P keepalive bug, 1.5.3 hardened `rngit` workdoc permissions and added media serving, 1.5.4 fixed RNode BLE reconnection deadlocks. Earlier releases fixed `rnsh`, decompression bombs, and discovery issues. Use `rngit` or `pip` to stay current.
+- **Keep software updated** - 1.5.2 fixed a resource transfer regression and an I2P keepalive bug, 1.5.3 hardened `rngit` workdoc permissions and added media serving, 1.5.4 fixed RNode BLE reconnection deadlocks, 1.5.5 added live interface attach/detach/reload and discovery auto-connect on Windows and macOS, and 1.5.6 fixed discovery candidates and static transport identity handling on non-transport instances. Earlier releases fixed `rnsh`, decompression bombs, and discovery issues. Use `rngit` or `pip` to stay current.
 - **Redact and bound output** - tools should sanitize local state, never return key material, and keep responses short for low-bandwidth links.
 - **Do not fake source addresses** - Reticulum uses cryptographic addresses. Do not invent destination hashes, fabricate announces, or replay signed messages.
 - **Test on real links** - behaviour on fast TCP differs from LoRa. Test latency, packet loss, and retransmission before assuming a design works.
@@ -539,28 +544,35 @@ Start the Reticulum daemon.
 - `--exampleconfig` print a verbose example config to stdout and exit.
 
 ### rnstatus
-Show status and interface health.
-- `rnstatus [filter] [-a] [-A] [-P] [-l] [-B] [-b] [-t] [-p] [-q] [-z] [-s SORT] [-r] [-j] [-R hash] [-i path] [-w seconds] [-d] [-D] [-m] [-I seconds] [-v]`
+Show status and interface health. Since 1.5.5 it can also attach, detach and reload interfaces on a running instance.
+- `rnstatus [filter] [--attach name] [--detach name] [--reload name] [-a] [-A] [-P] [-l] [-B] [-b] [-t] [-p] [-q] [-z] [-s SORT] [-r] [-j] [-R hash] [-i path] [-w seconds] [-d] [-D] [--show-stale] [--show-unknown] [-m] [-I seconds] [-v]`
+- `--attach name`, `--detach name`, `--reload name` live-manage interfaces on a running `rnsd` (1.5.5).
 - `-a, --all` show all interfaces.
 - `-A, --announce-stats` show announce stats.
 - `-P, --pr-stats` show path request stats.
 - `-l, --link-stats` show link stats.
+- `-B, --burst` only show interfaces with active bursts.
 - `-t, --totals` display traffic totals.
 - `-p, --pps` packets per second in totals.
 - `-q, --queues` queue stats.
+- `-z, --profiling` display live profiling results.
 - `-j, --json` output in JSON.
 - `-d, --discovered` list discovered interfaces.
-- `-D` show details for discovered interfaces.
+- `-D` show details and config entries for discovered interfaces.
+- `--show-stale` show stale discovery entries (1.5.5).
+- `--show-unknown` show discovery entries without version info (1.5.5).
 - `-m, --monitor` continuous monitor.
 - `-R hash` query a remote transport instance.
 - `-i path` identity for remote management.
 
 ### rnpath
 Manage and query paths.
-- `rnpath [destination] [list_filter] [-t] [-m hops] [-r] [-d] [-x] [-w seconds] [-R hash] [-i path] [-W seconds] [-b] [-B] [-U] [--duration HOURS] [--reason REASON] [-p] [-j] [-v]`
+- `rnpath [destination] [list_filter] [-t] [-m hops] [-r] [-d] [-D] [-x] [-w seconds] [-R hash] [-i path] [-W seconds] [-b] [-B] [-U] [--duration HOURS] [--reason REASON] [-p] [-j] [-v]`
 - `-t, --table` show all known paths.
 - `-m, --max hops` filter by max hops.
+- `-r, --rates` show announce rate info.
 - `-d, --drop` remove path to a destination.
+- `-D, --drop-announces` drop all queued announces.
 - `-x, --drop-via` drop all paths via a transport instance.
 - `-b, --blackholed` list blackholed identities.
 - `-B, --blackhole` blackhole an identity.
@@ -590,7 +602,7 @@ File transfer.
 
 ### rnid
 Identity and encryption utility.
-- `rnid [-i rid] [-g path] [-m rid] [-M rid] [-x] [-X] [-a [aspects]] [-H aspects] [-d [file ...]] [-e [file ...]] [-V [path ...]] [-s [path ...]] [-S text] [-E [path]] [--raw] [-w path] [-r path] [-f] [-R] [-N] [-t seconds] [-p] [-P] [-B] [-b] [-U] [-F] [--meta]`
+- `rnid [-i rid] [-g path] [-m rid] [-M rid] [-x] [-X] [-a [aspects]] [-H aspects] [-d [file ...]] [-e [file ...]] [-V [path ...]] [-s [path ...]] [-S text] [-E [path]] [--meta-spec [path]] [--raw] [-w path] [-r path] [-f] [-R] [-N] [-t seconds] [-p] [-P] [-B] [-b] [-U] [-F] [--meta]`
 - `-g path` generate a new identity and save to path.
 - `-i rid` specify an identity, destination hash or identity file.
 - `-H aspects` show destination hashes for aspects.

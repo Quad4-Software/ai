@@ -2,7 +2,7 @@
 name: electron
 description: >
   This skill covers Electron, the Chromium + Node desktop app
-  framework, as of September 2026 (Electron 44 stable, 45 beta, 46
+  framework, as of October 2026 (Electron 44 stable, 45 in beta, 46
   nightly). Use it for version selection and EOL windows, the Windows
   sandbox and Job Object failure modes (V8 cage, Chromium broker,
   LPAC/AppContainer), packaging and auto-update plumbing (Forge,
@@ -45,10 +45,11 @@ description: >
 
 ## Versions and support
 
-- Major versions follow Chromium milestones on an **8-week cadence**
-  (every other Chromium release. Since Chrome moved to 2-week cycles
-  in Sept 2026, Electron aligns to Extended Stable milestones). Alpha
-  4 weeks, beta 4 weeks, stable lands with the Chrome stable.
+- Major versions follow Chromium milestones on an **8-week cadence**.
+  Since Chrome moved to 2-week cycles with Chrome 153 (Sept 8, 2026),
+  that cadence maps to every 4th milestone, matching the Extended
+  Stable line (M152, M156, M160). Alpha 4 weeks, beta 4 weeks,
+  stable lands with the Chrome stable.
 - **Only the latest 3 stable majors get fixes.** Currently Electron
   42, 43, 44. Electron 44.0.0 shipped Aug 25, 2026 (Chromium 152,
   Node 24.18, V8 15.2). Electron 45 stable Oct 20, 2026 (M156),
@@ -83,10 +84,10 @@ links are in references/windows-sandbox.md.
 
 ## Updates and packaging
 
-- Forge is the official toolchain (v7.x stable, v8 on `next`),
-  electron-builder v27 is the community standard with the broadest
-  target matrix. `@electron/packager` is the low-level lib Forge
-  wraps.
+- Forge is the official toolchain (v8.x stable since Sept 2026,
+  needs Node >= 22.13), electron-builder v26 is the community
+  standard with the broadest target matrix (v27 in alpha on `next`).
+  `@electron/packager` is the low-level lib Forge wraps.
 - Built-in `autoUpdater`: Squirrel.Mac (needs signing) and
   Squirrel.Windows or MSIX updater on Windows. Nothing built-in on
   Linux.

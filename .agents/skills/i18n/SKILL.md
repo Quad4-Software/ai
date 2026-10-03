@@ -48,14 +48,14 @@ and scans source for strings that bypass the i18n layer. Read-only.
 | `list_locales` | none | locale files + flattened key counts |
 | `missing_keys` | `reference` (en) | keys in reference missing per locale |
 | `key_lookup` | `key` | dotted key's value in every locale |
-| `hardcoded_strings` | `path`, `limit` (40/300) | template text/attrs not routed through `t()`/`$t` |
+| `hardcoded_strings` | `path` (default meshchatx/src/frontend/src), `limit` (40/300) | template text/attrs not routed through `t()`/`$t` |
 | `key_usage` | `key`, `path` | substring search in source, first 30 hits |
 | `key_stats` | `limit` (10/100) | counts, longest values, dup values, placeholder mismatches |
 | `unused_keys` | `path`, `limit` (50/500) | en keys never quoted in source |
 
 `hardcoded_strings` scans `.vue .svelte .ts .js .tsx .jsx` and
-`unused_keys` adds `.py`. `key_stats` and `unused_keys` error if the
-reference locale is absent.
+`unused_keys` adds `.py`. `key_stats` and `unused_keys` hardcode `en`
+as the reference and error if no en locale exists.
 
 ## Notes and quirks
 
@@ -63,4 +63,6 @@ reference locale is absent.
   agents/context. Keep `MCP_REPO_ROOT` real-path clean.
 - `hardcoded_strings` and `unused_keys` are heuristic. Dynamically
   constructed keys produce false positives.
-- Placeholder mismatch detection covers `{var}` and `%s` styles.
+- Scanned files over 1 MiB are skipped (2 MiB for `unused_keys`).
+- Placeholder mismatch detection covers `{var}` and `%s`/`%d`-style
+  verbs.

@@ -3,7 +3,7 @@ name: sast
 description: >
   This skill covers free and open-source local static analysis,
   linting, secret scanning, dependency scanning, and IaC scanning tools
-  as of September 2026: ruff, bandit, opengrep, semgrep CE, gosec,
+  as of October 2026: ruff, bandit, opengrep, semgrep CE, gosec,
   staticcheck, golangci-lint, ESLint v10, oxlint, biome, gitleaks,
   trufflehog, detect-secrets, osv-scanner, trivy, grype, syft,
   cargo-audit, cargo-deny, checkov, hadolint, kube-linter, conftest,
@@ -67,7 +67,7 @@ description: >
 - **Shell**: shellcheck + shfmt.
 - **CI security**: zizmor for GitHub Actions (offline mode, SARIF).
 - **Orchestration**: pre-commit for local gates, MegaLinter for CI
-  fan-out (images only on ghcr.io since v9.5).
+  fan-out (v10.x, images only on ghcr.io since v9.5).
 - **CodeQL**: deep but the engine is proprietary - free only for
   public repos, OSS research, and query testing. Not for private CI
   without GitHub Code Security.

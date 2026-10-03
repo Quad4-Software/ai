@@ -2,7 +2,7 @@
 
 Source: Mark Qvist, Brandolini's Reference chapter, Reticulum
 Network Stack manual (reticulum.network/manual/brandolinis.html).
-Verified against the live page Sept 2026.
+Verified against the live page Oct 2026.
 
 ## Brandolini's law
 

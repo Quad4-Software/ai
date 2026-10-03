@@ -19,8 +19,9 @@ WSTG-APIT-01 (GraphQL). Pair with the Checklist.
 **MAS (mobile)** - MASVS 2.1.0 categories: STORAGE, CRYPTO, AUTH,
 NETWORK, PLATFORM, CODE, RESILIENCE, PRIVACY. Verification levels
 removed. Profiles live in MASWE/MASTG. MASTG 2.0.0 (July 2026) maps
-each test to a MASWE weakness. MAS checklist spreadsheet removed in
-v2 - the site is authoritative.
+each test to a MASWE weakness. MASWE itself hit v1.0.0 in Aug 2026
+with stable IDs and a one-time beta-to-1.0 mapping. MAS checklist
+spreadsheet removed in v2 - the site is authoritative.
 
 **Cheat Sheet Series** - ~120 sheets at cheatsheetseries.owasp.org,
 indexed against ASVS, MASVS, Top 10, Proactive Controls. First stop
@@ -42,7 +43,7 @@ amplification factors.
  crypto inventory, patents, TLP constraints, citations.
 - **Dependency-Track 5.x** (v5.0 June 2026 "Hyades" redesign, v5.1
  Aug 2026): SBOM platform, PostgreSQL only, horizontal scale. v4
- EOL ~Dec 2026, no in-place upgrade.
+ EOL Dec 2026 (4.14.x maintenance), no in-place upgrade.
 - **Dependency-Check 13.x**: CLI/plugins SCA scanner. Needs NVD API
  key for decent throughput (12.1+ mandatory after NVD changes).
 
@@ -50,7 +51,7 @@ amplification factors.
 
 - **Juice Shop v20** (May 2026): flagship deliberately-insecure app,
  100+ challenges incl. AI/LLM (prompt injection), mapped to Top 10.
-- **WebGoat v2025.3**: guided Java/Spring lessons.
+- **WebGoat v2026.4**: guided Java/Spring lessons.
 - **Cornucopia v2**: threat-modeling card game, ASVS 4.x website
  edition + MASVS 2.x mobile edition, play at copi.owasp.org.
 
@@ -59,7 +60,7 @@ amplification factors.
 | Tool | Status | Note |
 | --- | --- | --- |
 | ZAP | Left OWASP Sept 2023, "ZAP by Checkmarx" since 2024, Apache-2.0, Java 17+ | DAST proxy. Not OWASP anymore |
-| Dependency-Track | v5.x GA, v4 EOL ~Dec 2026 | SBOM/SCA platform |
+| Dependency-Track | v5.x GA, v4 EOL Dec 2026 | SBOM/SCA platform |
 | Dependency-Check | v13.x | SCA CLI/plugins, needs NVD API key |
 | Amass | Active, repo at owasp-amass/amass, v5.x | External attack surface, OSINT |
 | Nettacker | Active | Recon/pentest framework |

@@ -6,7 +6,7 @@ description: >
   rustdoc, rustfmt, and the migration workflow. Use when writing Rust,
   bumping an edition, reviewing edition-sensitive code, or pinning
   toolchain versions.
-compatibility: rust-1.98
+compatibility: rust-1.99
 ---
 
 ## When to use this skill
@@ -15,7 +15,7 @@ compatibility: rust-1.98
   crate to Rust 2024.
 - Code fails to compile after an edition bump and you need the actual
   rule change, not a guess.
-- You need current toolchain facts: stable is 1.98.x (September 2026),
+- You need current toolchain facts: stable is 1.99.x (October 2026),
   Rust 2024 was released in 1.85.0.
 
 ## How to use
@@ -41,7 +41,7 @@ package, not per workspace; dependencies on other editions link fine.
 `rust-version` (MSRV) is orthogonal: it states the minimum toolchain,
 not the language dialect.
 
-Current state (September 2026): stable is rustc 1.98.1. Rust 2024
+Current state (October 2026): stable is rustc 1.99.0. Rust 2024
 shipped in 1.85.0 (February 2025). `cargo new` defaults to 2024.
 There is no Rust 2027 yet; a 2027 edition is not announced.
 
@@ -98,8 +98,9 @@ New capability:
 Type inference / macros:
 
 - **Never type fallback**: never-to-any coercions fall back to `!`
-  instead of `()`. Was edition-2024-only; since Rust 1.100 it applies
-  on all editions and the migration lint is gone.
+  instead of `()`. Was edition-2024-only. Since Rust 1.100 (beta as of
+  October 2026) it applies on all editions and the migration lint is
+  gone.
 - **`expr` macro fragment** now also matches `const { }` blocks and
   `_` underscore expressions; `expr_2021` preserves the old match set.
 - **`missing_fragment_specifier` is a hard error**: bare `$x` in

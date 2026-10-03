@@ -1,7 +1,7 @@
 ---
 name: qa
 description: >
-  This skill covers software QA as of September 2026: test shapes
+  This skill covers software QA as of October 2026: test shapes
   (pyramid, trophy, honeycomb), unit/integration/E2E boundaries,
   contract testing with Pact, property-based testing (fast-check,
   Hypothesis, rapid), mutation testing (Stryker, mutmut, mutago,
@@ -76,7 +76,7 @@ Measures whether tests detect faults, not just execute lines. One
 test-suite run per mutant, so scope it: critical modules (auth,
 money, parsers), nightly or pre-release, never whole-repo per-commit.
 
-- JS/TS: Stryker v10 (Node 22+, Vitest 4 support).
+- JS/TS: Stryker v10 (Node 22+, Vitest 2+ support).
 - Python: mutmut.
 - Go: go-mutesting lineage is stale. Use quality-gates/mutago or
   gremlins for new work.

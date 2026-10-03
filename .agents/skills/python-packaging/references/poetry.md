@@ -1,6 +1,6 @@
 # Poetry reference
 
-Poetry 2.5.x (latest 2.5.1, Sept 2026). Dependency manager, virtualenv
+Poetry 2.5.x (latest 2.5.1, Oct 2026). Dependency manager, virtualenv
 manager, and PEP 517 build frontend in one. Docs:
 https://python-poetry.org/docs/
 

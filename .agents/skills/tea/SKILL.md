@@ -1,7 +1,7 @@
 ---
 name: tea
 description: >
-  This skill covers tea, the official Gitea CLI (v0.16.x, Sept 2026),
+  This skill covers tea, the official Gitea CLI (v0.16.x, Oct 2026),
   which also works against Forgejo and Codeberg. Use it for login
   management across instances, issues/pulls/releases/milestones from
   the terminal, actions secrets and variables, notifications, JSON

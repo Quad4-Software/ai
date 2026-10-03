@@ -6,7 +6,7 @@ title: Type Generation
 
 `surrealkit typegen` introspects a **live database** and emits a structured
 schema document describing tables, fields, functions, and params. JSON is the
-default output. TypeScript is an optional, config-driven emitter.
+default output; TypeScript is an optional, config-driven emitter.
 
 Because typegen reads the live database, run `surrealkit sync` (or apply your
 rollout) first so the database reflects your current schema.
@@ -31,10 +31,11 @@ The default folder follows `--folder` / `SURREALDB_FOLDER` (so
 
 ## TypeScript output
 
-TypeScript generation is **not a CLI flag** - it is enabled via the `[typegen]`
+TypeScript generation is **not a CLI flag** — it is enabled via the `[typegen]`
 section of `surrealkit.toml`. When `typescript` is set, both
-`surrealkit typegen` and `surrealkit sync --watch` write an `index.ts` of
-SurrealDB JS SDK interfaces into that directory.
+`surrealkit typegen` and `surrealkit sync` write an `index.ts` of SurrealDB JS
+SDK interfaces into that directory, so the generated types never drift from the
+database.
 
 ```toml
 # surrealkit.toml
@@ -44,23 +45,23 @@ format     = "biome check --write"     # optional formatter, e.g. prettier --wri
 ```
 
 - One `interface` is generated per table, with `id: RecordId<'table'>` and
-  fields mapped to TypeScript types (record links become `RecordId<'...'>`
+  fields mapped to TypeScript types (record links become `RecordId<'…'>`
   unions, optional fields become `| undefined`).
 - The `format` command is run on the written file (the file path is appended
   as the final argument, e.g. `biome check --write <path>`). It inherits the
   working directory so it picks up your project's own config. A missing or
-  failing formatter is a non-fatal warning - it never breaks typegen or sync.
+  failing formatter is a non-fatal warning — it never breaks typegen or sync.
 
 ### Regenerating on schema change
 
-Because `sync --watch` regenerates types when `[typegen] typescript` is set,
-the common dev loop is:
+Because every `sync` regenerates types when `[typegen] typescript` is set, the
+common dev loop is:
 
 ```bash
 surrealkit sync --watch
 ```
 
-Edit `database/schema/*.surql` -> sync applies the change -> `index.ts` is
+Edit `database/schema/*.surql` → sync applies the change → `index.ts` is
 rewritten automatically.
 
 ## With Vite
@@ -79,10 +80,21 @@ export default defineConfig({
 });
 ```
 
-Install it with `npm i -D vite-plugin-surrealkit`. It runs sync on dev-server
+Install it with `npm i -D vite-plugin-surrealkit` (requires Vite 8). Pass
+`schemas: ["core", "billing"]` to restrict which schema modules it syncs. It
+runs sync on dev-server
 startup, watches `database/schema/**/*.surql`, and re-runs on change. Options
 include `syncArgs`, `schemaGlobs`, `runOnStartup`, `reloadOnSync`, `debounceMs`,
 `logLevel`, and `failBuildOnError`.
+
+## `typegen` vs `check`/`generate`
+
+`typegen` introspects a **live database**, so it reflects whatever is actually
+deployed. `surrealkit check` and `surrealkit generate` are static: they read the
+schema files and the queries embedded in host code, contact no database, and
+emit a typed client for those queries. See
+[static-analysis.md](static-analysis.md). The two are complementary — `typegen`
+types your tables, `generate` types your queries.
 
 ## Workflow notes
 

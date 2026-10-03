@@ -16,6 +16,12 @@ supported platforms, plus the `nebulaoss/nebula` distroless image.
   Many relay, DNS, lifecycle, and reload fixes. Built on Go 1.26.
 - v1.11.1: IPv6 next-header classifier fix (firewall bypass). Message
   counter limit enforcement. ICMPv6 conntrack echo id fix.
+- v1.11.2: Windows only set NLMTU for AF_INET, so an IPv6 overlay with
+  `tun.mtu` under 1280 now refuses to start, matching other platforms.
+  Android 11+ netlink route socket bind fix (local address discovery,
+  peers on the same LAN were only reachable at lighthouse-observed
+  addresses). macOS transport checksum fix for TCP/UDP to a host's own
+  IPv6 overlay address.
 
 ## v1.10.x (2025-12 to 2026-02)
 

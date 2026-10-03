@@ -50,7 +50,7 @@ tools. It is read-only and jailed to the detected repo root.
 | `list_conventions` | none | `.agents/conventions/` plus README/overview/module-ownership/AGENTS.md |
 | `read_file` | `path` | any repo file, jailed, 1 MiB cap |
 | `search_docs` | `query`, `limit` (30/200) | case-insensitive regex over `.agents/`, `docs/`, `AGENTS.md`. Md/mdc/txt only |
-| `tree` | `path`, `depth` (2/6) | dir listing. Skips node_modules/.git/dist/vendor/build |
+| `tree` | `path`, `depth` (2/6) | dir listing. Skips node_modules/.git/dist/vendor/__pycache__/storage/build |
 | `skill_for` | `task`, `limit` (5/15) | ranks skills by word overlap on name+description |
 | `module_owners` | none | `.agents/module-ownership.md` |
 | `ask` | `question`, `limit` (8/20) | top-3 skill bodies plus fuzzy snippets |

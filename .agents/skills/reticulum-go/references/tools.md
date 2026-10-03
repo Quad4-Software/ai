@@ -4,5 +4,6 @@
 - `get_topic {id}`: full plain text of a doc page
 - `list_sections {id}`: heading index with anchors
 - `get_section {id, section}`: one section by heading name or anchor
-- `search_docs {query, limit}`: regex search across all pages
+- `search_docs {query, limit}`: word-substring search across all pages
+  (not regex, despite the tool description)
 - `fetch_page {url}`: fetch a page on reticulum-go.quad4.io

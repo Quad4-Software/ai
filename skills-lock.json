@@ -11,7 +11,7 @@
       "source": "surrealdb/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/surrealdb-docs/SKILL.md",
-      "computedHash": "83acc288fe61ad76e2dc10dbe3dec5e87966f76a5fbbbb3195e6f5d037bd208f"
+      "computedHash": "ff1b29072bcc3adec5440236ff0f071b9053525487b0da70c247bbea89ef0247"
     },
     "surrealdb-js": {
       "source": "surrealdb/agent-skills",
@@ -35,7 +35,7 @@
       "source": "surrealdb/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/surrealkit/SKILL.md",
-      "computedHash": "78b5de3fd67848c04df1e8711e34b04ca71a548535d6570ff354519adbaf40b1"
+      "computedHash": "32624ced465d362fa8683c979397ad1f2b5264bf5820dca0c2d55c96fa38b718"
     },
     "surrealql": {
       "source": "surrealdb/agent-skills",

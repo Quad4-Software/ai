@@ -101,6 +101,17 @@ PUT /snapshot/load       {snapshot_path, mem_file_path,
 on load) for Diff snapshots. Restores are CPU-model sensitive. Use
 cpu templates for cross-host restore.
 
+## Memory and device hotplug
+
+`PUT /hotplug/memory` (pre-boot only) configures a virtio-mem region
+(`total_size_mib`, `slot_size_mib`, `block_size_mib`). Post-boot,
+`PATCH /hotplug/memory` with `requested_size_mib` asks the guest to
+plug or unplug toward that size. `GET /hotplug/memory` reports
+progress (`plugged_memory_mib`). Since v1.16, PCI virtio devices
+(block, pmem, net) can be hot(un)plugged on a running microVM as a
+developer preview. The guest must rescan PCI itself and remove the
+device before unplug. See docs/device-hotplug.md.
+
 ## Rate limiters
 
 Token buckets (ops/sec + bandwidth) per virtio-net rx/tx and per

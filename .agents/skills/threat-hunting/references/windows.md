@@ -3,9 +3,9 @@
 ## Telemetry: Sysmon
 
 - Sysmon 15.22.0 (Sept 2026). Since Feb 2026 it also ships as a
- built-in optional Windows 11 feature. The classic Sysinternals
- installer still exists. Runs as PPL. Schema 4.90 adds Event ID 29
- FileExecutableDetected.
+ built-in optional feature on Windows 11 and Server 2025. The
+ classic Sysinternals installer still exists. Runs as PPL. Schema
+ 4.90 adds Event ID 29 FileExecutableDetected.
 - Event IDs: 1 ProcessCreate, 2 FileCreateTime, 3 NetworkConnect, 5
  ProcessTerminate, 6 DriverLoad, 7 ImageLoad, 8 CreateRemoteThread,
  9 RawAccessRead, 10 ProcessAccess, 11 FileCreate, 12/13/14 registry

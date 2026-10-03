@@ -1,7 +1,7 @@
 ---
 name: gh
 description: >
-  This skill covers the GitHub CLI (gh, v2.101.x as of Sept 2026). Use
+  This skill covers the GitHub CLI (gh, v2.102.x as of Oct 2026). Use
   it for auth and token handling, gh api REST/GraphQL patterns, repo/pr/
   issue/workflow/run/release commands, secrets and variables, attestation
   verification, extensions, and scripting flags (--json/--jq/--template).
@@ -34,13 +34,18 @@ description: >
 
 ## Version and install
 
-- Latest **v2.101.0** (Sept 15, 2026). Releases are immutable since
+- Latest **v2.102.0** (Sept 30, 2026). Releases are immutable since
   2.93 and ship SLSA attestations: `gh at verify -R cli/cli <asset>`.
 - Install: `brew install gh`, `winget install GitHub.cli`, official
   APT repo (cli.github.com/packages), RPM, or release binaries.
 - **v2.101.0 caveat:** the APT/RPM repo signing key rotated. Installs
   made before April 8, 2026 must refresh the keyring at
   `/etc/apt/keyrings/githubcli-archive-keyring.gpg`.
+- **v2.102 security fixes:** symlink path writes in `gh release
+  download`/`run download`/`attestation download`/`repo read-file
+  --output`, attestation `--source-ref` case-insensitive compare,
+  `--signer-workflow` prefix-match bypass, `gh skill search` option
+  injection.
 - **v2.97 security fixes:** terminal escape injection in `gh api`/`pr
   diff`/`gist view`, partial token leaks in `gh auth status`,
   attestation `--signer-*` regex bypass. Keep gh current.

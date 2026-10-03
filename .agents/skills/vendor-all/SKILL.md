@@ -88,7 +88,7 @@ assets/vendor/
   css/
     bootstrap-5.3.8.min.css
   js/
-    htmx-2.0.10.min.js
+    htmx-2.0.11.min.js
 ```
 
 ## Rewriting HTML
@@ -97,7 +97,7 @@ Replace remote URLs with local paths:
 
 ```
 <link rel="stylesheet" href="assets/vendor/css/bootstrap-5.3.8.min.css">
-<script src="assets/vendor/js/htmx-2.0.10.min.js"></script>
+<script src="assets/vendor/js/htmx-2.0.11.min.js"></script>
 ```
 
 For CSS that imports fonts from a remote URL, edit the `@font-face` `src` lines

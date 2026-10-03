@@ -77,14 +77,14 @@ metadata:
 5. Check adversarial surface: could the text have been
    paraphrased, translated, or edited? See references/adversarial.md.
 
-## Tool map (Sept 2026)
+## Tool map (Oct 2026)
 
 | Tool | Lang | Best for | Notes |
 | --- | --- | --- | --- |
 | stylo | R | Full pipeline, Delta, classify, imposters | CRAN, field standard |
 | stylo2gg | R | ggplot2 visualization of stylo output | GitHub only, small |
-| JStylo | Java | Writeprints feature sets, forensic workflows | Branch 2.3.0 for UI |
-| Anonymouth | Java | Obfuscation guidance, edit suggestions | Ships with JStylo |
+| JStylo | Java | Writeprints feature sets, forensic workflows | Unmaintained since 2016, branch 2.3.0 for UI |
+| Anonymouth | Java | Obfuscation guidance, edit suggestions | Ships with JStylo, same state |
 | JGAAP | Java | Non-expert GUI attribution | Duquesne EVL Lab |
 | faststylometry | Python | Quick Burrows' Delta between texts | MIT, calibrated proba |
 | pystylometry | Python | 50+ metrics: Delta, Zeta, NCD, MATTR | MIT |

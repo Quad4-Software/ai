@@ -58,8 +58,8 @@ curl -s -X POST "$BASE/movie" -H "X-Api-Key: $KEY" \
 
 ## Sonarr
 
-- **Latest stable:** v4.0.19.2979 (June 2026), `main` branch. Develop is
-  ahead (v4.0.19.30xx). Port 8989. API v3 (the v3 API docs apply to v4).
+- **Latest stable:** v4.0.20.3014 (Sept 2026), `main` branch. Nightly
+  tracks v4.0.20.30xx. Port 8989. API v3 (the v3 API docs apply to v4).
 - **v3 is EOL.** Last v3 was 3.0.10.1567. v4 broke compatibility:
   Preferred Words became Custom Formats, Release Profiles were removed
   (delete them before upgrading), ffprobe replaced MediaInfo for file
@@ -83,8 +83,8 @@ curl -s -X POST "$BASE/movie" -H "X-Api-Key: $KEY" \
 
 ## Lidarr
 
-- **Latest stable:** v3.1.0.4875 (Nov 2025). Develop ahead at v3.1.4.x,
-  nightly at 3.1.5.x. Port 8686. **API v1**, not v3.
+- **Latest stable:** v3.1.0.4875 (Nov 2025). Develop and nightly at
+  v3.1.6.x. Port 8686. **API v1**, not v3.
 - The first v3 stable (v3.0.1.4866, Oct 2025) carried breaking changes:
   .NET 8 runtime, Basic Auth removed (forms auth only), linux-x86 builds
   dropped, and a SourceGear sqlite3 dependency that requires GLIBC 2.29+
@@ -102,8 +102,7 @@ curl -s -X POST "$BASE/movie" -H "X-Api-Key: $KEY" \
 
 ## Prowlarr
 
-- **Latest stable:** v2.5.2.5491 (July 2026). Develop at v2.6.x. Port
-  9696. API v1.
+- **Latest stable:** v2.6.5.5623 (Sept 2026). Port 9696. API v1.
 - Role: one place to hold indexer credentials, sync them into every *arr
   app, and proxy searches. Adding an indexer in Prowlarr and an app in
   Settings -> Apps pushes the indexer config downstream automatically.

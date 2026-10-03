@@ -24,10 +24,10 @@
   tool handlers
 - `soft_fuzz_scan {path, limit}`: try/except pass and tests without
   assertions
-- `complexity_scan {path, max_lines}`: functions over N lines
+- `complexity_scan {path, max_lines, limit}`: functions over N lines
 - `dead_code {path, limit}`: unreferenced functions, candidates only
-- `markers_scan {path, limit}`: TODO/FIXME/HACK/SECURITY comment density
-- `mutation_hints {file, name}`: mutants that expose weak checks
+- `markers_scan {path, limit}`: TODO/FIXME/HACK/XXX/BUG/SECURITY comments
+- `mutation_hints {file, name, limit}`: mutants that expose weak checks
 - `charter {area}`: exploratory session template with suggested scans
 
 Prompts: `hunt {area}` for a full methodology-plus-scanners briefing.

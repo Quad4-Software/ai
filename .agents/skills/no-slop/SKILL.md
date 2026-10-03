@@ -21,8 +21,9 @@ metadata:
 2. Add the binary to your MCP client config as `prose` or `no-slop`.
 3. Call `check_text {text, kind}` or `check_file {path}` with `prose`, `doc`, or `comment`.
 4. Use `fix_text` for a rewrite pass, `check_diff`/`check_commit` for
-   changed lines only, and `list_rules` for the rule set. The
-   `review_prose` prompt returns the ruleset plus rewrite instructions.
+   changed lines only, `check_dir` for a whole directory, and
+   `list_rules` for the rule set. The `review_prose` prompt returns the
+   ruleset plus rewrite instructions.
 
 ## Examples
 

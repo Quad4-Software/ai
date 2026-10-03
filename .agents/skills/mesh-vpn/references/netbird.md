@@ -1,6 +1,14 @@
 # NetBird reference
 
-- **Latest:** v0.77.1 (Aug 2026). All components BSD-3 open source.
+- **Latest:** v0.80.0 (Oct 2026). All components BSD-3 open source.
+  v0.78 added Rosenpass (post-quantum) support through the embedded
+  reverse proxy (`NB_PROXY_ROSENPASS=false` disables), a reworked lazy
+  connection model, an agentgateway-based LLM gateway, a catch-all NRPT
+  rule on Windows when NetBird is the primary resolver, and a local
+  Prometheus metrics endpoint on the client. v0.79 added desktop light
+  mode and MDM policy enforcement for the mobile SDKs. v0.80 is mostly
+  security hardening (IdP open-redirect fix, gateway cross-account
+  validation, signed upload URLs).
 - Four logical components: **Management** (control plane, gRPC + HTTP
   API, SQLite default / PostgreSQL / MySQL), **Signal** (WebRTC-style
   ICE-candidate exchange. Encrypted, stores nothing), **Relay** (own

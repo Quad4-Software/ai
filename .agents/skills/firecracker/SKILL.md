@@ -44,10 +44,10 @@ description: >
 - Current **v1.17.0** (Sept 10, 2026). ~3-month release cadence, 6
   months support per minor. v1.16.x also supported.
 - Minimal device model: virtio-net, virtio-block, virtio-vsock,
-  virtio-rng, virtio-balloon, virtio-pmem, serial console. No USB, no
-  display, no BIOS (direct kernel boot, Linux boot protocol + PVH).
-  virtio-mmio default. Virtio-pci opt-in since v1.13
-  (`--enable-pci`).
+  virtio-rng, virtio-balloon, virtio-pmem, virtio-mem (memory hotplug),
+  serial console. No USB, no display, no BIOS (direct kernel boot,
+  Linux boot protocol + PVH). virtio-mmio default. Virtio-pci opt-in
+  since v1.13 (`--enable-pci`).
 - SLAs: VMM boot ~8 CPU-ms, <=125 ms to guest init, <=5 MiB overhead,
   ~5 microVMs/sec/core. Max 32 vCPUs. Raw disk images only, no qcow2,
   no virtio-fs, no DHCP/DNS inside.

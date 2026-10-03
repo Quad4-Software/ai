@@ -26,7 +26,8 @@ metadata:
    Recalled versions are stale at best and slopsquat bait at worst.
 2. Prefer a release older than 24-72 hours over the newest. Every
    major npm/PyPI compromise of 2025-2026 was live for under a day.
-   This repo's pnpm config already enforces `minimumReleaseAge`.
+   On JS projects enforce that cooldown with pnpm's
+   `minimumReleaseAge` (see the pnpm skill).
 3. Check the candidate against a vulnerability feed before pinning.
 4. If there is no network or no registry client, do not guess. Read
    the lockfile and vendor dir, or ask the user for the version.
@@ -46,8 +47,8 @@ metadata:
 
 ## Vulnerability and freshness checks
 
-- `osv-scanner scan --lockfile=<file>` or the OSV API for a single
-  package+version query. Works across ecosystems.
+- `osv-scanner scan source --lockfile=<file>` or the OSV API for a
+  single package+version query. Works across ecosystems.
 - `govulncheck ./...` for Go reachability, `pip-audit` for PyPI,
   `npm audit` / `pnpm audit` for npm.
 - GitHub Advisory Database web or `gh api` search for GHSA entries.

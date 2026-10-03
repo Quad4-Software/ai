@@ -65,22 +65,39 @@ All require `ACCESS_WIFI_STATE` + (`ACCESS_FINE_LOCATION` or
 
 ## Newer APIs (R2 / API 35-37)
 
-- **API 35:** `WifiP2pListener` consolidates state callbacks. `requestP2pState`, `requestDiscoveryState`, `getListenState`.
+- **API 35:** `WifiP2pListener` consolidates state callbacks
+  (`onP2pStateChanged`, `onDiscoveryStateChanged`,
+  `onListenStateChanged`), registered with
+  `registerWifiP2pListener(Executor, listener)`. `requestP2pState`,
+  `requestDiscoveryState`, `getListenState` remain the one-shot
+  queries. `WifiP2pDiscoveryConfig` + `startPeerDiscovery` replace
+  the channel-constrained `discoverPeers*` variants.
 - **API 36:** `WifiP2pPairingBootstrappingConfig` +
   `WifiP2pConfig.Builder.setPairingBootstrappingConfig` replace the
   legacy WPS dialog with programmatic pairing:
   `DISPLAY_PASSPHRASE`, `DISPLAY_PINCODE`, `KEYPAD_PASSPHRASE`,
   `KEYPAD_PINCODE`, `OPPORTUNISTIC`, `OUT_OF_BAND` (e.g. password over
-  BLE). `setPairingDiscoveryChannelFrequencyMhz` for OOB. `setAuthorizeConnectionFromPeerEnabled` to pre-authorize an
+  BLE). `setAuthorizeConnectionFromPeerEnabled` to pre-authorize an
   incoming request.
 - **API 36 PCC mode:** `isPccModeSupported()`,
   `setPccModeConnectionType` (`LEGACY_ONLY`/`LEGACY_OR_R2`/`R2_ONLY`, R2 groups are WPA3-Personal), `isWiFiDirectR2Supported()`.
 - **API 36 USD service discovery:** `discoverUsdBasedServices`,
-  `startUsdBasedLocalServiceAdvertisement`, plus config classes.
-- `setGroupClientIpProvisioningMode` for client IP provisioning
-  incl. IPv6 link-local. `discoverPeersOnSocialChannels`/
-  `discoverPeersOnSpecificFrequency`, `WifiP2pDiscoveryConfig`,
-  `WifiP2pDirInfo`, `WifiP2pWfdInfo` (API 36-37).
+  `startUsdBasedLocalServiceAdvertisement`, plus config classes
+  (`WifiP2pUsdBasedServiceDiscoveryConfig`,
+  `WifiP2pUsdBasedLocalServiceAdvertisementConfig`).
+- **API 37:** `setPairingDiscoveryChannelFrequencyMhz` for OOB
+  pairing. `WifiP2pConnectionInfo` exposes link PHY details (Wi-Fi
+  standard, channel width, Tx/Rx spatial streams) via
+  `WifiP2pDevice.getWifiP2pConnectionInfo` and
+  `WifiP2pGroup.getWifiP2pGroupClientConnectionInfo`.
+  `CONNECTION_REQUEST_DEFER_SHOW_PASSWORD_TO_SERVICE` lets an
+  ExternalApprover flow defer the system password prompt.
+- Older but worth knowing: `discoverPeersOnSocialChannels`/
+  `discoverPeersOnSpecificFrequency` are API 33 behind
+  `isChannelConstrainedDiscoverySupported()`,
+  `setGroupClientIpProvisioningMode` is API 34 (DHCP or IPv6
+  link-local for group clients), `WifiP2pDirInfo` is API 36, and
+  `WifiP2pWfdInfo` R2 fields are API 31.
 
 ## Caveats
 

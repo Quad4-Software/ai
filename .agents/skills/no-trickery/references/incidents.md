@@ -1,6 +1,6 @@
 # Documented incidents and sources
 
-All entries verified against public reporting as of Sept 2026.
+All entries verified against public reporting as of Oct 2026.
 
 ## Prompt injection incidents
 
@@ -39,8 +39,9 @@ All entries verified against public reporting as of Sept 2026.
   commercial and 21.7% of open-weight model-suggested package names
   do not exist. 205k+ unique invented names. Basis for slopsquatting.
 - Originality.ai AI-content dashboard: 17.3% of Google top-20
-  detected as AI-generated Sep 2025, 2.3% Feb 2019. Detector-based
-  estimate, not ground truth.
+  detected as AI-generated Sep 2025, 2.3% Feb 2019. 21.6% by Jul
+  2026 under a revised detector with a 5% threshold.
+  Detector-based estimate, not ground truth.
 - Simon Willison: lethal trifecta post, agentic browser security
   series. simonwillison.net.
 - Embrace The Red (Rehberger): Operator, Copilot, ASCII smuggling
@@ -50,7 +51,6 @@ All entries verified against public reporting as of Sept 2026.
 
 ## Flagged as partially verified
 
-- Push Security LLMShare date relies on secondary sources.
 - Churilov slopsquatting census and hackback.zip Obsidian analysis
   are single-source items.
 - Gootloader SEO poisoning is long-documented but not freshly

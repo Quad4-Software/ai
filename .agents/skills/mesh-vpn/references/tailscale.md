@@ -1,10 +1,13 @@
 # Tailscale reference
 
-- **Latest:** v1.102.3 (Aug 2026). Highlights: TS-2026-011 security fix
+- **Latest:** v1.102.5 (Sept 2026). v1.104.0 was tagged Sept 30 and is
+  rolling out. v1.102.x highlights: TS-2026-011 security fix
   (host-scoped IPv4 on 4via6), large-tailnet memory reductions,
-  `TS_BOOT_TIMEOUT` for containers, k8s operator peer-relay fixes.
+  `TS_BOOT_TIMEOUT` for containers, container `tailscaled` now
+  reconnects instead of exiting when it falls behind on status updates,
+  k8s operator peer-relay fixes.
 - Client and `cmd/derper` are BSD-3 open source. The coordination server
-  is hosted and closed. `headscale` (v0.29.3, July 2026) is the
+  is hosted and closed. `headscale` (v0.29.4, Sept 2026) is the
   community single-tailnet reimplementation.
 
 ## Tailnet policy file

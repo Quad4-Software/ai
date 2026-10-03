@@ -35,6 +35,7 @@ The scheme on the endpoint picks the transport:
 | --- | --- | --- |
 | `ws://`, `wss://` | WebSocket RPC | Stateful, required for live queries, sessions, transactions |
 | `http://`, `https://` | HTTP RPC | Stateless, one connection per request |
+| `grpc://`, `grpcs://` | gRPC RPC | Streaming results, rows delivered as produced (3.3+) |
 | `mem://` | Embedded in-memory | No server process. Data dies with the connection |
 | `surrealkv://<path>` | Embedded SurrealKV | File persistence, embedded builds |
 | `rocksdb://<path>` | Embedded RocksDB | File persistence. Needs the engine built with RocksDB |

@@ -9,14 +9,14 @@ Alpha 4 weeks, beta 4 weeks. Support window: latest 3 stable majors.
 
 | Electron | Stable | EOL | Chromium | Node | V8 |
 | --- | --- | --- | --- | --- | --- |
-| 39 | Oct 28 2025 | May 5 2026 | 142 | 22.20.0 | 14.2 |
-| 40 | Jan 13 2026 | Jun 30 2026 | 144 | 24.11.1 | 14.4 |
-| 41 | Mar 10 2026 | Aug 25 2026 | 146 | 24.14.0 | 14.6 |
+| 39 | Oct 27 2025 | May 5 2026 | 142 | 22.20.0 | 14.2 |
+| 40 | Jan 15 2026 | Jul 1 2026 | 144 | 24.11.1 | 14.4 |
+| 41 | Mar 10 2026 | Aug 24 2026 | 146 | 24.14.0 | 14.6 |
 | 42 | May 5 2026 | Oct 20 2026 | 148 | 24.15.0 | 14.8 |
 | 43 | Jun 30 2026 | Jan 5 2027 | 150 | 24.17.0 | 15.0 |
 | 44 | Aug 25 2026 | Mar 2 2027 | 152 | 24.18.1 | 15.2 |
 
-Supported now: 42, 43, 44. Latest patch mid-Sept 2026: 44.4.0.
+Supported now: 42, 43, 44. Latest patch late Sept 2026: 44.5.1.
 
 ## Per-major breaking changes
 
@@ -57,13 +57,21 @@ DE support removed. `openAsHidden` login options removed.
 
 ## Upcoming
 
-**E45** - beta Sept 29 2026, stable Oct 20 2026, Chromium M156, Node
-24.19. Planned breaks: Node module shims and Buffer/setImmediate/
-clearImmediate globals removed from sandboxed preloads (`require`
-will only load `electron` - use Web APIs or bundle polyfills),
-ipcRenderer/process in sandboxed preloads switch to a native
-EventEmitter. New: localAIHandler in UtilityProcess (Prompt API),
-iCloud Keychain passkeys, cross-platform save/restore window state,
-`webFrameMain.printToPDF()`, `disableWakeLocks` webPreference.
+**E45** - beta phase opened Oct 1 2026, stable Oct 20 2026,
+Chromium M156, Node 24.21. Breaks: Node module shims and
+Buffer/setImmediate/clearImmediate globals removed from sandboxed
+preloads (`require` only loads `electron` - use Web APIs or bundle
+polyfills), ipcRenderer/process in sandboxed preloads switch to a
+native EventEmitter. Also removed: `contentTracing.enableHeapProfiling()`.
+`window.open()` children of unsandboxed windows now get their own
+sandboxed process (returns null to the opener). New: localAIHandler
+in UtilityProcess (Prompt API), iCloud Keychain passkeys,
+cross-platform save/restore window state, `webFrameMain.printToPDF()`,
+`disableWakeLocks` webPreference.
 
-**E46** - stable Jan 5 2027, Chromium M160.
+**E46** - alpha Oct 22 2026, beta Dec 3 2026, stable Jan 5 2027,
+Chromium M160, Node 24.21. Breaks already on main: synchronous
+safeStorage methods removed (deprecated in E45, Chromium dropped the
+sync OSCrypt backend), `utilityProcess` `child.kill()` no longer
+force-kills, preload scripts run only in DevTools-hosted extension
+frames, workers from subframes need `nodeIntegrationInSubFrames`.

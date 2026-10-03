@@ -51,5 +51,5 @@ from "historically documented".
 ## Temporal discipline
 
 Models treat context as stationary. Date-stamp every freshness-
-sensitive claim ("as of 2026-09, latest is vX") and re-verify at
+sensitive claim ("as of 2026-10, latest is vX") and re-verify at
 decision time rather than trusting an old note.

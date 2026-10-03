@@ -114,6 +114,8 @@ secrets:
 - **`logging:`**: `driver` (`json-file`, `local`, `syslog`, `journald`,
   `fluentd`) plus `options` (`max-size`, `max-file`, `compress`, `mode`,
   `max-buffer-size`).
+- **`jobs:`** (v5.6.0+): top-level jobs next to `services:`. Manually
+  triggered jobs only for now. Scheduled jobs wait on Engine support.
 
 ## Commands
 
@@ -151,3 +153,5 @@ order: shell env, `--env-file`, `.env` in the project dir. Use
 - Compose v5.5.0 reconciles image digests: the first `up` after an
   upgrade may recreate containers once. `pull` honors `pull_policy`
   refresh windows.
+- Compose v5.6.0 warns on unsupported compose-file attributes. A clean
+  file should produce no attribute warnings.

@@ -61,13 +61,13 @@ offline devices catch up.
 
 Full mechanics: [references/protocol.md](references/protocol.md).
 
-## Servers (all actively maintained, Sept 2026)
+## Servers (all actively maintained, Oct 2026)
 
 | Server | Version | Language | Character |
 |---|---|---|---|
-| Prosody | 13.0.6 | Lua | Minimal core, module-driven. Community modules at modules.prosody.im add MAM/upload/push. Security releases are frequent. |
-| ejabberd | 26.07 | Erlang | Batteries-included: MUC, MAM, push, STUN/TURN integration, admin API. OTP 27 soft minimum. |
-| MongooseIM | 6.8.1 | Erlang | Enterprise/scale sibling of ejabberd. GraphQL admin API. OTP 27+. |
+| Prosody | 13.0.7 | Lua | Minimal core, module-driven. Community modules at modules.prosody.im add MAM/upload/push. Security releases are frequent. |
+| ejabberd | 26.09 | Erlang | Batteries-included: MUC, MAM, push, STUN/TURN integration, admin API. OTP 27 soft minimum. |
+| MongooseIM | 6.9.0 | Erlang | Enterprise/scale sibling of ejabberd. GraphQL admin API. OTP 27+. |
 | Openfire | 5.1.2 | Java | Easiest admin GUI, plugin ecosystem. Apache-2.0. |
 | Snikket | stable.20260611 | Prosody-based | Opinionated Docker distro. Invite-only by design. Ships with matching clients. |
 
@@ -78,20 +78,20 @@ matters more than the protocol edge. Pick **Snikket** when you want a
 batteries-included, invite-only distro that already made the module
 choices for you.
 
-## Clients (Sept 2026)
+## Clients (Oct 2026)
 
 | Client | Platform | Latest | Notes |
 |---|---|---|---|
-| Conversations | Android | 2.20.2 | Reference Android client. OMEMO (legacy axolotl ns), DTLS-SRTP calls, MAM, UnifiedPush. Paid on Play, free on F-Droid. Maintained by Daniel Gultsch on Codeberg. |
+| Conversations | Android | 2.20.4 | Reference Android client. OMEMO (legacy axolotl ns), DTLS-SRTP calls, MAM, UnifiedPush. Paid on Play, free on F-Droid. Maintained by Daniel Gultsch on Codeberg. |
 | Quicksy | Android/iOS | - | Conversations flavor with phone-number discovery. iOS variant built on Monal since 2024. |
 | Cheogram | Android | - | JMP.chat fork, actively developed. |
 | Dino | Linux/desktop | 0.5.1 | GTK/Vala. Jingle calls, OMEMO, XEP-0447 file transfer. DinoX fork adds features. |
 | Gajim | Desktop | 2.6.0 | Python/GTK. Built-in OMEMO via omemo-dr, OpenPGP XEP-0374. |
 | Kaidan | Desktop/mobile | 0.16.0 | Qt/KDE, cross-platform. Experimental Jingle calls since 0.15, OMEMO:2 via QXmpp. |
 | Converse.js | Web | 14.0.0 | Embeddable web client. OMEMO:2 via libomemo.js 2.0. |
-| Monal | iOS/macOS | 6.4.21 | Most complete iOS client: OMEMO, calls, MAM, APNS push with notification-filtering entitlement. |
-| Siskin IM | iOS | 7.4.1 | Tigase. OMEMO, calls, push. |
-| Movim | Web | 0.33 | PubSub-as-social-network. First XEP-0503 Spaces implementation. |
+| Monal | iOS/macOS | 6.4.22 | Most complete iOS client: OMEMO, calls, MAM, APNS push with notification-filtering entitlement. |
+| Siskin IM | iOS | 7.4 | Tigase. OMEMO, calls, push. 7.4.1 is in beta. |
+| Movim | Web | 0.35.1 | PubSub-as-social-network. First XEP-0503 Spaces implementation. |
 
 ## The XEPs that matter
 
@@ -113,7 +113,8 @@ choices for you.
   ad-hoc commands, 0357 push notifications, 0215 external services
   discovery (STUN/TURN), 0030 service discovery, 0199 ping.
 - **Compliance:** XEP-0479 "Compliance Suites 2023" is the latest
-  published suite. No CS2024/2025 XEP exists.
+  published suite. No CS2024 or later compliance XEP exists (checked
+  Oct 2026).
 
 ## OMEMO versions
 

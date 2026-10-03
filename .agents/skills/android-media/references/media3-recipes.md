@@ -1,16 +1,18 @@
 # Media3 recipes
 
 Working snippets for the common pitfalls. Package names and imports
-omitted. Everything here is Media3 1.8 + Kotlin.
+omitted. Everything here is Media3 1.11 + Kotlin.
 
 ## Authenticated bitmap loader
 
+The DataSourceBitmapLoader constructors are deprecated. Use the
+Builder and inject the authenticated DataSource.Factory:
+
 ```kotlin
 val bitmapLoader = CacheBitmapLoader(
-    DataSourceBitmapLoader(
-        DataSourceBitmapLoader.DEFAULT_EXECUTOR_SERVICE.get(),
-        OkHttpDataSource.Factory(HttpClients.media),
-    ),
+    DataSourceBitmapLoader.Builder(context)
+        .setDataSourceFactory(OkHttpDataSource.Factory(HttpClients.media))
+        .build(),
 )
 MediaLibrarySession.Builder(this, player, callback)
     .setSessionActivity(pendingIntentToNowPlaying)

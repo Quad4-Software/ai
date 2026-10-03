@@ -25,10 +25,12 @@ periodically. Structural rules are the durable layer.
 
 ## Structural tells (durable)
 
-- SlopShape (arXiv:2609.15369, Sep 2026): 187 structural features
-  detect AI posts at 98.0 macro-F1, unchanged (98.1) after full
-  rewording by the source model. Machine text has a tidy,
-  self-announcing shape. Paraphrasing does not launder it.
+- SlopShape (arXiv:2609.15369, Sep 2026): replicates StoryScope on
+  commercial content. A 203-feature instrument, whose 176
+  structural features alone detect AI posts at 97.0 macro-F1,
+  nearly unchanged (96.1) after full rewording by the source
+  model. Machine text has a tidy, self-announcing shape.
+  Paraphrasing does not launder it.
 - StoryScope (arXiv:2604.03136): 304 narrative features, 93.2%
   macro-F1 on fiction. AI stories over-explain themes, favor tidy
   single-track plots.

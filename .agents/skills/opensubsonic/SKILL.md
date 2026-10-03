@@ -48,7 +48,7 @@ in every response envelope, and a public `getOpenSubsonicExtensions`
 endpoint.
 
 Navidrome is the most complete implementation and the reference server
-most clients test against. Latest stable **v0.64.0** (Sept 2026).
+most clients test against. Latest stable **v0.64.2** (Sept 2026).
 
 ## The response envelope
 
@@ -60,7 +60,7 @@ three required fields:
     "status": "ok",
     "version": "1.16.1",
     "type": "Navidrome",
-    "serverVersion": "0.64.0",
+    "serverVersion": "0.64.2",
     "openSubsonic": true,
     "openSubsonicExtensions": [
       {"name": "transcodeOffset", "versions": [1]}
@@ -145,7 +145,7 @@ decision plus an opaque `transcodeParams` token, and the client GETs
 # Navidrome
 
 Single-binary Go server, embedded SQLite, React web UI on **port
-4533**. Latest stable **v0.64.0** (Sept 2026).
+4533**. Latest stable **v0.64.2** (Sept 2026).
 
 ## Deployment
 
@@ -185,10 +185,10 @@ Single-binary Go server, embedded SQLite, React web UI on **port
 Navidrome advertises API 1.16.1, `openSubsonic: true`, `type:
 "Navidrome"`. `getOpenSubsonicExtensions` is public. Advertised
 extensions: `transcodeOffset`, `formPost`, `songLyrics` v1+v2,
-`indexBasedQueue`, `transcoding`, `playbackReport`, and
-`sonicSimilarity` (the last only when a SonicSimilarity plugin such as
-AudioMuse-AI is loaded). Not implemented: `apiKeyAuthentication` and
-`topSongsByArtistId`.
+`indexBasedQueue`, `transcoding`, `playbackReport`,
+`topSongsByArtistId` (since 0.64.0), and `sonicSimilarity` (the last
+only when a SonicSimilarity plugin such as AudioMuse-AI is loaded).
+Not implemented: `apiKeyAuthentication` (PR open).
 
 Endpoint gaps by design: no video at all, no podcasts (`getPodcasts`
 returns 501), `search2`/`search3` are autocomplete only, `getTopSongs`
@@ -210,6 +210,11 @@ under `/api/*` powering the web UI. Treat it as unstable.
   trusted-source IP validation.
 - v0.64.0 fixed SQLi in the native API's artist `role` sort/filter, a
   share IDOR, plugin SSRF, and a rate-limit bypass.
+- v0.64.1 was a dedicated security release fixing five advisories:
+  unthrottled Subsonic auth (brute force), SSRF and local file read via
+  M3U artwork URLs, player ownership takeover, and library-filter leaks
+  on bookmarks, playlist tracks, and now-playing. v0.64.2 fixed the
+  `database is locked` floods on slow storage and 32-bit scan failures.
 
 ## Upgrade caveats
 
@@ -217,7 +222,9 @@ under `/api/*` powering the web UI. Treat it as unstable.
   base62. Touches every table, so back up first. Clients that cache
   IDs need a re-sync. Extism built-in HTTP disabled for plugins. Plugin HTTP/WS to private/loopback blocked unless declared in
   `requiredHosts`. Experimental Jellyfin Music API added
-  (`Jellyfin.Enabled`).
+  (`Jellyfin.Enabled`). Since 0.64.1 the server reports itself as
+  Jellyfin 12.1.0, accepts Quick Connect sign-in, and can announce
+  itself on the LAN so clients find it without a typed address.
 - **v0.63.0:** sidecar lyrics (TTML/ELRC/SRT/YAML) + `songLyrics` v2.
   `EnableSharing` flipped to true.
 - **v0.62.0:** `sonicSimilarity` + `playbackReport` extensions,

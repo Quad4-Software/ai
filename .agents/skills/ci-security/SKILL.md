@@ -28,6 +28,27 @@ metadata:
 - "Pin all `uses:` lines in a workflow to commit SHAs."
 - "Run `audit_workflow` on a new workflow file."
 
+## Tools
+
+- `list_guides` / `get_guide {id}`: fetch GitHub secure-use,
+  pull_request_target, secrets, workflow syntax, hardening, OWASP Docker,
+  immutable releases, and zizmor doc pages as plain text
+- `reference`: embedded offline cheat sheet (pinning, secrets,
+  permissions, injection, Docker hardening)
+- `scan_workflow {yaml}`: unpinned actions, pull_request_target traps,
+  script injection, missing permissions, secret leaks, pipe-to-shell
+- `scan_dockerfile {dockerfile}`: image pinning, USER, ADD remote URLs,
+  privileged flags, pipe-to-shell, chmod 777
+- `lint_yaml {yaml}`: real YAML parse plus tabs, trailing whitespace,
+  CRLF, duplicate keys
+- `resolve_ref {repo, ref}`: tag/branch to commit SHA via api.github.com
+- `pin_workflow {yaml}`: rewrite uses: lines to SHA pins with the tag as
+  a comment, max 10 lookups per call
+
+Prompt: `audit_workflow {yaml}` audits a workflow against the embedded
+reference. Scans return JSON findings. `resolve_ref` and `pin_workflow`
+need network access.
+
 # CI and Security Gates
 
 ## Workflows

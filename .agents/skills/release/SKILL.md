@@ -41,8 +41,11 @@ compatibility: goreleaser
 - Configuration lives in .goreleaser.yml at repo root.
 - Build artifacts land in dist/ (gitignored).
 - Because this is a multi-module repo of independent binaries, the release
-  matrix covers each mcp/* server binary (or a documented subset).
-- Local dry run: goreleaser release --snapshot --clean, then inspect dist/.
+  matrix covers every mcp/* server (scaffold excluded): linux, darwin,
+  windows on amd64 and arm64, CGO_ENABLED=0 with -s -w ldflags.
+- Archives are tar.gz (zip on windows) plus a sha256 checksums.txt.
+- Local dry run: goreleaser release --snapshot --clean, then inspect
+  dist/. A real release is goreleaser release --clean (make release).
 
 ## notes.md artifact table
 
@@ -50,20 +53,23 @@ Each release publishes a notes.md containing a sha256 checksum table of
 every released artifact:
 
 ```
-| artifact | sha256 |
-|----------|--------|
-| rns_linux_amd64.tar.gz | <sha256> |
+| Artifact | SHA-256 |
+| --- | --- |
+| rns_linux_amd64.tar.gz | `<sha256>` |
 ```
 
-Generate with sha256sum over dist/ outputs and verify against the
-checksums.txt GoReleaser emits. Attach notes.md and checksums.txt to the
-GitHub release.
+scripts/release-notes.sh builds it from dist/checksums.txt and prepends
+dist/CHANGELOG.md when GoReleaser emitted one. GoReleaser uploads
+checksums.txt as a release asset, and the workflow puts notes.md in the
+release body via gh release edit.
 
 ## Release workflow
 
 The release workflow is .github/workflows/release.yml:
 
 - Triggers on v*.*.* tags and workflow_dispatch.
+- A validate-tag job rejects refs that are not strict vX.Y.Z before the
+  release job runs.
 - Includes step-security/harden-runner with a pinned SHA (see ci-security
   skill).
 - Pins all actions to full commit SHAs.

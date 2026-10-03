@@ -46,7 +46,7 @@ expressed.
 
 | | Tailscale | NetBird |
 |---|---|---|
-| Latest (Sept 2026) | v1.102.3 (Aug 2026) | v0.77.1 (Aug 2026) |
+| Latest (Oct 2026) | v1.102.5 (Sept 2026) | v0.80.0 (Oct 2026) |
 | Control plane | Hosted SaaS, closed source | Open source, self-hostable. Hosted cloud also available |
 | Self-hosted control | headscale (community, single tailnet, hobbyist scope) | Full stack: management + signal + relay + dashboard, all BSD-3 |
 | Relay | DERP (HTTPS) + peer relays (v1.86+) | Own relay (QUIC + WebSocket), replaced coturn since v0.29 |
@@ -120,7 +120,7 @@ expressed.
 ## Self-hosting
 
 - **Tailscale:** the coordination server is closed. `headscale` is the
-  community reimplementation (v0.29.3, July 2026), deliberately scoped to
+  community reimplementation (v0.29.4, Sept 2026), deliberately scoped to
   a single tailnet for hobbyists and small orgs. Minimum supported
   client v1.80.0. The client and `derper` are open. You can also run a
   custom DERP relay (region IDs 900-999 reserved) with caveats: no node

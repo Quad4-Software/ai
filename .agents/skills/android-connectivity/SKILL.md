@@ -128,6 +128,13 @@ plus a reboot. During the opt-in phase the platform relies on
 `ACCESS_LOCAL_NETWORK` resets with the NEARBY_DEVICES group, so a
 user who denied twice can be re-prompted after the reset window.
 
+Apps on targetSdk 36 or lower keep implicit LAN access through
+`INTERNET` and should not declare `ACCESS_LOCAL_NETWORK` at all.
+For single mDNS service discovery there is a picker path that avoids
+the broad runtime grant: `NsdManager` with
+`DiscoveryRequest.FLAG_SHOW_PICKER` shows a system-run service
+picker. Pickers cover discovery, not general socket access.
+
 ## API-level matrix
 
 | API | Android | What lands |
@@ -138,10 +145,11 @@ user who denied twice can be re-prompted after the reset window.
 | 31 | 12 | `getAvailableAwareResources`. OOB `createNetworkSpecifier*` deprecated |
 | 33 | 13 | `NEARBY_WIFI_DEVICES`. `WifiAwareDataPathSecurityConfig`. Instant comm mode. Session-count characteristics |
 | 34 | 14 | NAN pairing + bootstrapping (`AwarePairingConfig`, `initiatePairingRequest`). Mandatory FGS types |
-| 35 | 15 | AOSP satellite stack (hidden `SatelliteManager`, `FEATURE_TELEPHONY_SATELLITE`). `TRANSPORT_SATELLITE`/`NET_CAPABILITY_NOT_BANDWIDTH_CONSTRAINED` (also via U Extensions 12). `WifiP2pListener` |
-| 36 | 16 | `SatelliteManager` public + `SatelliteStateChangeListener` + `READ_BASIC_PHONE_STATE`. `AwarePairingConfig.setSupportedCipherSuites` (NCS_PK_PASN_*). P2P R2: pairing bootstrapping, PCC mode, USD discovery |
+| 35 | 15 | AOSP satellite stack (hidden `SatelliteManager`, `FEATURE_TELEPHONY_SATELLITE`). `TRANSPORT_SATELLITE` transport bit (also via U Extensions 12). `WifiP2pListener`, `WifiP2pDiscoveryConfig` + `startPeerDiscovery` |
+| 36 | 16 | `SatelliteManager` public + `SatelliteStateChangeListener` + `READ_BASIC_PHONE_STATE`. `NET_CAPABILITY_NOT_BANDWIDTH_CONSTRAINED` constant. `AwarePairingConfig.setSupportedCipherSuites` (NCS_PK_PASN_*). P2P R2: pairing bootstrapping, PCC mode, USD discovery |
 | 36.1 | 16 minor | `PROPERTY_SATELLITE_DATA_OPTIMIZED` manifest opt-in |
-| 37 | 17 | `ACCESS_LOCAL_NETWORK` enforcement. Aware in-band data-path requests (`AwareDataPathRequest`). `NtnSignalStrength` public |
+| 37 | 17 | `ACCESS_LOCAL_NETWORK` enforcement. Aware in-band data-path requests (`AwareDataPathRequest`). `NtnSignalStrength` public. `WifiP2pConnectionInfo` |
+| 37.1 | 17 minor | Minor SDK, Pixel-first (Sept 2026, wider with QPR2). No connectivity API changes |
 
 ## Flow at a glance
 

@@ -51,15 +51,15 @@ description: >
 - **SurrealDB** is a multi-model database written in Rust. One engine
   stores document, graph, vector, full-text, relational, time-series,
   geospatial and key-value data, all inside one ACID transaction. Latest
-  stable is v3.2.x as of September 2026.
+  stable is v3.3.x as of October 2026.
 - **SurrealQL** is the one query language. It keeps SQL shape (SELECT,
   CREATE, UPDATE, DELETE) and adds arrow syntax for graph paths, dot
   notation for nested fields, and vector similarity operators. Target 3.x
   syntax. 2.x syntax is a common source of stale queries.
 - **Other interfaces** reach the same data: GraphQL (schema generated
   from tables), a REST API over HTTP, an RPC protocol over WebSocket or
-  HTTP, ISO GQL, and DEFINE API for custom HTTP endpoints written in
-  SurrealQL.
+  HTTP, a gRPC transport and a Postgres wire listener (both 3.3+), ISO
+  GQL, and DEFINE API for custom HTTP endpoints written in SurrealQL.
 - **Schema is your choice.** Schemaless tables accept anything.
   Schemafull tables enforce defined fields, types and assertions on
   write. You can tighten a table later without rewriting data.
@@ -75,8 +75,9 @@ description: >
 
 ## Version notes
 
-- SurrealDB 3.x is current (v3.2.4 latest). Data tools on the MCP
-  servers and per-call namespace arguments need 3.1 or later.
+- SurrealDB 3.x is current (v3.3.0 latest). The embedded MCP server
+  needs 3.1 or later. Per-call namespace and database arguments on its
+  tools need 3.3.
 - `surreal mcp` (embedded MCP over stdio) exists since v3.1.0.
   `SURREAL_MCP_ALLOWED_HOSTS` exists since v3.2.1. ISO GQL via MCP is on
   by default from v3.3.0.

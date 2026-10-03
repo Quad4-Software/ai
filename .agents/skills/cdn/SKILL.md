@@ -1,7 +1,7 @@
 ---
 name: cdn
 description: >
-  This skill covers Cloudflare and BunnyCDN (bunny.net) as of September
+  This skill covers Cloudflare and BunnyCDN (bunny.net) as of October
   2026: CDN caching, authoritative DNS and registrar, object storage
   (R2, Bunny Storage), edge compute (Workers, Edge Scripts), tunnels
   (cloudflared), WAF, and APIs/Terraform. Use it when putting a site or
@@ -80,14 +80,17 @@ No free bandwidth tier but effectively free at small scale (about
 $1/month minimum). Pay-as-you-go, no contracts.
 
 - Pull Zones front any origin. Standard tier: 119 PoPs,
-  $0.01/GB EU/NA, $0.03 Asia, $0.045 SA, $0.06 MEA. Volume tier: flat
-  $0.005/GB on 10 PoPs for big files and video. You can disable
+  $0.01/GB EU/NA, $0.03 Asia, $0.045 SA, $0.06 MEA. Volume tier: 10
+  PoPs for big files and video, $0.005/GB for the first 500 TB,
+  $0.004/GB to 1 PB, $0.002/GB to 2 PB. You can disable
   expensive regions per zone.
 - Storage Zones: replicated object storage via HTTP API and FTP/SFTP.
-  Standard HDD $0.01/GB per region. S3-compatible API is still public
+  Standard HDD $0.01/GB per region for the first two regions,
+  +$0.005/GB per additional region, up to 9 regions. Edge SSD
+  $0.02/GB per region, up to 15. S3-compatible API is still public
   preview: enable at zone creation only, 8 S3 regions, reduced
-  replication. rclone and aws-cli work. Traffic from Storage to a Bunny
-  pull zone is free.
+  replication (4 regions max). rclone and aws-cli work. Traffic from
+  Storage to a Bunny pull zone is free.
 - Token authentication gives signed URLs: basic MD5 or advanced
   HMAC-SHA256 with geo rules, directory prefixes for HLS, IP locking.
 - Perma-Cache keeps a permanent replica layer for near-100% hit ratio.
@@ -99,7 +102,7 @@ $1/month minimum). Pay-as-you-go, no contracts.
 - Edge Scripts are Deno-based isolates, 30 s CPU per request, priced
   per request plus CPU. Bunny Stream is a full video pipeline with
   free standard transcoding. Magic Containers run Docker images across
-  41+ regions.
+  40 regions. Bunny Database offers SQLite-compatible edge databases.
 - API: single account AccessKey against api.bunny.net. Official
   Terraform provider BunnyWay/bunnynet and an official bunny CLI.
 - Gotchas: thinner network than Cloudflare in exotic locales, S3 API

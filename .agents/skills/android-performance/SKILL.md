@@ -152,7 +152,7 @@ A good fix shows as fewer janky frames on the same swipe script.
   does not pollute the measurement.
 - `am profile start <pid> /data/local/tmp/x.trace` /
   `am profile stop <pid>` captures a method trace on debuggable builds.
-  Pull it and parse with trace_processor; the slice table resolves
+  Pull it and parse with trace_processor. The slice table resolves
   method names and durations. This is the reliable fallback when
   Perfetto comes back empty.
 - Perfetto/`systrace` for CPU vs GPU vs binder breakdown. Note ftrace

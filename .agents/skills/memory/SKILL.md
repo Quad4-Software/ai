@@ -64,6 +64,8 @@ lowercase hyphenated), 50 results max per query.
 - Secret-looking values are redacted in output only, via a
   `(token|key|password|secret|private)[:=]` pattern. Content is
   stored plaintext, so do not put real secrets in memories.
-- Every operation loads and rewrites the whole file under a mutex,
-  O(n) per call, fine for personal-scale stores.
+- Every call loads the whole file under a mutex, and writes rewrite
+  it. O(n) per call, fine for personal-scale stores.
+- `recall` and `list_memory` truncate each memory's content to 512
+  chars in output. `memory_by_id` returns it whole.
 - Corrupted lines are skipped silently. No dedupe on `remember`.

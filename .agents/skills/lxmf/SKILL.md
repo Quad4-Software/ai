@@ -22,6 +22,13 @@ metadata:
 3. Call `store_config`, `store_inventory`, `store_identities`, or `store_destinations` to read state.
 4. Combine with the `reticulum` skill for mesh concepts.
 
+The server reads `~/.reticulum` by default. Set `MCP_RNS_CONFIG` to point
+at a different config dir. `store_destinations {limit}` takes a
+digit-string limit, default 25, max 500, and returns JSON sorted by most
+recent. Identity file contents are never read and config secrets are
+redacted. Msgpack decoding is pure Go via internal/mpack, no python3
+needed.
+
 ## Examples
 
 - "Show sanitized `~/.reticulum/config` without keys."

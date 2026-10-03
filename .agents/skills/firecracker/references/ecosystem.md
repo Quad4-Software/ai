@@ -25,7 +25,8 @@
  service, containerd-backed, Cluster API provider for k8s-node
  microVMs. Community owned post-Weaveworks.
 - **firecracker-containerd**: effectively maintenance mode, still on
- containerd 1.7. Works but check health before committing.
+ containerd 1.7 (EOL Sept 2026). Works but check health before
+ committing.
 - **microvm.nix** (active): declarative NixOS microVMs across
  firecracker, cloud-hypervisor, qemu, crosvm, kvmtool, stratovirt,
  alioth, vfkit.

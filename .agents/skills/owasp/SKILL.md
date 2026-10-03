@@ -1,7 +1,7 @@
 ---
 name: owasp
 description: >
-  This skill covers the OWASP project landscape as of September 2026:
+  This skill covers the OWASP project landscape as of October 2026:
   the Top 10 2025 web list, API Security Top 10 2023, LLM Top 10 2026,
   the new Agentic Applications Top 10, ASVS 5.0, MASVS/MASTG 2.x, WSTG,
   Cheat Sheet Series, SAMM 2.0, CycloneDX 1.7, Dependency-Check/Track,
@@ -66,8 +66,8 @@ description: >
 - **ZAP is no longer OWASP.** Left Sept 2023, branded "ZAP by
   Checkmarx" since Sept 2024. Still Apache-2.0. Do not call it OWASP
   ZAP.
-- **Dependency-Track v5.0** (June 2026, "Hyades" redesign) is GA. V4
-  line EOL ~Dec 2026, no in-place upgrade.
+- **Dependency-Track v5.x** (v5.0 June 2026, "Hyades" redesign) is
+  GA. V4 line EOL Dec 2026, no in-place upgrade.
 - **CycloneDX 1.7** (Oct 2025), ratified ECMA-424 2nd ed (Dec 2025).
 - **Amass** repo moved to github.com/owasp-amass/amass (still OWASP).
 - **Juice Shop v20** (May 2026) added AI/LLM challenges.

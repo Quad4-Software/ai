@@ -26,7 +26,7 @@ without prompting:
 
 | Flag | Behaviour |
 | --- | --- |
-| `--feature <id>` | Enable a feature by id. Repeatable. Pulls in what it requires |
+| `--feature <id>` | Enable a feature by id. Repeatable; pulls in what it requires |
 | `-y`, `--yes` | Take the template's default features |
 | `--minimal` | Scaffold the base project only, with no features |
 | `--force` | Overwrite files that already exist (default is to skip them) |
@@ -87,10 +87,10 @@ schema = ["schema/team/team.surql"]
 
 Each feature lists the files it adds, grouped by where they land:
 
-- `schema` files -> `database/schema/`
-- `seed` files -> `database/seed/`
-- `suites` files -> `database/tests/suites/`
-- `fixtures` files -> `database/tests/fixtures/`
+- `schema` files → `database/schema/`
+- `seed` files → `database/seed/`
+- `suites` files → `database/tests/suites/`
+- `fixtures` files → `database/tests/fixtures/`
 
 Set `default = true` to pre-check a feature in the prompt and include it with
 `-y`. Use `requires` to declare dependencies on other features.
@@ -100,12 +100,12 @@ Set `default = true` to pre-check a feature in the prompt and include it with
 The bundled `default` template provides an organization and access-control
 model with four opt-in features:
 
-- **Organizations** - organizations, roles that bundle permissions, a per-app
+- **Organizations** — organizations, roles that bundle permissions, a per-app
   permission catalog, employees, and invitations.
-- **Teams** - teams within an organization, with per-member roles.
-- **Organization units** - a department and region hierarchy with unit-scoped
+- **Teams** — teams within an organization, with per-member roles.
+- **Organization units** — a department and region hierarchy with unit-scoped
   permissions.
-- **Subsidiaries and delegation** - parent and child organizations with
+- **Subsidiaries and delegation** — parent and child organizations with
   cross-org delegated permissions.
 
 Teams, units, and subsidiaries each require the organizations feature.

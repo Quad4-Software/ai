@@ -67,8 +67,10 @@ Reticulum/discussions/), `github_discussions` (HTML scrape, fragile),
 
 `rns_rngit {subcommand, rns_url, args}`: subs `create release fork
 mirror sync perms work info ls log show verify install`. URL must
-match `^rns://[0-9a-fA-F]{32}(/seg){1,3}$` and the flag allowlist is
-enforced. Hidden by `MCP_READ_ONLY=1`/`--read-only`.
+match `^rns://[0-9a-fA-F]{32}(/seg){1,3}$` where each segment is
+`[A-Za-z0-9._-]{1,64}`. Extra args are limited to a bool-flag
+allowlist and simple target strings. Hidden by `MCP_READ_ONLY=1` or
+`READ_ONLY=1`, or `--read-only`.
 
 ## Prompts
 

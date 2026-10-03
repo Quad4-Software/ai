@@ -2,7 +2,7 @@
 name: web-perf
 description: >
   This skill covers web performance profiling and testing as of
-  September 2026: Core Web Vitals (LCP, INP, CLS), lab tools
+  October 2026: Core Web Vitals (LCP, INP, CLS), lab tools
   (Lighthouse, WebPageTest, DevTools Performance panel,
   chrome-devtools-mcp, Playwright tracing), slow-connection testing
   (DevTools throttling vs tc/netem vs Toxiproxy), heap and leak
@@ -16,7 +16,7 @@ metadata:
     - https://web.dev/articles/vitals
     - https://developer.chrome.com/docs/devtools
     - https://www.webpagetest.org/
-    - https://github.com/facebookincubator/memlab
+    - https://github.com/facebook/memlab
 ---
 
 ## When to use this skill
@@ -70,7 +70,8 @@ table above is current.
   sidebar flags LCP phases, layout-shift culprits, third parties,
   and the network dependency tree.
 - `npx chrome-devtools-mcp@latest` (public preview since Sept
-  2025): trace capture and analysis from an agent session.
+  2025, v1 stable since May 2026): trace capture and analysis from
+  an agent session.
 - Playwright tracing (`trace: 'on-first-retry'` in CI) is a
   debugging tool, not a profiler. Pair with `page.metrics()` or
   CDP for numbers.
@@ -118,9 +119,10 @@ chrome://inspect.
 
 ## RUM collection
 
-- `web-vitals` v5 (~2KB): onLCP, onINP, onCLS. The
-  `web-vitals/attribution` build adds sub-parts and LoAF script
-  attribution.
+- `web-vitals` v6 (~2KB, v6.2.x as of Oct 2026): onLCP, onINP,
+  onCLS. The `web-vitals/attribution` build adds sub-parts and LoAF
+  script attribution. v6 added Soft Navigation support where the
+  browser provides it.
 - Ship with `navigator.sendBeacon` (survives unload), batch by
   metric.id, send on visibilitychange hidden or pagehide since INP
   and CLS only finalize then.
@@ -131,13 +133,17 @@ chrome://inspect.
   `Timing-Allow-Origin`. LoAF attribution is empty for cross-origin
   scripts. Do not beacon URLs containing PII.
 - JS Self-Profiling API (`new Profiler`) for production CPU
-  sampling in Chromium, roughly 1% overhead at 10ms intervals.
+  sampling in Chromium only, roughly 1% overhead at 10ms intervals.
+  Needs a `Document-Policy: js-profiling` response header or the
+  constructor throws NotAllowedError.
 
 ## Heatmaps and analytics
 
 - Microsoft Clarity: free, unlimited sessions, click/scroll
   heatmaps, session replay, rage-click and dead-click detection.
-  30-day retention, data processed by Microsoft, read the ToS.
+  Recordings retained 30 days, favorited sessions and aggregated
+  click/heatmap data up to ~9 months. Data processed by Microsoft,
+  read the ToS.
 - Hotjar is now Contentsquare. The free tier samples ~5% of sessions.
   PostHog includes heatmaps, session replay, feature flags, 1M
   events/mo free tier.

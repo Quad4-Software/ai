@@ -73,7 +73,7 @@ and `<a>`/`<r>` ack counting.
 | Avatars | XEP-0084 (PEP) vs XEP-0153 (vCard) | XEP-0398 covers conversion. |
 | Bookmarks | XEP-0048 legacy vs XEP-0402 PEP-native | XEP-0411 covers conversion. |
 | Calls | XEP-0166 Jingle, 0167 RTP, 0176 ICE-UDP, 0320 DTLS-SRTP, 0353 Jingle Message Initiation, 0234 Jingle FT | The Kaidan/Conversations call stack. |
-| Compliance | XEP-0479 | "Compliance Suites 2023" (v0.1.0, May 2023) is the latest published. No CS2024/2025 exists. |
+| Compliance | XEP-0479 | "Compliance Suites 2023" (v0.1.0, May 2023) is the latest published. No CS2024 or later exists (checked Oct 2026). |
 | Ops | XEP-0157 contact addresses, 0077 IBR, 0050 ad-hoc, 0357 push, 0215 extdisco, 0030 disco, 0115 caps, 0199 ping, 0156 alt-connection | |
 | UX | XEP-0308 correction, 0424 retraction, 0425 moderation, 0444 reactions, 0461 replies, 0359 stanza-ids, 0421 occupant-id, 0333 markers, 0490 MDS, 0447 stateless file sharing | |
 

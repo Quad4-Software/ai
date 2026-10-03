@@ -1,7 +1,7 @@
 ---
 name: devsecops
 description: >
-  This skill covers DevSecOps as of September 2026: where security
+  This skill covers DevSecOps as of October 2026: where security
   controls sit in the pipeline (pre-commit through runtime), SLSA
   v1.2 and in-toto attestation, Sigstore/cosign keyless signing,
   SBOM generation and continuous scanning (CycloneDX, SPDX, cdxgen,
@@ -11,7 +11,7 @@ description: >
   CI-pipeline static analysis (zizmor), security champions, threat
   modeling (Threat Dragon), compliance-as-code (OpenSCAP, OSCAL),
   runtime detection (Falco), and vulnerability triage with KEV,
-  EPSS v4, and SSVC. Use it when wiring security gates, signing and
+  EPSS v5, and SSVC. Use it when wiring security gates, signing and
   attesting artifacts, triaging CVEs, or assessing program maturity
   with DSOMM.
 ---
@@ -30,7 +30,7 @@ description: >
 1. Read this file for control placement and tool choices.
 2. For scanner catalogs see `sast`. For GitHub Actions hardening see
    `ci-security`. For OWASP category lists see `owasp`.
-3. Version notes are pinned to September 2026. Verify before quoting.
+3. Version notes are pinned to October 2026. Verify before quoting.
 
 ## Examples
 
@@ -96,9 +96,12 @@ existing findings, block only new ones.
   Dependency-Track ingests them for triage. The trust rule: only sign
   VEX you produced, and treat third-party `not_affected` claims as
   UNVERIFIED until audited.
-- Caution: Trivy was reportedly compromised in a March 2026
-  supply-chain window. Verify current status before pinning it into
-  a pipeline.
+- Caution: the March 2026 TeamPCP campaign pushed credential-stealing
+  builds of Trivy (v0.69.4-0.69.6 binaries and images, plus
+  trivy-action and setup-trivy tags), the Checkmarx KICS and AST
+  GitHub Actions, and LiteLLM PyPI packages. Verify remediation
+  status before pinning these into a pipeline, and pin by SHA, not
+  tag.
 
 ## Admission policy
 
@@ -124,7 +127,9 @@ existing findings, block only new ones.
   deep history scans (live-credential verification separates real
   leaks from noise).
 - Licensing notes: gitleaks is feature-complete (security patches
-  only) with changed org terms at v8.19. TruffleHog is AGPL-3.0.
+  only, maintainer focus moved to Betterleaks) and gitleaks-action
+  requires a license key for organization accounts. TruffleHog is
+  AGPL-3.0.
 
 ## Scanner placement
 
@@ -134,6 +139,8 @@ existing findings, block only new ones.
   Apache-2.0, active). Nuclei complements it. Run against ephemeral
   envs, warn first, graduate to gates.
 - IaC: Checkov, Trivy IaC, KICS on changed modules at PR time.
+  KICS's GitHub Action was hit in the same March 2026 campaign
+  noted above.
 - Pipeline self-analysis: zizmor audits the workflow files
   themselves. This repo gates on it. Most guides still miss this
   category.
@@ -141,7 +148,7 @@ existing findings, block only new ones.
 ## Program layer
 
 - Security champions: OWASP Security Champions Guide. Nominated not
-  assigned, defined time commitment, outcome metrics. BSIMM15 shows
+  assigned, defined time commitment, outcome metrics. BSIMM16 shows
   adoption tracks maturity.
 - Threat modeling: OWASP Threat Dragon v2.x (Production status)
   with STRIDE-per-element and the Threat Modeling Manifesto.
@@ -167,7 +174,7 @@ Never sort by CVSS alone:
 
 1. CISA KEV first: known-exploited entries get patched regardless
    of score.
-2. EPSS (v4 model): daily exploitation probability. Above 0.5 is urgent,
+2. EPSS (v5 model): daily exploitation probability. Above 0.5 is urgent,
    <0.1 deprioritize. It is a forecast, not evidence.
 3. SSVC decision trees (Track/Track*/Attend/Act) for the formal
    path.

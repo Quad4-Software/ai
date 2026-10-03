@@ -35,9 +35,12 @@ description: >
 
 ## Toolchain snapshot
 
-- Kotlin 2.x, Android Gradle Plugin 9.x, JVM target 17.
+- Kotlin 2.4.x, Android Gradle Plugin 9.4.x (Gradle 9.6+), JVM
+  target 17.
 - compileSdk 37, targetSdk 36+, minSdk 26 is a sane floor for media
-  apps (Media3, per-app language, themed icons all work).
+  apps (Media3, per-app language, themed icons all work). Google
+  Play requires targetSdk 36+ for new apps and updates since
+  Aug 31, 2026.
 - Version catalog at `gradle/libs.versions.toml`, single `:app`
   module, `gradle.properties` for AndroidX/R8 flags.
 - Prefer `debugImplementation` for tooling-only deps so release builds
@@ -77,8 +80,9 @@ launcher intent without needing the activity name. Screenshot with
 
 ## Stack notes
 
-- Media3 1.8: `UnstableApi` annotation is required for many classes
-  (`Download`, `CacheDataSource`, `DataSourceBitmapLoader`). File-level
+- Media3 1.11: `UnstableApi` annotation is still required for many
+  classes (`Download`, `CacheDataSource`, `DataSourceBitmapLoader`),
+  though items get promoted to stable piecemeal. File-level
   opt-in:
   `@file:androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)`
 - Coil: build `ImageRequest` inside `remember(cacheKey)` and use your

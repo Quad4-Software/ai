@@ -146,14 +146,13 @@ Go 1.26 shipped in February 2026. It added new packages and security features.
 - `crypto/ecdh` and `crypto/ecdsa` now ignore the user-supplied random reader and
   always use a CSPRNG. Use `testing/cryptotest.SetGlobalRandom` for
   deterministic tests. Re-enable the old behavior with `cryptocustomrand=1`.
-- `sync.WaitGroup.Go` runs a function in a new goroutine and calls `Done`.
 
 ### Security
 
 - **Green Tea garbage collector** is now the default (see below).
 - 64-bit platforms now randomize the heap base address at startup, making cgo
   exploits harder. Opt out with `GOEXPERIMENT=norandomizedheapbase64`.
-- Point releases 1.26.1 through 1.26.6 fixed many security issues, including:
+- Point releases 1.26.1 through 1.26.8 fixed many security issues, including:
   - `crypto/x509` name and email constraints
   - `html/template` meta content URL escaping
   - `net/url` IPv6 literal validation

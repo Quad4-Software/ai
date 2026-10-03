@@ -38,7 +38,7 @@ description: >
   overlay network written in Go. Slack open-sourced it in 2019 after years of
   internal use. It still runs Slack's production overlay of 50k+ hosts. The
   creators founded Defined Networking in 2020 to maintain it. Latest stable
-  is v1.11.x as of September 2026.
+  is v1.11.x as of October 2026.
 - **Crypto.** Handshakes use the Noise Protocol Framework (Noise IXpsk0
   pattern). Key exchange is Curve25519 ECDH by default, NIST P-256 supported
   for compliance. Transport cipher is AES-256-GCM by default, or

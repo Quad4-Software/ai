@@ -53,7 +53,7 @@ bodies, references, and diff mapping. Every response carries an
 | `read_callsite` | `path`, `line` | which symbol encloses a line |
 | `callers` | `name`, `path`, `limit` (30/200) | heuristic `name(` callers outside the def |
 | `callees` | `path`, `name`, `number` | calls inside a symbol resolved via index |
-| `search_code` | `pattern`, `path`, `context` (3/20), `limit` | regex search with context lines |
+| `search_code` | `pattern`, `path`, `context` (3/20), `limit` (20/100) | regex search with context lines |
 
 ## Notes and quirks
 

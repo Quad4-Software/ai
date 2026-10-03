@@ -123,9 +123,9 @@ territory. Documented campaigns:
 ## Slop in search results
 
 - Originality.ai measured 17.3% of Google top-20 results as
-  AI-generated in Sep 2025, up from 2.3% in 2019. Over half of AI
-  Overview citations were not in the organic top 100. Slop cites
-  slop.
+  AI-generated in Sep 2025, up from 2.3% in 2019, and 21.6% by
+  Jul 2026 under a revised detector. Over half of AI Overview
+  citations were not in the organic top 100. Slop cites slop.
 - Slop tells: freshness-gamed dates, no named author, confident
   generic steps with no version numbers or real error output,
   commands that do not match the tool's actual CLI, identical text

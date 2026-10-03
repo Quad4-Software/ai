@@ -18,7 +18,7 @@ io_uring, userfaultfd, kexec, module loads, and a rootcmd rule
 
 ## eBPF runtime detection
 
-- Falco 0.44.x (CNCF graduated): modern eBPF probe default, rule
+- Falco 0.45.x (CNCF graduated): modern eBPF probe default, rule
  engine, strong for shell-spawned-by-webserver, miners, escapes.
 - Tetragon 1.7.x (Cilium): TracingPolicy CRDs, in-kernel filtering,
  works standalone without Kubernetes, runtime enforcement possible.
@@ -64,7 +64,7 @@ io_uring, userfaultfd, kexec, module loads, and a rootcmd rule
 - Volatility 3 on Linux needs dwarf2json symbol packs. Plugins
  linux.pslist, linux.bash, linux.lsof, linux.elfs, linux.sockstat,
  linux.check_modules. Capture with LiME or AVML.
-- Sysmon for Linux 1.5 exists (SysinternalsEBPF) but is niche -
+- Sysmon for Linux 1.5.x exists (SysinternalsEBPF) but is niche -
  Falco/Tetragon/auditd are the primary options.
 - GTFObins is the Linux LOLBAS: hunt SUID/capability/sudo abuse of
  find, awk, vim, nmap, perl, python.

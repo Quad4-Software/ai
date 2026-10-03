@@ -77,16 +77,16 @@ path the *arr container can see.
 
 ## Component map
 
-| App | Role | Port | API | Latest stable (Sept 2026) |
+| App | Role | Port | API | Latest stable (Oct 2026) |
 |---|---|---|---|---|
 | Radarr | Movies | 7878 | v3 | v6.4.4.10685 |
-| Sonarr | TV | 8989 | v3 | v4.0.19.2979 |
+| Sonarr | TV | 8989 | v3 | v4.0.20.3014 |
 | Lidarr | Music | 8686 | **v1** | v3.1.0.4875 |
-| Prowlarr | Indexer sync | 9696 | v1 | v2.5.2.5491 |
-| Seerr | Requests | 5055 | v1 | v3.4.1 |
-| qBittorrent | Download client | 8080 | WebAPI v2 | v5.2.3 |
-| Emby | Media server | 8096 / 8920 | REST | 4.9.5.0 |
-| Jellyfin | Media server | 8096 | REST | 10.11.11 |
+| Prowlarr | Indexer sync | 9696 | v1 | v2.6.5.5623 |
+| Seerr | Requests | 5055 | v1 | v3.5.0 |
+| qBittorrent | Download client | 8080 | WebAPI v2 | v5.2.4 |
+| Emby | Media server | 8096 / 8920 | REST | 4.10.1.0 |
+| Jellyfin | Media server | 8096 | REST | 12.1 |
 
 Version detail and per-app API surface: see the reference files.
 
@@ -196,7 +196,8 @@ The *arr decides when a torrent leaves the client:
   *arr hostname, port, API key, and URL base. The test button returns the
   *arr's quality profiles and root folders, which Seerr stores as
   selectable defaults. Seerr supports a separate 4K *arr instance per
-  type. Radarr/Sonarr v3/v4 only.
+  type. Radarr and Sonarr only (v3 API, so current majors work).
+  Lidarr and Prowlarr are not wired in.
 - **Prowlarr -> *arr:** Settings -> Apps in Prowlarr. Add each *arr with
   its API key. Prowlarr pushes indexers and keeps them in sync. App
   profiles control which indexer categories sync to which app.
@@ -233,6 +234,8 @@ The *arr decides when a torrent leaves the client:
   Words with Custom Formats. Lidarr v3.0.1 moved to .NET 8, dropped Basic
   Auth, and dropped linux-x86.
 - Jellyfin 10.9+ rewrote the DB on EF Core. Upgrades are one-way. The
-  installer drops a `library.db.bak` next to the DB. Skip-major-version
-  jumps are not supported on some paths. 10.11 re-added a legacy
-  migration route for pre-10.10 installs.
+  installer drops a `library.db.bak` next to the DB. 12.0 (Sept 2026)
+  renumbered the project, moved to .NET 10, removed the `/emby/*` and
+  `/mediabrowser/*` route prefixes, and disables legacy auth on
+  upgrade. Direct upgrades from 10.10.7 or 10.11.x. Older installs
+  should step through 10.10.7 first.

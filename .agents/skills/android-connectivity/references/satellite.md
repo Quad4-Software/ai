@@ -27,22 +27,24 @@ Third-party apps can use:
   meta-data `android.telephony.PROPERTY_SATELLITE_DATA_OPTIMIZED`
   naming the package opts the app into constrained satellite
   networks and lists it among satellite-enabled apps in Settings.
-- **Network detection (API 36+):**
-  `NetworkCapabilities.TRANSPORT_SATELLITE` and the inverse
-  `NET_CAPABILITY_NOT_BANDWIDTH_CONSTRAINED` bit let an app detect a
-  low-bandwidth satellite link through `ConnectivityManager` and
-  degrade gracefully.
+- **Network detection:** `NetworkCapabilities.TRANSPORT_SATELLITE`
+  (constant API 35) and the inverse
+  `NET_CAPABILITY_NOT_BANDWIDTH_CONSTRAINED` bit (constant API 36)
+  let an app detect a low-bandwidth satellite link through
+  `ConnectivityManager` and degrade gracefully. Both can be checked
+  as raw integer constants on older releases, where the network bits
+  already exist.
 - **`NtnSignalStrength`** (public API 37): `NONE/POOR/MODERATE/GOOD/
   GREAT`, `getLevel()`.
 - **`TelephonyCallback.CarrierRoamingNtnListener`** (public interface,
-  API 37): `onCarrierRoamingNtnModeChanged`,
+  API 37, `telephony_satellite_apis` flag): `onCarrierRoamingNtnModeChanged`,
   `onCarrierRoamingNtnSignalStrengthChanged`, plus eligibility and
   available-services callbacks. Caveat: the underlying
   `EVENT_CARRIER_ROAMING_NTN_*` constants remain `@SystemApi` +
-  `READ_PHONE_STATE` + `FLAG_SATELLITE_SYSTEM_APIS` in the
-  android17-release tree, so whether a third-party app can actually
-  register and receive these events is unverified and likely
-  privileged in practice.
+  `@RequiresPermission(READ_PHONE_STATE)` + `FLAG_SATELLITE_SYSTEM_APIS`
+  in the android17-release tree, so whether a third-party app can
+  actually receive these events through `registerTelephonyCallback` is
+  unverified and likely privileged in practice.
 
 ## What is carrier/system gated
 
@@ -68,7 +70,7 @@ the sky, or query visibility**.
 ## Device and carrier reality
 
 - Devices: Pixel 9 and later on Android 15+, select Samsung Galaxy
-  (S24/S25-era).
+  flagships (S24 and later).
 - Services: Pixel Satellite SOS is an emergency-mode flow to
   emergency providers. Carrier satellite SMS/RCS rides Skylo
   (Verizon/AT&T via Google Messages) or Starlink direct-to-cell

@@ -2,7 +2,7 @@
 name: blue-teaming
 description: >
   This skill covers blue teaming: the whole defensive security
-  function as of September 2026. Use it for SOC stack selection
+  function as of October 2026. Use it for SOC stack selection
   (Wazuh, Security Onion, Elastic, Splunk free limits), alert triage,
   detection engineering as code (Sigma, Atomic Red Team, Caldera),
   incident response (NIST 800-61r3, PICERL), DFIR triage tooling
@@ -32,7 +32,7 @@ engineering, deception.
 
 | Layer | Free/OSS picks |
 |---|---|
-| SIEM/XDR | Wazuh (GPLv2, no paywall, own agent), Security Onion 3.x (full distro: Elastic + Suricata + Zeek + SOC UI, v2.4 EOL Oct 2026), Elastic Basic, OpenSearch |
+| SIEM/XDR | Wazuh (GPLv2, no paywall, own agent), Security Onion 3.x (full distro: Elastic + Suricata + Zeek + SOC UI, Oracle Linux 9 only, v2.4 EOL Oct 1 2026), Elastic Basic, OpenSearch |
 | EDR/endpoint | Wazuh agent (FIM, SCA, active response), Velociraptor, osquery+Fleet, LimaCharlie free tier, Sysmon+Winlogbeat as poor man's EDR |
 | Network | Suricata, Zeek, Arkime, Malcolm |
 | Case mgmt | TheHive + Cortex, DFIR-IRIS |
@@ -59,8 +59,8 @@ dispositions: every false-positive pattern is a tuning opportunity.
 3. Rules live in Git with PR review and metadata (author, ATT&CK
    tags, FP notes, logsource).
 4. Test with Atomic Red Team or MITRE Caldera before trusting a rule.
-   SigmaHQ release tiers: start with `core`, expand to `core+` or
-   `emerging-threats` as tuning matures.
+   SigmaHQ release tiers: start with `core`, expand to `core+`,
+   `core++`, or `emerging-threats` as tuning matures.
 5. Deploy via CI converting Sigma to target queries.
 6. Measure FP rate, MTTD per rule, coverage percent. Purple-team
    periodically.

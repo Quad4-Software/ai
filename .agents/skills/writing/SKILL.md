@@ -36,9 +36,9 @@ checked, no borrowed authority.
 
 The fix is never a word blacklist. Lexical tells decay (delve fell
 94% from its 2024 peak once flagged). Structural tells persist:
-the SlopShape study detects machine text at 98% macro-F1 from
-structure alone, unchanged after full rewording. Write like a
-person, do not paraphrase like a machine.
+the SlopShape study detects machine text at 97% macro-F1 from
+structure alone, nearly unchanged after full rewording. Write like
+a person, do not paraphrase like a machine.
 
 ## Workflow
 

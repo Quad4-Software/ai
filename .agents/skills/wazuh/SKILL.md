@@ -2,7 +2,7 @@
 name: wazuh
 description: >
   This skill covers Wazuh, the free GPLv2 SIEM+XDR platform, as of
-  September 2026 (stable 4.14.x, 5.0 in beta with breaking changes).
+  October 2026 (stable 4.14.x, 5.0 in beta with breaking changes).
   Use it for architecture (manager, indexer, dashboard, agent),
   deployment modes (all-in-one, distributed, Docker, Kubernetes),
   agent enrollment, capabilities (FIM, SCA, vulnerability detection,
@@ -22,15 +22,18 @@ metadata:
 - Enrolling agents, wiring integrations, sizing indexer nodes.
 - Deciding Wazuh vs Elastic Security, Security Onion, or Splunk.
 
-## Version reality (Sept 2026)
+## Version reality (Oct 2026)
 
-- Stable line is 4.14.x (v4.14.7, July 2026). Target 4.x for
+- Stable line is 4.14.x (v4.14.8, Sept 2026). Target 4.x for
   production.
-- 5.0 is beta (v5.0.0-beta4, July 2026), no announced GA and NO
-  in-place upgrade from 4.x. Breaking changes: a new Engine replaces
-  analysisd, YAML decoders replace XML, KVDB replaces CDB lists,
-  Filebeat is removed, and agents get a new protocol. Plan a fresh
-  install plus migration, not an upgrade.
+- 5.0 is still beta (v5.0.0-beta5, Sept 2026), no announced GA and NO
+  in-place upgrade from 4.x. The 5.x packages refuse to install over a
+  4.x host. Breaking changes: a new Engine replaces analysisd, YAML
+  decoders replace XML, KVDB replaces CDB lists, Filebeat is removed,
+  the manager installs to /var/wazuh-manager/ with a single
+  wazuh-manager-internal-options.conf file, and agents get a new
+  protocol (4.x agents can still forward events to a 5.0 manager in
+  mixed mode). Plan a fresh install plus migration, not an upgrade.
 
 ## Architecture (4.x)
 

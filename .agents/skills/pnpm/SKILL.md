@@ -39,14 +39,16 @@ description: >
 
 ## Version map
 
-- **pnpm 12.5.x** (latest: 12.5.1, Sept 2026): a rewrite in Rust.
+- **pnpm 12.x** (latest: 12.9.0, Oct 2026): a rewrite in Rust.
   Stable since 12.0 on Aug 26, 2026. Keeps pnpm 11 commands, flags,
   settings, and lockfile format.
-- **npm `latest` still points at pnpm 11.** Install 12 via
-  `npm i -g pnpm@latest-12` or an exact version, or the standalone
-  installer which needs no Node.js. npm-installed pnpm 12 needs
-  Node.js 22.13+.
-- **pnpm 11.x** is still maintained (11.26 line) and gets the docs.
+- **npm `latest` now points at pnpm 12.** `npm i -g pnpm` installs 12
+  and needs Node.js 22.13+ to install. The standalone installer needs
+  no Node.js at all, and once installed pnpm 12 runs as a native
+  executable. `pnpm self-update` upgrades a pinned or global 11.10+
+  install to 12.
+- **pnpm 11.x** is still maintained (11.28 line), with its docs behind
+  the version selector.
 - **pnpm 10.x** added `minimumReleaseAge` (10.16) and the two-document
   lockfile. Postinstall scripts in dependencies have been off by
   default since v10.
@@ -87,6 +89,17 @@ description: >
    `pnpm peers check`, which reads issues from the lockfile with no
    re-resolution. Grep CI scripts for `--resolution-only` before
    upgrading.
+
+Notable minor releases since 12.0: 12.6 added automatic dependency
+deduplication, relocatable `node_modules`, `--save-types`, and
+`file:`/`link:` protocols in catalogs. 12.7 added
+`pnpm install --allow-build=<pkg>` (writes `allowBuilds`,
+`--allow-build='!pkg'` denies), `pnpm publish --publish-wait-timeout`,
+and let the global `node` shim follow `.nvmrc`/`.node-version`. 12.8
+warns when `pnpm pack`/`pnpm publish` would ship a `.env` file and
+accepts every setting as `--config.<name>=<value>`. 12.9 adds a
+per-registry `networkConcurrency` setting and runs pnpm in StackBlitz
+WebContainers.
 
 ## Settings live in pnpm-workspace.yaml
 

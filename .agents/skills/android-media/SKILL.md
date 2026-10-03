@@ -85,21 +85,21 @@ Two requirements, both easy to miss:
 1. `MediaMetadata.Builder().setArtworkUri(uri)` on each `MediaItem`.
 2. A bitmap loader on the session that can actually fetch the URI.
 
-`MediaLibrarySession.Builder.setBitmapLoader(...)`. The trap:
-`DataSourceBitmapLoader(context)` builds a `DefaultHttpDataSource`
-internally, which does NOT carry your OkHttp interceptors. Auth headers
-(bearer tokens, cookies, API keys in headers) never reach the artwork
-request and the load 401s silently, so the lock screen shows no art.
+`MediaLibrarySession.Builder.setBitmapLoader(...)`. The trap: a
+`DataSourceBitmapLoader` built without a factory falls back to
+`DefaultDataSource.Factory`/`DefaultHttpDataSource`, which does NOT
+carry your OkHttp interceptors. Auth headers (bearer tokens, cookies,
+API keys in headers) never reach the artwork request and the load
+401s silently, so the lock screen shows no art.
 
-Fix: inject your authenticated factory. In Media3 1.8 the factory
-constructor takes an explicit executor:
+Fix: inject your authenticated factory. The `DataSourceBitmapLoader`
+constructors are deprecated in favor of `DataSourceBitmapLoader.Builder`:
 
 ```kotlin
 val bitmapLoader = CacheBitmapLoader(
-    DataSourceBitmapLoader(
-        DataSourceBitmapLoader.DEFAULT_EXECUTOR_SERVICE.get(),
-        OkHttpDataSource.Factory(mediaClient),
-    ),
+    DataSourceBitmapLoader.Builder(context)
+        .setDataSourceFactory(OkHttpDataSource.Factory(mediaClient))
+        .build(),
 )
 MediaLibrarySession.Builder(this, player, callback)
     .setBitmapLoader(bitmapLoader)
@@ -166,9 +166,11 @@ For servers exposing structured lyrics (OpenSubsonic
 
 ## Pitfalls
 
-- `replaceMediaItem` on the current item can restart playback in older
-  Media3. 1.8+ supports metadata-only in-place updates when uri and
-  cacheKey match, but verify on your version before relying on it.
+- `replaceMediaItem` on the current item restarts playback when the
+  media source has to be rebuilt. Replacing with only metadata
+  changes (same `uri`, same `customCacheKey`) updates in place
+  without interruption on current Media3, but verify on your version
+  before relying on it.
 - `Download.STATE_*` constants are `@UnstableApi`. Add the file-level
   OptIn.
 - Do not run `onPlaybackResumption` media item building on the main

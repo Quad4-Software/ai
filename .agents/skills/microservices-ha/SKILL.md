@@ -2,7 +2,7 @@
 name: microservices-ha
 description: >
   This skill covers microservices vs modular monolith decisions,
-  high-availability design, and horizontal scaling as of September
+  high-availability design, and horizontal scaling as of October
   2026. Use it when decomposing services, designing for HA (quorum,
   failover, multi-AZ vs multi-region), choosing resilience patterns
   (timeouts, retries, circuit breakers, sagas, outbox), picking a
@@ -114,8 +114,8 @@ monolith before cutting.
 - KEDA (CNCF graduated) for queue/lag-driven scaling and
   scale-to-zero workers. Karpenter or cluster autoscaler at node level.
 - Gateway API is the standard for north-south traffic. Ingress NGINX
-  is being retired. Envoy Gateway, Cilium, Kong, or NGINX Gateway
-  Fabric for new work.
+  was retired March 2026, no more releases or security patches.
+  Envoy Gateway, Cilium, Kong, or NGINX Gateway Fabric for new work.
 - Service mesh (Istio ambient GA since 1.24, Linkerd, Cilium) buys
   automatic mTLS, uniform L7 telemetry, and traffic splitting - at the
   price of operating a second distributed system. Under ~10 services

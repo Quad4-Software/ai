@@ -49,6 +49,9 @@ allowBuilds:
 - `pnpm approve-builds` interactively picks which pending builds to
  allow and writes `allowBuilds` (older spelling
  `onlyBuiltDependencies` still works).
+- `pnpm install --allow-build=<pkg>` (12.7+) approves a build
+ non-interactively and records it in `allowBuilds`.
+ `--allow-build='!pkg'` denies it (`pkg: false`).
 - `ignoredBuiltDependencies` silences the warning for packages whose
  scripts you deliberately skip.
 - `strictDepBuilds: true` turns unreviewed build scripts into a hard
@@ -102,6 +105,8 @@ packages (published before provenance existed) from tripping it.
  registry cannot substitute.
 - `verifyDepsBeforeRun` - checks the lockfile against package.json
  before `pnpm run`, catching stale installs.
+- `pnpm pack` and `pnpm publish` warn when the tarball includes a
+ `.env` or `.env.*` file not listed in `files` (since 12.8).
 - Integrity: tarball hash mismatches are fatal. `--update-checksums`
  rewrites them. Only run it after verifying the tarball source.
 - Lockfile is a two-document YAML file. Audit your SBOM/scanner: tools

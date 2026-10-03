@@ -15,7 +15,9 @@ compatibility: reticulum
 
 ## How to use
 
-1. Install `pip install rngit` or `pipx install rngit` after `rns` is running.
+1. Install `pip install rns`. The package provides `rngit`, `git-remote-rns`
+   and `rngcs`. There is no standalone rngit package on PyPI. Have `rnsd`
+   running.
 2. Use `git clone rns://<hash>/group/repo` and `rngit create/fork/mirror` as needed.
 3. Configure `~/.rngit/config` with groups, access, and optional Nomad Network pages.
 4. Use `rngcs` for SSH-format commit signing with a Reticulum identity.
@@ -36,10 +38,12 @@ Reticulum-hosted repositories the same way they work with any other remote.
 This feature was introduced in RNS 1.2.0 and has grown steadily since: work
 documents, permissions, signed releases and page nodes arrived across 1.2.x,
 media serving to nomadnet clients and instant permission activation landed in
-1.5.3. Upstream RNS releases are now distributed and verified through rngit
-itself, so it is the reference deployment. Still treat a public page node as
-infrastructure: keep RNS updated and review the `[access]` and `stats_ignore`
-defaults before exposing repositories.
+1.5.3, and 1.5.5 added micron-converted downloads and workdoc counts to the
+page node. Upstream RNS releases are now distributed and verified through
+rngit itself, so it is the reference deployment. Still treat a public page
+node as infrastructure: keep RNS updated and review the `[access]`,
+`stats_ignore` and `blocked_identities` defaults before exposing
+repositories.
 
 ## URLs
 
@@ -89,8 +93,9 @@ URL. It is not normally run by hand. It reads these environment variables:
     RNGIT_CONFIG  path to alternative client config directory
     RNS_CONFIG    path to alternative Reticulum config directory
 
-The client config lives at `~/.rngit/client_config` and can tune parameters such
-as reference batch size for transfers.
+The client config lives at `~/.rngit/client_config`. The `[client]` section
+sets `ref_batch_size` (default 25) for transfers and `[aliases]` defines
+destination aliases.
 
 Everyday Git commands work unchanged:
 
@@ -181,6 +186,9 @@ The node config at `~/.rngit/config` or `/etc/rngit/config` contains:
     node_name = My Git Node
     announce_interval = 360
     record_stats = yes
+    stats_ignore_identities = <hash>
+    stats_push_ignore_identities = <hash>
+    blocked_identities = <hash>
 
     [repositories]
     public = /var/git/public
@@ -193,9 +201,15 @@ The node config at `~/.rngit/config` or `/etc/rngit/config` contains:
     [pages]
     serve_nomadnet = yes
     unicode_icons = no
+    media_conversion = yes
 
 `[repositories]` maps group names to filesystem paths. `[access]` grants group
 permissions. `[pages]` enables the optional Nomad Network page node.
+
+`blocked_identities` in `[rngit]` blocks listed identities from any
+interaction with the node. Adding the null-identity hash
+`d7db22f63b453c23bb0688dde565b7c1` blocks unidentified peers entirely,
+which is the recommended posture for a public page node.
 
 ## Permissions
 
@@ -358,6 +372,10 @@ Page node features:
 - customisable Micron templates in `~/.rngit/templates/`
 - Nerd Font icons by default. Set `unicode_icons = yes` for plain Unicode
 - a "Thanks" counter on each repository page
+- on-the-fly media conversion to WebP for nomadnet clients, enabled by
+  default. It auto-detects `magick`, `convert`, `gm`, `ffmpeg` or `avconv`.
+  Set `media_conversion = no` to disable or force a backend with the
+  `RNGIT_MEDIA_BACKEND` environment variable
 
 Install pygments for code syntax highlighting:
 
@@ -379,6 +397,8 @@ The page node reads Micron templates from `~/.rngit/templates/`:
     commits.mu and commit.mu  commit history and detail
     refs.mu    branches and tags
     stats.mu   repository statistics
+    work.mu and work_doc.mu  work document list and detail
+    no_ident.mu  page shown to unidentified peers
 
 Templates can include these variables:
 
@@ -482,6 +502,7 @@ repository. Each release is a subdirectory containing:
     list    list releases
     view    show release details
     fetch   fetch and verify artifacts
+    verify  verify artifacts against a local manifest without fetching
     create  create a new release
     delete  remove a release
     latest  show latest release details
@@ -648,8 +669,8 @@ inside Reticulum use rngcs.
 them or try to fetch them over HTTP.
 - `RNGIT_CONFIG` and `RNS_CONFIG` override default client and Reticulum config
 paths.
-- The client config at `~/.rngit/client_config` can adjust reference batch size
-and destination aliases.
+- The client config at `~/.rngit/client_config` sets `ref_batch_size` under
+`[client]` and destination aliases under `[aliases]`.
 - The page node requires `serve_nomadnet = yes` in the `[pages]` section.
 - Release manifests (`.rsm`) keep embedded signatures so artifacts can be
 verified offline and updated from any source.

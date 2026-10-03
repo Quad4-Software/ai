@@ -61,8 +61,8 @@ shell, `cmd.Dir = root`, 180 s timeout, 256 KiB output cap. Root is
 - `.ts/.tsx/.js/.jsx/.vue/.svelte` -> `tests/frontend/<s>.test.js`,
   `.test.ts`, `.spec.js`
 - `.go` -> `<dir>/<s>_test.go`
-- Generic stems (manager, index, core, main, utils) also try the
-  parent dir name.
+- Generic stems (manager, index, core, main, mod, app, utils,
+  helpers) also try the parent dir name and `<parent>_<stem>`.
 
 Runners: `uv run pytest <f> -q --tb=short`, `pnpm exec vitest run
 <f>`, `go test ./<dir>`. File args must be repo-relative.

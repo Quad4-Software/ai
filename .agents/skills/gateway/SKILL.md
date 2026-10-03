@@ -41,7 +41,10 @@ failed transport gets one respawn. Child stderr is discarded.
   flags, or a self-reference to gateway are skipped.
 - `--socket` (default `$XDG_RUNTIME_DIR/gateway.sock` or
   `/tmp/gateway-$UID.sock`), `--attach` (stdio-to-socket shim that
-  auto-spawns the daemon), `--daemon`, `--read-only`.
+  auto-spawns the daemon), `--daemon`, `--read-only`, `--http`
+  (serve HTTP only on `HTTP_PORT`, no stdio), `--health-check`
+  (GET /healthz on `HTTP_PORT`, exit 0 on success), `--log`
+  (append operational log to a file, default `GATEWAY_LOG`).
 - `HTTP_PORT` exposes `GET /`, `GET /healthz`, `GET /sse`, and
   `POST /messages?session=<id>`.
 
@@ -54,7 +57,7 @@ removed on SIGTERM/SIGINT.
 |---|---|---|
 | `servers` | none | children + reachability + tool count |
 | `tools` | `server` (opt) | compact `<server>.<tool>` index |
-| `gateway_stats` | none | per-server calls, errors, spawns, avg_ms |
+| `gateway_stats` | none | per-server calls, errors, spawns, avg_ms, last_call, tool count |
 | `tool_schema` | `name` | full schema for one `<server>.<tool>` |
 | `invoke` | `name`, `arguments` | proxy a `tools/call` to a child |
 
@@ -64,10 +67,11 @@ removed on SIGTERM/SIGINT.
   `invoke` of a child's mutating tool directly. Protection relies on
   children inheriting `MCP_READ_ONLY` via the environment. Set
   `MCP_READ_ONLY=1` in the gateway environment before relying on it.
-- Each `/sse` connection builds its own child set rather than
-  sharing the daemon's children.
+- All `/sse` sessions share one server and one child pool
+  process-wide. Concurrent sessions cap at 256 and each POST body
+  at 1 MiB.
 - Response matching is by `"id":N` substring over up to 10000 lines
   with no read deadline. A hung child stalls until the server-side
   30 s tool timeout fires.
-- Child `tools/list` is cached for the process lifetime. Restarting
-  a child does not refresh it.
+- Child `tools/list` is cached per child. A transport failure
+  clears the cache, so a respawned child re-advertises its tools.

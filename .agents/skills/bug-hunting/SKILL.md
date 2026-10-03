@@ -47,10 +47,11 @@ Coverage and git mining:
 
 - `hotspots {since, limit}`: git churn ranked by recency, defects cluster there
 - `regression_mine {limit}`: fix/hotfix/revert commits and touched files
-- `complexity_scan {path, max_lines}`: oversized functions hide untested paths
+- `complexity_scan {path, max_lines, limit}`: oversized functions hide
+  untested paths
 - `dead_code {path, limit}`: unreferenced functions, candidates only
-- `markers_scan {path, limit}`: TODO/FIXME/HACK/SECURITY comments
-- `mutation_hints {file, name}`: mutants that escape weak tests
+- `markers_scan {path, limit}`: TODO/FIXME/HACK/XXX/BUG/SECURITY comments
+- `mutation_hints {file, name, limit}`: mutants that escape weak tests
 - `soft_fuzz_scan {path, limit}`: try/except pass, tests without assertions
 
 Code-level security:
@@ -63,7 +64,8 @@ Code-level security:
   verification, JWT alg confusion, timing-unsafe comparisons
 - `concurrency_scan {path, limit}`: Go loop-var capture, defer in loops,
   WaitGroup misuse, unclosed bodies, send-after-close, unlocked shared state
-- `taint_scan {path, limit}`: naive source-to-sink pairs within a file
+- `taint_scan {path, limit}`: naive source-to-sink pairs within 30 lines
+  of each other in a file
 
 Repo and history security:
 

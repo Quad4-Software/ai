@@ -3,7 +3,7 @@ name: k3s
 description: >
   This skill covers k3s, the lightweight CNCF-certified Kubernetes
   distribution from SUSE/Rancher, tracking upstream Kubernetes
-  (v1.37.0+k3s1 current, Sept 2026). Use it for install flags and env
+  (v1.37.1+k3s1 current, Oct 2026). Use it for install flags and env
   vars, server/agent topology, the bundled components (containerd,
   flannel, servicelb, traefik, local-path-provisioner, helm-controller),
   datastore choices (sqlite vs embedded etcd vs external), registries.yaml
@@ -45,9 +45,10 @@ servicelb (klipper LoadBalancer), traefik ingress, local-path-provisioner,
 metrics-server, helm-controller, and a network policy controller. CNCF
 certified, so manifests behave the same as upstream.
 
-Versions track upstream Kubernetes directly: **v1.37.0+k3s1** is the
-current release line (Sept 2026). The `+k3sN` suffix is the packaging
-revision. Upgrade one minor at a time. Do not skip.
+Versions track upstream Kubernetes directly: **v1.37.1+k3s1** is the
+current release (Sept 30, 2026). 1.36.x, 1.35.x, and 1.34.x still get
+patch releases. The `+k3sN` suffix is the packaging revision. Upgrade
+one minor at a time. Do not skip.
 
 ## Topology
 

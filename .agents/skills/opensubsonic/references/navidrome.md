@@ -1,6 +1,6 @@
 # Navidrome reference
 
-Latest stable **v0.64.0** (Sept 2026). Single Go binary, embedded
+Latest stable **v0.64.2** (Sept 2026). Single Go binary, embedded
 SQLite (`navidrome.db` in `DataFolder`, no external DB), React web UI
 on port 4533. GPL-3.0. The `master` branch can be unstable. Use
 release builds.
@@ -121,8 +121,16 @@ return nothing useful.
   re-sync. Extism built-in HTTP removed (plugins must use
   `host.HTTPSend`). Shares always owned by creator. Unknown config
   keys now warn. Security fixes for SQLi, share IDOR, plugin SSRF,
-  rate-limit bypass. Experimental Jellyfin Music API
-  (`Jellyfin.Enabled=true` lets Finamp/Jellify connect).
+  rate-limit bypass. `topSongsByArtistId` extension added.
+  Experimental Jellyfin Music API (`Jellyfin.Enabled=true` lets
+  Finamp/Jellify connect).
+- **0.64.1:** security release. Fixes unthrottled Subsonic auth,
+  M3U-artwork SSRF and local file read, player takeover, and
+  library-filter leaks on bookmarks, playlist tracks, now-playing.
+  Jellyfin API now reports Jellyfin 12.1.0, supports Quick Connect,
+  and announces the server on the LAN.
+- **0.64.2:** fixes `database is locked` floods on slow storage
+  (artwork worker pauses during scans) and 32-bit scan failures.
 - **0.63.0:** sidecar lyrics (TTML/ELRC/SRT/YAML), `songLyrics` v2,
   smart search. `EnableSharing` default flipped to true.
 - **0.62.0:** `sonicSimilarity` + `playbackReport` extensions,

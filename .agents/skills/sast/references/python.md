@@ -30,7 +30,7 @@ Still maintained but mostly redundant once ruff `S` rules are on.
 `bandit -r . -f json`, `.bandit` config, `# nosec B603` suppressions.
 Fully offline.
 
-## Pylint (4.0.x, GPL-2.0)
+## Pylint (4.x, GPL-2.0)
 
 Slower, deeper - refactoring and duplication checks ruff does not
 cover. Complements ruff rather than competing.
@@ -39,12 +39,12 @@ cover. Complements ruff rather than competing.
 
 All fully offline once installed.
 
-- **mypy 2.3.0** (MIT) - 2.x line since May 2026.
-- **pyright ~1.1.412** (MIT) - npm-distributed, Node dependency.
-- **basedpyright 1.39.x** (MIT) - community fork, stricter
+- **mypy 2.4.0** (MIT) - 2.x line since May 2026.
+- **pyright ~1.1.414** (MIT) - npm-distributed, Node dependency.
+- **basedpyright 1.40.x** (MIT) - community fork, stricter
  recommended/all modes, Pylance-like LSP outside VS Code.
 - **ty** (Astral, MIT) - beta, Rust, 10-100x faster, unstable API.
-- **Pyrefly 1.0** (Meta, MIT, stable May 2026) - Rust, LSP built in,
- runs Instagram-scale codebases.
+- **Pyrefly 1.x** (Meta, MIT, stable since May 2026) - Rust, LSP
+ built in, runs Instagram-scale codebases.
 
 Pick basedpyright or pyrefly for strictness today, watch ty.

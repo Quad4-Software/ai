@@ -56,20 +56,20 @@ information credibility 1-6). A username match is a lead, not identity
 proof: corroborate with two or more independent signals. Record
 retrieval dates, public data goes stale.
 
-## Tool map (Sept 2026)
+## Tool map (Oct 2026)
 
 | Category | Best picks | Notes |
 |---|---|---|
 | Search/dorks | Google operators, GHDB, Bing, Brave | `cache:` operator is dead, use Wayback |
-| Username | Maigret (3k+ sites, maintained), Sherlock v0.16 (pipx install) | WhatsMyName is now data-only |
-| Domain/DNS | subfinder, Amass v5 (major rewrite), dnsx, crt.sh, SecurityTrails | subfinder wants free API keys |
+| Username | Maigret (3k+ sites, maintained), Sherlock v0.16.x (pipx install) | WhatsMyName is now data-only |
+| Domain/DNS | subfinder, Amass v5.x (major rewrite), dnsx, crt.sh, SecurityTrails | subfinder wants free API keys |
 | Email | HIBP (paid API), holehe (fragile modules), GHunt, Epieos | h8mail is unmaintained |
-| Breach data | HIBP, IntelligenceX (free tier incl. darkweb), Hudson Rock, DeHashed | BreachForums was taken down Oct 2025 |
+| Breach data | HIBP, IntelligenceX (free tier incl. darkweb), Hudson Rock, DeHashed | BreachForums seized Oct 2025, knocked offline again Mar 2026, expect respawns |
 | Infra intel | Shodan (InternetDB is free, no key), Censys, GreyNoise, FOFA | GreyNoise separates scanner noise from targeted |
 | Geolocation | Google Earth, SunCalc, Overpass Turbo, WiGLE | Method over tools: shadows, terrain, signage |
 | Metadata | ExifTool, oletools (olevba/olemeta), pdfinfo | Platforms strip EXIF on upload |
 | Archives | Wayback + CDX API, archive.today, Common Crawl | Common Crawl columnar index is underused |
-| Frameworks | theHarvester v4.11 (active), SpiderFoot forks (upstream stalled at v4.0), Maltego CE (limited) | Recon-ng is dormant |
+| Frameworks | theHarvester v4.11.x (active), SpiderFoot forks (upstream stalled at v4.0), Maltego CE (limited) | Recon-ng is dormant |
 | Crypto | Blockchair, Etherscan, mempool.space, Arkham free tier, bitcoinabuse | Ransom tracing, OFAC checks |
 | Dark web | Ahmia, IntelligenceX, DarkSearch | Dedicated VM, never authenticate |
 

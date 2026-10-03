@@ -30,12 +30,14 @@ replication.
 | --- | --- | --- |
 | RocksDB | LSM-tree KV store on disk | Mature, recommended for write-heavy single-node servers. `rocksdb://path` |
 | SurrealKV | SurrealDB's own LSM engine | Beta. Small config surface, aimed at embedded and local-first. `surrealkv://path` |
-| SurrealMX | In-memory | `memory`. Tests, scratch, Redis-like persistence mode exists. Supports VERSION temporal reads |
+| SurrealMX | In-memory | `memory`. Tests, scratch, Redis-like persistence mode exists. No VERSION support since 3.3.0 |
 | IndexedDB | Browser | WASM/embedded in web apps |
 | Distributed storage | Shared transactional store | Multi-node clusters only. Managed Scale plan or self-hosted Enterprise |
 
 Temporal versioning (SELECT ... VERSION) was built on SurrealKV first
-and now works on SurrealMX and RocksDB where supported.
+and now works on RocksDB too. The in-memory SurrealMX backend dropped
+it in 3.3.0: `mem://` refuses `versioned=true` and non-zero retention
+at startup.
 
 ## Single node
 
@@ -44,10 +46,11 @@ surreal start --user root --pass secret --bind 127.0.0.1:8000 memory
 surreal start rocksdb://path/to/database
 ```
 
-Default endpoint is port 8000. Serves the REST API, RPC, GraphQL, and
-(3.1+) `POST /mcp` on the same bind. Vertical scaling only, no built-in
-fault tolerance. Use filesystem backups. Prefer RocksDB over SurrealKV
-for conservative production.
+Default endpoint is port 8000. Serves the REST API, RPC (WebSocket and,
+from 3.3, gRPC), GraphQL, and (3.1+) `POST /mcp` on the same bind. A
+Postgres wire listener (3.3+) is a separate bind via `--postgres-bind`.
+Vertical scaling only, no built-in fault tolerance. Use filesystem
+backups. Prefer RocksDB over SurrealKV for conservative production.
 
 ## Multi-node
 

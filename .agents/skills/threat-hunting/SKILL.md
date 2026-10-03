@@ -2,7 +2,7 @@
 name: threat-hunting
 description: >
   This skill covers threat hunting on Linux and Windows endpoints with
-  free and open-source tooling as of September 2026: hunting
+  free and open-source tooling as of October 2026: hunting
   methodology (hypothesis-driven, Pyramid of Pain, ATT&CK v19, Sqrrl
   maturity, PEAK, TaHiTI), Sysmon and Windows event IDs, Sysinternals,
   KAPE, Chainsaw, Hayabusa, Velociraptor, osquery, Volatility 3,
@@ -65,10 +65,10 @@ description: >
 
 ## Tool selection
 
-- **Windows telemetry**: Sysmon 15.22.x (built-in optional Windows 11
-  feature since Feb 2026, also classic installer. Runs as PPL) with
-  sysmon-modular or SwiftOnSecurity config. Windows event log for
-  4688/4624/4648/4698/7045/1102/4104.
+- **Windows telemetry**: Sysmon 15.22.x (built-in optional feature on
+  Windows 11 and Server 2025 since Feb 2026, also classic installer.
+  Runs as PPL) with sysmon-modular or SwiftOnSecurity config. Windows
+  event log for 4688/4624/4648/4698/7045/1102/4104.
 - **Windows triage**: KAPE + EZ Tools for artifact collection,
   Chainsaw (fast) or Hayabusa (fullest Sigma coverage incl. v2
   correlation) for EVTX hunting, Velociraptor for live/forensic

@@ -1,11 +1,12 @@
 # qBittorrent reference
 
-- **Latest stable:** v5.2.3 (July 2026). v5.3.0beta1 exists and flips the
-  default to libtorrent 2.1.x. Port 8080 for the WebUI and WebAPI.
+- **Latest stable:** v5.2.4 (Sept 2026). v5.3.0 is at rc1 and flips the
+  default build to libtorrent 2.1.x (an `lt12` variant keeps 1.2.x).
+  Port 8080 for the WebUI and WebAPI.
 - Official builds ship two libtorrent variants: the standard build uses
-  libtorrent 1.2.x, the `lt20` build uses libtorrent 2.0.x (v5.2.3 ships
-  lt 1.2.20 / lt 2.0.13). libtorrent 2.x changes disk I/O behavior and
-  hashing. Stick to one variant per data set.
+  libtorrent 1.2.x, the `lt20` build uses libtorrent 2.0.x (the v5.2
+  line ships lt 1.2.20 / lt 2.0.13). libtorrent 2.x changes disk I/O
+  behavior and hashing. Stick to one variant per data set.
 - `qbittorrent-nox` is the headless build. Docker images (LinuxServer.io,
   hotio) wrap it.
 

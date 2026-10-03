@@ -44,15 +44,16 @@ development.
 ## Release status
 
 - **v3 is beta, not GA.** Promoted from alpha on 2026-08-02 with
-  `v3.0.0-beta.0`. Nightly beta tags are cut from master. Confirmed
-  tags include `v3.0.0-beta.20`/`beta.21` (check
+  `v3.0.0-beta.0`. Nightly beta tags are cut from master. Latest tag
+  verified Oct 2026: `v3.0.0-beta.27` (check
   github.com/wailsapp/wails/releases for the newest). The desktop API
   is declared stable in the beta, but **v2 remains the current stable
   release** (latest `v2.11.0`, Nov 2025).
 - **Beta scope:** Windows 10/11 amd64+arm64, macOS Intel+Apple Silicon,
   Linux amd64+arm64. **Go 1.25+ required.** Android/iOS are
   experimental and outside the compatibility promise.
-- Releases are tag-only since ~beta.8. Install the CLI with
+- Release tags carry generated changelogs but no binary assets.
+  Install the CLI with
   `go install github.com/wailsapp/wails/v3/cmd/wails3@latest`, or pin
   the tag matching your `go.mod` since betas cut nightly and can drift.
 - v3 docs live at https://v3.wails.io/.
@@ -188,7 +189,7 @@ build-assets`. Binaries land in `bin/<APP_NAME>`, not `build/bin/`.
   Windows EXE and Linux DEB/RPM sign from any OS. MacOS
   signing/notarization runs on macOS only.
 - Obfuscation: `wails3 build --obfuscated` uses Garble (needs
-  `go install mvdan.cc/garble@v0.16.0`). Generate bindings with
+  `go install mvdan.cc/garble@v0.18.0`). Generate bindings with
   `-obfuscated` for stable IDs. UPX post-build is available but not
   recommended on macOS (breaks signing).
 

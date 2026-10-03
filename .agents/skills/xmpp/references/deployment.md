@@ -2,24 +2,30 @@
 
 ## Server picks
 
-- **Prosody 13.0.6** (May 2026). Minimal Lua core. You enable each
+- **Prosody 13.0.7** (Sept 2026). Minimal Lua core. You enable each
   module. Community modules at modules.prosody.im cover MAM, upload,
-  push, anti-spam. Old stable 0.12.6 still gets security fixes. Pick it
-  for control and a small footprint.
-- **ejabberd 26.07** (July 2026). Erlang, batteries-included: MUC, MAM,
-  push, STUN/TURN, admin API. OTP 27 soft minimum. `mod_invites` added
-  invite pages. ConverseJS 14 supported. Pick it for features out of
-  the box and horizontal scale.
-- **MongooseIM 6.8.1** (Aug 2026). Erlang Solutions' enterprise sibling.
-  GraphQL admin API, OTP 27+. Pick it when scale and a formal admin API
-  matter.
+  push, anti-spam. Old stable 0.12.6 (May 2026) is expected to be the
+  last release of the 0.12.x series. Pick it for control and a small
+  footprint.
+- **ejabberd 26.09** (Sept 2026). Erlang, batteries-included: MUC, MAM,
+  push, STUN/TURN, admin API. OTP 27 soft minimum. 26.09 fixes an
+  unauthenticated remote code execution reachable when BOSH, s2s and
+  `mod_adhoc_api` are all enabled, plus a BOSH DoS and cross-tenant
+  MUC/roster access bugs. Update promptly. `mod_invites` gained invite
+  pages in 26.07. Pick it for features out of the box and horizontal
+  scale.
+- **MongooseIM 6.9.0** (Sept 2026). Erlang Solutions' enterprise sibling.
+  GraphQL admin API, OTP 27+. 6.9.0 adds rule-based push notification
+  handling as an alternative to plugins. Pick it when scale and a
+  formal admin API matter.
 - **Openfire 5.1.2** (Aug 2026). Java, Apache-2.0, easiest admin GUI,
   plugin ecosystem. Pick it when the GUI matters more than the protocol
   edge.
 - **Snikket stable.20260611** (June 2026). Opinionated Prosody-based
-  Docker distro, invite-only by design, ships matching clients and a
-  "Borogove" SDK/web app in development. Pick it when you want the
-  module choices already made.
+  Docker distro, invite-only by design, ships matching clients. The
+  companion Borogove chat SDK is published at borogove.dev and on npm,
+  and SDK-based web and iOS apps are in development. Pick it when you
+  want the module choices already made.
 
 ## Ports
 

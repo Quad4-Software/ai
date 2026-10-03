@@ -23,9 +23,9 @@ is dead.
 
 ## Why paraphrase humanizers do not work
 
-- SlopShape detects machine text at 98% from structure alone,
-  unchanged after full rewording. Synonym swapping and word
-  shuffling leave the shape intact.
+- SlopShape detects machine text at 97% from structure alone,
+  nearly unchanged after full rewording. Synonym swapping and
+  word shuffling leave the shape intact.
 - Dedicated evasion tools do beat detector-class instruments
   (DIPPER, TempParaphraser, adversarial paraphrasing at 80%+
   detection drop), but the output still reads machine-shaped to a

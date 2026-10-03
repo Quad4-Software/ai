@@ -60,9 +60,11 @@ and comment are Write-marked.
 Environment: token lookup order `MESHCHATX_GITHUB_TOKEN`,
 `GITHUB_TOKEN`, `GH_TOKEN`. Repo override `MESHCHATX_ISSUES_REPO`
 (default `Quad4-Software/MeshChatX`, validated `owner/name`). The
-token goes only to api.github.com. All issue tools, including
-reads, require a token. Bodies are normalized to house style and
-about 30 known terms get auto-linked.
+token goes only to api.github.com. The API-backed tools (create,
+view, update, comment, search) all need a token, including reads.
+`issue_templates` and `issue_references` are local and work without
+one. Bodies are normalized to house style and about 30 known terms
+get auto-linked.
 
 ## Prompts
 
@@ -70,7 +72,8 @@ about 30 known terms get auto-linked.
 
 ## Notes and quirks
 
-- `MCP_READ_ONLY=1`/`--read-only` hides the Write-marked tools.
+- `MCP_READ_ONLY=1` or `READ_ONLY=1`, plus the `--read-only` flag,
+  hides the Write-marked tools.
 - Doc pages cache in a 32-entry LRU that never expires within a
   session (`cacheTTL` is declared but unused). Restart for fresh docs.
 - README drift: `feature_check` is implemented but undocumented.

@@ -56,6 +56,11 @@ Current servers and purposes:
   storage inventory, identity names, decoded destinations. Never returns key
   material, secrets are redacted.
 - lxmfy - LXMFy docs, bot scaffolding, static diagnostics, test guidance.
+- mediawiki - read-only MediaWiki Action API client for one configured
+  wiki (status, search, page, info, backlinks, category). Anubis
+  proof-of-work is solved natively, and Cloudflare and other JS
+  challenges route through FlareSolverr when MEDIAWIKI_FLARESOLVERR_URL
+  is set.
 - memory - short-term agent memory: remember, recall, update and forget
   notes, people, destinations, tasks and snippets.
 - meshchatx - MeshChatX documentation as searchable, section-aware tools,
@@ -103,7 +108,8 @@ make build / test / vet / fmt / clean   # delegated to each server Makefile
 Other root targets: go-fix (modernizers), install, mcp-config and
 server-json (client config generation via scripts/gen-configs.py),
 inspector (scripts/mcp-inspector.py), links (scripts/link-check.py),
-release (GoReleaser plumbing, see the release skill).
+zizmor (static analysis of the workflow files), release (GoReleaser
+plumbing, see the release skill).
 
 Per server: cd mcp/<name> && make test (or go test ./...).
 

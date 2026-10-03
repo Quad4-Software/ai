@@ -6,8 +6,14 @@ archived (last release v1.35.0, Feb 2026, which exists only to prep the
 migration). Jellyseerr's last branded release was v2.7.3 (Aug 2025) and
 its Docker image is marked "do not use, migrate to seerr/seerr".
 
-- **Latest stable:** v3.4.1 (July 2026). v3.4.0 fixed CVE-2026-73291, a
+- **Latest stable:** v3.5.0 (Sept 2026). v3.4.0 fixed CVE-2026-73291, a
   path-traversal-to-RCE in the ImageProxy. Run 3.4.x or later.
+- **v3.5.0 API break:** `GET /settings/plex/library` and
+  `GET /settings/jellyfin/library` no longer accept `sync`/`enable`
+  params, and reading libraries no longer toggles their state. Library
+  sync moved to `POST /settings/{plex,jellyfin}/library/sync` and
+  enable/disable to `PUT /settings/{plex,jellyfin}/library/{id}`.
+  Only direct API consumers are affected.
 - **Port:** 5055 (env `PORT`). Healthcheck: `GET /api/v1/settings/public`.
 - **Migration:** pointing the Seerr image at an existing Overseerr or
   Jellyseerr config volume migrates the SQLite DB on first start. The
@@ -69,8 +75,8 @@ Settings -> Services takes one Radarr and one Sonarr entry (plus optional
 separate 4K entries per type). Each entry holds hostname, port, SSL flag,
 API key, URL base, and a "default server" flag. The test button calls the
 *arr's `/system/status` and returns its quality profiles and root folders
-so they can be picked in the UI. Only Radarr/Sonarr **v3 and v4** are
-supported. Lidarr and Prowlarr are not wired here.
+so they can be picked in the UI. Radarr and Sonarr only (v3 API, so
+current majors work). Lidarr and Prowlarr are not wired here.
 
 On approval, Seerr creates the item through the *arr's add endpoint, so
 the movie/series appears in the *arr library monitored and searched.
@@ -89,8 +95,8 @@ Per-user and per-event toggles across these agents:
 
 ## Operational notes
 
-- State is a SQLite DB in `/app/config`. Back it up before upgrades. There
-  is no downgrade path.
+- State is a SQLite DB in `/app/config` by default. PostgreSQL is also
+  supported. Back it up before upgrades. There is no downgrade path.
 - The container image is `seerr/seerr` (also published as
   `ghcr.io/seerr-team/seerr`). The `fallenbagel/jellyseerr` and
   `sct/overseerr` images are frozen.

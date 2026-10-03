@@ -42,7 +42,8 @@ Coolify is a self-hosted, open-source alternative to Heroku/Netlify/
 Vercel/Railway, also offered as managed Coolify Cloud
 (app.coolify.io). Latest stable **v4.3.23** (Sept 2026). The 4.x line
 went stable April 2026 after about two years of betas. V5.x is in early
-development as a Rust rewrite (`coold`) with native clustering.
+development: the panel stays Laravel, with a new Rust per-host agent
+(`coold`) and clustering over a WireGuard mesh of Podman hosts.
 
 ## Architecture
 
@@ -78,7 +79,7 @@ The script:
    `upgrade.sh` from cdn.coollabs.io and runs `docker compose up -d`.
 
 Auto-install supports Ubuntu LTS (20.04/22.04/24.04). Other distros use
-the manual install. Minimums: 2 CPU, 2 GB RAM, 30 GB disk, Docker 24+.
+the manual install. Minimums: 2 CPU, 2 GB RAM, 10 GB disk, Docker 24+.
 
 ## Resource model
 
@@ -143,7 +144,7 @@ Traefik versions supported in v4.3.21+: 3.7.13 / 3.6.25 / 2.11.57.
   PR ids), `services`, `databases`, `servers`, `projects`,
   `environments`, `teams`, `security`, `s3`. `/api/health` is
   unauthenticated.
-- **CLI:** official `coolify-cli` (Go, MIT), latest v1.7.0. Contexts,
+- **CLI:** official `coolify-cli` (Go, MIT), latest v1.8.0. Contexts,
   `app`, `database backup`, `deploy`, `s3`, `resource list`, JSON
   output for CI.
 - **Notifications:** email (SMTP/Resend/system), Discord, Telegram,
@@ -156,8 +157,10 @@ Traefik versions supported in v4.3.21+: 3.7.13 / 3.6.25 / 2.11.57.
   retention, parallel gzip), optional upload to any S3-compatible
   storage. Volume/file backups and a scheduled backup of the Coolify
   instance itself exist.
-- **Logs:** deployment logs (per-deployment UUID, streamable,
-  API-accessible since v4.3.23) and container logs in the dashboard.
+- **Logs:** deployment logs (per-deployment UUID, streamable) and
+  container logs in the dashboard. API access covers application,
+  database, and service logs, plus preview deployment runtime logs
+  by app UUID and PR id since v4.3.23.
 - **Sentinel:** `coolify-sentinel` (Rust) reports server + container
   health to the panel, optional CPU/memory metrics (10 s default, 7-day
   retention, SQLite on the server), optional traffic analytics from

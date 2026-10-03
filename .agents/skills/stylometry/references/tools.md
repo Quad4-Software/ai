@@ -66,10 +66,12 @@ def ncd(x, y):
 ## Java stack (forensic-oriented)
 
 - JStylo (github.com/psal/jstylo): Writeprints-style feature
-  sets, Weka backend, needs JGAAP jar. Use branch 2.3.0 for the
-  UI per the project's own recommendation.
+  sets, Weka backend, needs JGAAP jar. Unmaintained upstream
+  since 2016 but still the standard forensic GUI. Use branch
+  2.3.0 for the UI per the project's own recommendation.
 - Anonymouth: feeds JStylo analysis back as edit suggestions for
-  obfuscation. Needs a reference corpus.
+  obfuscation. Needs a reference corpus. Ships in the same
+  unmaintained JStylo tree.
 - JGAAP (github.com/evllabs/JGAAP): GUI attribution lab.
 
 ## Corpora for testing

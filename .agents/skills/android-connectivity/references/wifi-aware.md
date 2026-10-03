@@ -93,7 +93,10 @@ Passphrase` (API 29) and OOB `WifiAwareSession.createNetworkSpecifier*`
 and `SubscribeDiscoverySession.initiateDataPathRequest`, with
 `onDataPathRequestReceived`/`onDataPathConnected`/
 `onDataPathRequestFailed` callbacks. Removes the out-of-band
-initiator-knowledge step.
+initiator-knowledge step. `DiscoverySession.releaseDataPath(PeerHandle)`
+(API 37) tears one down. `setChannelFrequencyMhz(int, boolean)` on
+`WifiAwareNetworkSpecifier.Builder` (API 37) pins the data-path
+channel, gated by `isSetChannelOnDataPathSupported()`.
 
 ## Pairing (Wi-Fi Aware R3/4.0, API 34)
 

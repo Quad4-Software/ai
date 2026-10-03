@@ -43,13 +43,15 @@ description: >
 Docker is two products that version independently:
 
 - **Docker Engine** (`dockerd` + `containerd` + `runc`) is the daemon that
-  runs containers. Latest stable **v29.8.1** (Sept 2026). The v29 series
-  launched Nov 2025. v28 and v27 are unmaintained. Only v25.0.x still
-  gets LTS patches.
+  runs containers. Latest stable **v29.8.2** (Sept 30, 2026, a security
+  release). The v29 series launched Nov 2025. v28 and v27 are
+  unmaintained. Only v25.0.x still gets LTS patches.
 - **Docker Compose** (`docker compose`, a CLI plugin) is the multi-service
-  orchestrator for a single host. Latest **v5.5.1** (Sept 2026). V5.0.0
-  shipped Dec 2025 and skipped v3/v4 numbering to distance itself from
-  the legacy file-version confusion.
+  orchestrator for a single host. Latest **v5.6.0** (Oct 2026), adding
+  partial `jobs` support (manually triggered only, scheduled jobs pending
+  Engine work) and warnings on unsupported compose-file attributes.
+  V5.0.0 shipped Dec 2025 and skipped v3/v4 numbering to distance itself
+  from the legacy file-version confusion.
 
 Compose is not Swarm. `docker compose up` runs on one daemon. `deploy`
 keys other than `resources.limits`/`reservations` are ignored without
@@ -178,7 +180,7 @@ Hardening patterns and socket-proxy configs:
 
 ## Alternatives worth knowing
 
-- **Podman** (v5.8.x): daemonless, rootless-first, drop-in CLI. Quadlet
+- **Podman** (v6.1.x): daemonless, rootless-first, drop-in CLI. Quadlet
   `.container` files generate systemd units.
 - **nerdctl + containerd**: Docker-compatible CLI straight on containerd,
   good for k8s-adjacent hosts.

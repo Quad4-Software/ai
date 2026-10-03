@@ -1,10 +1,10 @@
 ---
 name: devops
 description: >
-  This skill covers DevOps and platform engineering as of September
+  This skill covers DevOps and platform engineering as of October
   2026: CI/CD systems (GitHub Actions, GitLab CI, Woodpecker, Argo,
   Dagger), GitOps (Argo CD v3.x, Flux v2.9), IaC post-Terraform-split
-  (OpenTofu v1.11, Pulumi, Crossplane graduated), config management
+  (OpenTofu v1.12, Pulumi, Crossplane graduated), config management
   (Ansible default, Chef/Puppet legacy, InSpec license trap),
   observability (OpenTelemetry, Prometheus 3.x LTS, Grafana LGTM,
   Vector), DORA and SPACE metrics, internal developer platforms
@@ -29,7 +29,7 @@ description: >
    runtimes see `docker`, `podman`, `k3s`. For isolation see
    `firecracker`.
 3. Verify version claims against the tool's releases page. These
-   notes are pinned to September 2026.
+   notes are pinned to October 2026.
 
 ## Examples
 
@@ -65,13 +65,13 @@ Pull-based reconciliation per OpenGitOps:
 
 ## IaC after the Terraform split
 
-- Terraform moved to BUSL 1.1 (Aug 2023). IBM acquired HashiCorp
-  (Dec 2024).
-- OpenTofu (Linux Foundation, CNCF sandbox, MPL-2.0, v1.11.x):
+- Terraform moved to BUSL 1.1 (Aug 2023). IBM's HashiCorp
+  acquisition closed Feb 2025.
+- OpenTofu (Linux Foundation, CNCF sandbox, MPL-2.0, v1.12.x):
   divergent features Terraform lacks: state encryption, ephemeral
   values, write-only attributes, `enabled` meta-argument, early
-  variable evaluation, provider `for_each`. Terraform provider
-  ecosystem stays compatible.
+  variable evaluation, provider `for_each`, dynamic
+  `prevent_destroy`. Terraform provider ecosystem stays compatible.
 - Pulumi (Apache-2.0): language-native SDKs, runs HCL natively,
   `pulumi convert --from terraform` bridges providers.
 - Crossplane graduated CNCF Nov 2025. V2.0 is the OSS control-plane
@@ -95,14 +95,15 @@ acceptance. Do not recommend it without noting that.
 - Route via OTel Collector or Grafana Alloy. Vector for telemetry
   plumbing between systems.
 - Store in Grafana LGTM (Loki, Grafana, Tempo, Mimir) or a vendor
-  backend. Prometheus 3.x current, 3.5 is the LTS line.
+  backend. Prometheus 3.x current, 3.13 is the LTS line (3.5 LTS
+  ended Jul 2026).
 - OTLP is the wire protocol. Never bet on a vendor-specific one.
 
 ## Metrics and delivery health
 
 - DORA four keys: deployment frequency, lead time for changes,
   change failure rate, failed-deployment recovery time. Current
-  reports add reliability as a fifth metric.
+  reports add deployment rework rate as a fifth metric (since 2024).
 - SPACE complements DORA for human sustainability: Satisfaction,
   Performance, Activity, Communication, Efficiency. Measure teams,
   never individuals.
@@ -127,9 +128,9 @@ Separate deploy from release:
   flag API. Flagd is its OSS evaluation daemon (pre-1.0). Caution:
   Unleash relicensed to AGPLv3 at v8.0 and OSS Unleash Edge is
   deprecated (EOL Dec 31, 2026) - verify and plan migration if used.
-- Traffic shape: Argo Rollouts (GA March 2026, stable v1 APIs:
-  canary, blue-green, analysis templates) or Flagger (CNCF
-  graduated, Flux-native).
+- Traffic shape: Argo Rollouts (GA since March 2026, the v1alpha1
+  APIs carry stability guarantees: canary, blue-green, analysis
+  templates) or Flagger (CNCF graduated, Flux-native).
 - Gate promotion on automated metric analysis (SLO burn), not on
   someone watching a dashboard.
 
